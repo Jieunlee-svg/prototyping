@@ -17,7 +17,8 @@ import {
 } from 'lucide-react';
 import { clsx } from 'clsx';
 import { ImageWithFallback } from '../figma/ImageWithFallback';
-import prescriptionImage from 'figma:asset/cc194b92e9a8d1d90a96e85418e5b9af42d0f6b0.png';
+
+const prescriptionImage = 'https://placehold.co/400x560/e2e8f0/64748b?text=처방전';
 
 interface Prescription {
   id: string;

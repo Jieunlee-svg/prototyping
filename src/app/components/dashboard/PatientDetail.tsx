@@ -54,7 +54,8 @@ import {
 } from 'recharts';
 import { clsx } from 'clsx';
 import { ImageWithFallback } from '../figma/ImageWithFallback';
-import hidocLogo from 'figma:asset/819b9f721543d20e17c10e6c8d8d6c30e9a9bcb7.png';
+
+const hidocLogo = 'https://placehold.co/120x40/e2e8f0/64748b?text=HiDoc';
 
 interface PatientDetailProps {
   onBack: () => void;
@@ -206,7 +207,7 @@ const RESOURCES: Resource[] = [
     type: 'youtube',
     title: '올바른 혈압 측정법',
     description: '가정에서 혈압계 사용 시 주의사항과 정확한 측정 자세.',
-    thumbnail: 'figma:asset/8fa11f440b6e92c2db27690f058145214876b6d0.png', 
+    thumbnail: 'https://placehold.co/400x225/e2e8f0/64748b?text=혈압+측정법',
     duration: '03:15',
     date: '2025.11.20'
   },
@@ -215,7 +216,7 @@ const RESOURCES: Resource[] = [
     type: 'pdf',
     title: '고지혈증 약물 복용 안내서',
     description: '스타틴 계열 약물 복용 시 나타날 수 있는 부작용과 대처법.',
-    thumbnail: 'figma:asset/4e44af28a649d2906b2086c8f41164c489c74872.png',
+    thumbnail: 'https://placehold.co/400x225/e2e8f0/64748b?text=고지혈증+안내',
     pages: 2,
     date: '2026.02.01'
   }
