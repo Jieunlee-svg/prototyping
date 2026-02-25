@@ -28,6 +28,7 @@ export const PharmacySettings: React.FC = () => {
   const [showTemplates, setShowTemplates] = useState(false);
   const [formData, setFormData] = useState({
     name: '서울종로약국',
+    phone: '02-1234-5678',
     address: '서울특별시 종로구 종로 123 (종로3가)',
     intro: '안녕하세요. 서울종로약국입니다. 정성을 다해 상담해드립니다.',
     hours: {
@@ -161,6 +162,21 @@ export const PharmacySettings: React.FC = () => {
                   onChange={handleChange}
                   className="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                   placeholder="약국 이름을 입력하세요"
+                />
+              </div>
+
+              <div>
+                <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
+                  약국 번호
+                </label>
+                <input
+                  type="text"
+                  id="phone"
+                  name="phone"
+                  value={formData.phone}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  placeholder="약국 전화번호를 입력하세요"
                 />
               </div>
 
