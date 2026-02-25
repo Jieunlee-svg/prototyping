@@ -511,7 +511,7 @@ export const MedicationConsultationC = () => {
                <div className="space-y-3">
                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">복용 시간</label>
                  <div className="grid grid-cols-4 gap-2">
-                   {['아침', '점심', '저녁', '자기 전'].map(time => (
+                   {['아침', '점심', '저녁', '취침 전'].map(time => (
                      <button
                        key={time}
                        onClick={() => toggleTime(time)}
