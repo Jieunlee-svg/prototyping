@@ -12,7 +12,7 @@ import { LoginScreen } from './components/auth/LoginScreen';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(true);
-  const [view, setView] = useState<'list' | 'detail' | 'sms' | 'prescription' | 'settings' | 'notice' | 'consultation-c'>('list');
+  const [view, setView] = useState<'list' | 'detail' | 'sms' | 'prescription' | 'settings' | 'notice' | 'consultation-c' | 'consultation-history' | 'consultation-reminder'>('list');
   const [selectedPatientId, setSelectedPatientId] = useState<string | null>(null);
 
   const handlePatientClick = (id: string) => {
@@ -37,6 +37,8 @@ function App() {
         onDashboardClick={() => setView('list')}
         onPrescriptionClick={() => setView('prescription')}
         onConsultationCClick={() => setView('consultation-c')}
+        onConsultationHistoryClick={() => setView('consultation-history')}
+        onConsultationReminderClick={() => setView('consultation-reminder')}
         onSettingsClick={() => setView('settings')}
         onNoticeClick={() => setView('notice')}
         onLogout={() => setIsLoggedIn(false)}
@@ -59,6 +61,26 @@ function App() {
           ) : view === 'consultation-c' ? (
             <div className="absolute inset-0 overflow-hidden">
               <MedicationConsultationC />
+            </div>
+          ) : view === 'consultation-history' ? (
+            <div className="absolute inset-0 overflow-auto">
+              <div className="flex flex-col items-center justify-center h-full text-gray-400">
+                <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mb-4">
+                  <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                </div>
+                <p className="text-lg font-semibold text-gray-500">복약 상담 내역</p>
+                <p className="text-sm mt-1">상담 내역이 여기에 표시됩니다.</p>
+              </div>
+            </div>
+          ) : view === 'consultation-reminder' ? (
+            <div className="absolute inset-0 overflow-auto">
+              <div className="flex flex-col items-center justify-center h-full text-gray-400">
+                <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mb-4">
+                  <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg>
+                </div>
+                <p className="text-lg font-semibold text-gray-500">복약 알림 설정</p>
+                <p className="text-sm mt-1">알림 설정이 여기에 표시됩니다.</p>
+              </div>
             </div>
           ) : view === 'settings' ? (
             <div className="absolute inset-0 overflow-hidden">

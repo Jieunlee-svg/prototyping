@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { 
   Bell, 
   Users, 
@@ -11,7 +11,12 @@ import {
   HelpCircle,
   LogOut,
   ChevronLeft,
-  Search
+  ChevronDown,
+  ChevronRight as ChevronRightIcon,
+  Search,
+  PlayCircle,
+  ClipboardList,
+  BellRing
 } from 'lucide-react';
 import { clsx } from 'clsx';
 
@@ -21,10 +26,12 @@ interface SidebarProps {
   onDashboardClick?: () => void;
   onPrescriptionClick?: () => void;
   onConsultationCClick?: () => void;
+  onConsultationHistoryClick?: () => void;
+  onConsultationReminderClick?: () => void;
   onSettingsClick?: () => void;
   onNoticeClick?: () => void;
   onLogout?: () => void;
-  activeView?: 'list' | 'detail' | 'sms' | 'prescription' | 'settings' | 'notice' | 'consultation-c';
+  activeView?: 'list' | 'detail' | 'sms' | 'prescription' | 'settings' | 'notice' | 'consultation-c' | 'consultation-history' | 'consultation-reminder';
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ 
@@ -33,20 +40,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onDashboardClick, 
   onPrescriptionClick,
   onConsultationCClick,
+  onConsultationHistoryClick,
+  onConsultationReminderClick,
   onSettingsClick,
   onNoticeClick,
   onLogout,
   activeView = 'list' 
 }) => {
-  const menuItems = [
-    { icon: Bell, label: '공지사항', active: false },
-    { icon: Users, label: '관리 고객', active: true },
-    { icon: Stethoscope, label: '복약 상담', active: false },
-    { icon: HeartPulse, label: '생활 습관 관리', active: false },
-    { icon: Activity, label: '재고 모니터링', active: false },
-    { icon: MonitorSmartphone, label: '디지털 헬스케어', active: false },
-    { icon: MessageSquare, label: '앱 설치문자 발송', active: false },
-  ];
+  const isConsultationActive = activeView === 'consultation-c' || activeView === 'consultation-history' || activeView === 'consultation-reminder';
+  const [consultationOpen, setConsultationOpen] = useState(isConsultationActive);
 
   const handleMenuClick = (e: React.MouseEvent, label: string) => {
     e.preventDefault();
@@ -58,8 +60,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
       onPrescriptionClick();
     } else if (label === '공지사항' && onNoticeClick) {
       onNoticeClick();
-    } else if (label === '복약 상담' && onConsultationCClick) {
-      onConsultationCClick();
     }
   };
 
@@ -68,7 +68,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
     if (label === '처방전' && activeView === 'prescription') return true;
     if (label === '단골 고객' && (activeView === 'list' || activeView === 'detail')) return true;
     if (label === '공지사항' && activeView === 'notice') return true;
-    if (label === '복약 상담' && activeView === 'consultation-c') return true;
     return false;
   };
 
@@ -97,8 +96,62 @@ export const Sidebar: React.FC<SidebarProps> = ({
       {/* Navigation */}
       <nav className="flex-1 overflow-y-auto py-2">
         <ul className="space-y-1">
+          {/* 복약 상담 with sub-menu */}
+          <li>
+            <a
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                setConsultationOpen(!consultationOpen);
+                if (!isConsultationActive && onConsultationCClick) {
+                  onConsultationCClick();
+                }
+              }}
+              className={clsx(
+                "flex items-center px-5 py-3 text-sm font-medium transition-colors",
+                isConsultationActive
+                  ? "text-blue-600 bg-blue-50"
+                  : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+              )}
+            >
+              <HeartPulse size={18} className="mr-3" />
+              복약 상담
+              <span className="ml-auto">
+                {consultationOpen ? <ChevronDown size={14} /> : <ChevronRightIcon size={14} />}
+              </span>
+            </a>
+            {consultationOpen && (
+              <ul className="mt-1 space-y-0.5">
+                {[
+                  { icon: PlayCircle, label: '복약 상담 시작', view: 'consultation-c' as const, onClick: onConsultationCClick },
+                  { icon: ClipboardList, label: '복약 상담 내역', view: 'consultation-history' as const, onClick: onConsultationHistoryClick },
+                  { icon: BellRing, label: '복약 알림 설정', view: 'consultation-reminder' as const, onClick: onConsultationReminderClick },
+                ].map((sub) => (
+                  <li key={sub.view}>
+                    <a
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        sub.onClick?.();
+                      }}
+                      className={clsx(
+                        "flex items-center pl-11 pr-5 py-2.5 text-sm transition-colors",
+                        activeView === sub.view
+                          ? "text-white bg-blue-600 font-medium"
+                          : "text-gray-500 hover:bg-gray-50 hover:text-gray-900"
+                      )}
+                    >
+                      <sub.icon size={15} className="mr-2.5" />
+                      {sub.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </li>
+
+          {/* Other menu items */}
           {[
-            { icon: HeartPulse, label: '복약 상담', id: '복약 상담' },
             { icon: Users, label: '단골 고객', id: '단골 고객' },
             { icon: Stethoscope, label: '처방전', id: '처방전' },
             { icon: MessageSquare, label: '앱 설치문자 발송', id: '앱 설치문자 발송' },
