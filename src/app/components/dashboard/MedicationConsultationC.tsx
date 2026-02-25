@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Search, X, Plus, Phone, Send, User, ChevronRight, Trash2, Bell, Clock, Info, CheckCircle, AlertCircle, Smartphone, Users, Calendar, Pill, FileText } from 'lucide-react';
+import { Search, X, Plus, Phone, Send, User, ChevronRight, Trash2, Bell, Clock, Info, CheckCircle, AlertCircle, Smartphone, Users, Calendar as CalendarIcon, Pill, FileText, Minus } from 'lucide-react';
 import { clsx } from 'clsx';
 import { ImageWithFallback } from '../figma/ImageWithFallback';
+import { Calendar } from '../ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
+import { format } from 'date-fns';
+import { ko } from 'date-fns/locale';
 
 // --- Types ---
 interface DrugInfo {
@@ -205,6 +209,10 @@ export const MedicationConsultationC = () => {
     times: ['아침', '점심', '저녁'],
     relation: '식후 30분'
   });
+
+  const [startDate, setStartDate] = useState<Date>(new Date());
+  const [durationDays, setDurationDays] = useState<number>(7);
+  const [calendarOpen, setCalendarOpen] = useState(false);
 
   // --- Recipient State (From Plan B) ---
   const [recipientMode, setRecipientMode] = useState<'search' | 'direct'>('direct');
@@ -541,6 +549,68 @@ export const MedicationConsultationC = () => {
                  </div>
                </div>
 
+               {/* Start Date */}
+               <div className="space-y-3">
+                 <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">복용 시작일</label>
+                 <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
+                   <PopoverTrigger asChild>
+                     <button
+                       className="w-full flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all text-left"
+                     >
+                       <CalendarIcon className="w-4 h-4 text-gray-400" />
+                       {format(startDate, 'yyyy년 M월 d일 (EEE)', { locale: ko })}
+                     </button>
+                   </PopoverTrigger>
+                   <PopoverContent className="w-auto p-0" align="start">
+                     <Calendar
+                       mode="single"
+                       selected={startDate}
+                       onSelect={(date) => {
+                         if (date) {
+                           setStartDate(date);
+                           setCalendarOpen(false);
+                         }
+                       }}
+                       locale={ko}
+                       initialFocus
+                     />
+                   </PopoverContent>
+                 </Popover>
+               </div>
+
+               {/* Duration Days */}
+               <div className="space-y-3">
+                 <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">복용 기간</label>
+                 <div className="flex items-center gap-3">
+                   <button
+                     onClick={() => setDurationDays(prev => Math.max(1, prev - 1))}
+                     className="w-10 h-10 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 hover:border-gray-300 flex items-center justify-center transition-all text-gray-600"
+                   >
+                     <Minus className="w-4 h-4" />
+                   </button>
+                   <div className="flex-1 relative">
+                     <input
+                       type="number"
+                       min={1}
+                       max={365}
+                       value={durationDays}
+                       onChange={(e) => {
+                         const val = parseInt(e.target.value);
+                         if (!isNaN(val) && val >= 1 && val <= 365) setDurationDays(val);
+                       }}
+                       className="w-full text-center py-2.5 text-sm font-medium border border-gray-200 rounded-lg bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                     />
+                     <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400 pointer-events-none">일간</span>
+                   </div>
+                   <button
+                     onClick={() => setDurationDays(prev => Math.min(365, prev + 1))}
+                     className="w-10 h-10 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 hover:border-gray-300 flex items-center justify-center transition-all text-gray-600"
+                   >
+                     <Plus className="w-4 h-4" />
+                   </button>
+                 </div>
+               </div>
+
                {/* App Reminder Setting Toggle */}
                <div className="pt-4 border-t border-gray-100">
                  <div className="flex items-center justify-between mb-2">
@@ -730,7 +800,7 @@ export const MedicationConsultationC = () => {
                     </div>
                     <div className="space-y-2 text-xs text-blue-800/80">
                       <div className="flex items-center"><Phone className="mr-2 w-3 h-3" />{selectedPatient.phone}</div>
-                      <div className="flex items-center"><Calendar className="mr-2 w-3 h-3" />최근: {selectedPatient.lastVisit}</div>
+                      <div className="flex items-center"><CalendarIcon className="mr-2 w-3 h-3" />최근: {selectedPatient.lastVisit}</div>
                     </div>
                     <button 
                       onClick={() => setSelectedPatient(null)}
