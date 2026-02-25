@@ -286,7 +286,7 @@ export const MedicationConsultationC = () => {
 
     const medList = medicines.map((m, i) => `${i+1}. ${m.name} (${m.company})`).join('\n');
     const times = reminder.times.join(', ');
-    const usage = `하루 ${reminder.frequency}번, ${times} ${reminder.relation}에 복용하세요.`;
+    const usage = `하루 ${reminder.frequency}번, ${times} ${reminder.relation}에 복약하세요.`;
     
     const precautions = medicines.map(m => `- ${m.name}: ${m.precautions}`).join('\n');
 
@@ -488,7 +488,7 @@ export const MedicationConsultationC = () => {
             <div className="p-4 space-y-6">
                {/* Frequency */}
                <div className="space-y-3">
-                 <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">복용 횟수</label>
+                 <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">복약 횟수</label>
                  <div className="grid grid-cols-3 gap-2">
                    {[1, 2, 3].map(freq => (
                      <button
@@ -509,7 +509,7 @@ export const MedicationConsultationC = () => {
 
                {/* Times */}
                <div className="space-y-3">
-                 <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">복용 시간</label>
+                 <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">복약 시간</label>
                  <div className="grid grid-cols-4 gap-2">
                    {['아침', '점심', '저녁', '취침 전'].map(time => (
                      <button
@@ -530,7 +530,7 @@ export const MedicationConsultationC = () => {
 
                {/* Relation */}
                <div className="space-y-3">
-                 <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">복용 시점</label>
+                 <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">복약 시점</label>
                  <div className="grid grid-cols-3 gap-2">
                    {['식사 전', '식후 즉시', '식후 30분'].map(rel => (
                      <button
@@ -552,7 +552,7 @@ export const MedicationConsultationC = () => {
                {/* Start Date & Duration in one row */}
                <div className="flex gap-4">
                  <div className="flex-1 space-y-3">
-                   <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">복용 시작일</label>
+                   <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">복약 시작일</label>
                    <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
                      <PopoverTrigger asChild>
                        <button
@@ -580,7 +580,7 @@ export const MedicationConsultationC = () => {
                  </div>
 
                  <div className="w-[160px] space-y-3 flex-shrink-0">
-                   <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">복용 기간</label>
+                   <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">복약 기간</label>
                    <div className="flex items-center gap-1.5">
                      <button
                        onClick={() => setDurationDays(prev => Math.max(1, prev - 1))}
@@ -718,11 +718,11 @@ export const MedicationConsultationC = () => {
                     <div className="p-3 bg-gray-50 border-t border-gray-100 flex flex-col gap-3">
                       <div className="flex gap-2 flex-wrap">
                         {[
-                          '식후 30분 복용하세요',
+                          '식후 30분 복약하세요',
                           '졸음이 올 수 있습니다',
                           '충분한 물과 함께 드세요',
                           '음주를 피하세요',
-                          '하루 3번 복용하세요',
+                          '하루 3번 복약하세요',
                           '증상이 호전되면 중단하세요'
                         ].map(phrase => (
                           <button 

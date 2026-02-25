@@ -168,7 +168,7 @@ const glucoseData = [
 const INITIAL_MESSAGES = [
   { id: 1, type: 'system', text: '상담이 시작되었습니다.', time: '09:00 AM' },
   { id: 2, type: 'patient', text: '약사님, 요즘 아침마다 약간 어지러운데 혈압약 때문일까요?', time: '09:05 AM' },
-  { id: 3, type: 'pharmacist', text: '안녕하세요, 이채림님. 복용 중이신 혈압약이 아침에 혈압을 너무 낮출 수도 있습니다. 최근 혈압 수치를 보니 안정적인데, 기립성 저혈압일 수도 있어요.', time: '09:07 AM' },
+  { id: 3, type: 'pharmacist', text: '안녕하세요, 이채림님. 복약 중이신 혈압약이 아침에 혈압을 너무 낮출 수도 있습니다. 최근 혈압 수치를 보니 안정적인데, 기립성 저혈압일 수도 있어요.', time: '09:07 AM' },
   { id: 4, type: 'pharmacist', text: '일어나실 때 천천히 일어나보시고, 수분을 충분히 섭취해주세요. 증상이 지속되면 내원 권유드립니다.', time: '09:08 AM' },
 ];
 
@@ -214,8 +214,8 @@ const RESOURCES: Resource[] = [
   {
     id: '4',
     type: 'pdf',
-    title: '고지혈증 약물 복용 안내서',
-    description: '스타틴 계열 약물 복용 시 나타날 수 있는 부작용과 대처법.',
+    title: '고지혈증 약물 복약 안내서',
+    description: '스타틴 계열 약물 복약 시 나타날 수 있는 부작용과 대처법.',
     thumbnail: 'https://placehold.co/400x225/e2e8f0/64748b?text=고지혈증+안내',
     pages: 2,
     date: '2026.02.01'
@@ -240,11 +240,11 @@ const INITIAL_COUNSELING_HISTORY: CounselingSession[] = [
     type: 'regular',
     title: '정기 복약 상담',
     date: '2026.01.05',
-    summary: '혈압약 변경 후 부작용 확인. 특별한 이상 없었음. 식후 30분 복용 강조.',
+    summary: '혈압약 변경 후 부작용 확인. 특별한 이상 없었음. 식후 30분 복약 강조.',
     isAI: true,
     isVoice: true,
     status: 'sent',
-    previewText: '안녕하세요 이채림님, 오늘 상담 내용을 요약해 드립니다. 혈압약 변경 후 특이사항은 없으셨고, 식후 30분 복용을 잘 지켜주세요.'
+    previewText: '안녕하세요 이채림님, 오늘 상담 내용을 요약해 드립니다. 혈압약 변경 후 특이사항은 없으셨고, 식후 30분 복약을 잘 지켜주세요.'
   },
   {
     id: '2',
@@ -266,7 +266,7 @@ const INITIAL_COUNSELING_HISTORY: CounselingSession[] = [
     isAI: false,
     isVoice: false,
     status: 'sent',
-    previewText: '종합감기약 복용 시 기존 약물과의 상호작용은 없으니 안심하고 드셔도 됩니다.'
+    previewText: '종합감기약 복약 시 기존 약물과의 상호작용은 없으니 안심하고 드셔도 됩니다.'
   }
 ];
 
@@ -441,7 +441,7 @@ const ResultModal: React.FC<ResultModalProps> = ({
                  <div className="flex gap-3">
                     <Clock size={16} className="text-gray-400 mt-0.5 flex-shrink-0" />
                     <div>
-                      <span className="text-xs font-bold text-gray-500 block mb-1">복용 시기</span>
+                      <span className="text-xs font-bold text-gray-500 block mb-1">복약 시기</span>
                       <div className="flex flex-wrap gap-1.5">
                         <span className="text-sm text-gray-800 font-medium">
                           하루 {reminderSettings.frequency}회, {reminderSettings.times.join(', ')} ({reminderSettings.relation})
@@ -469,7 +469,7 @@ const ResultModal: React.FC<ResultModalProps> = ({
 };
 
 export const PatientDetail: React.FC<PatientDetailProps> = ({ onBack, patientId }) => {
-  const [memo, setMemo] = useState("고객 특이사항:\n- 알약 삼키는 것을 힘들어함\n- 저녁 식후 복용 선호\n\n다음 상담 시 확인:\n- 어지럼증 호전 여부");
+  const [memo, setMemo] = useState("고객 특이사항:\n- 알약 삼키는 것을 힘들어함\n- 저녁 식후 복약 선호\n\n다음 상담 시 확인:\n- 어지럼증 호전 여부");
   const [activeTab, setActiveTab] = useState<'counseling' | 'education' | 'products'>('counseling');
   const [resourceFilter, setResourceFilter] = useState<'all' | 'video' | 'pdf'>('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -548,7 +548,7 @@ export const PatientDetail: React.FC<PatientDetailProps> = ({ onBack, patientId 
 
     const medList = medicines.map((m, i) => `${i+1}. ${m.name} (${m.company})`).join('\n');
     const times = reminder.times.join(', ');
-    const usage = `하루 ${reminder.frequency}번, ${times} ${reminder.relation}에 복용하세요.`;
+    const usage = `하루 ${reminder.frequency}번, ${times} ${reminder.relation}에 복약하세요.`;
     const precautions = medicines.map(m => `- ${m.name}: ${m.precautions}`).join('\n');
     
     const newMsg = `[복약 상담 안내]\n안녕하세요, 서울종로약국입니다.\n처방받으신 약품 안내드립니다.\n\n[처방 약품]\n${medList}\n\n[복약 알림 설정]\n${usage}\n\n[주의사항]\n${precautions}\n\n문의사항은 약국으로 연락주세요.`;
