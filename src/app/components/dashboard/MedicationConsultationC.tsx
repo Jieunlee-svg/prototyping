@@ -532,7 +532,7 @@ export const MedicationConsultationC = () => {
                <div className="space-y-3">
                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">복용 시점</label>
                  <div className="grid grid-cols-3 gap-2">
-                   {['식후 30분', '식사 전', '식후 즉시'].map(rel => (
+                   {['식사 전', '식후 즉시', '식후 30분'].map(rel => (
                      <button
                        key={rel}
                        onClick={() => setReminder({...reminder, relation: rel})}
