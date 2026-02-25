@@ -549,65 +549,66 @@ export const MedicationConsultationC = () => {
                  </div>
                </div>
 
-               {/* Start Date */}
-               <div className="space-y-3">
-                 <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">복용 시작일</label>
-                 <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
-                   <PopoverTrigger asChild>
-                     <button
-                       className="w-full flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all text-left"
-                     >
-                       <CalendarIcon className="w-4 h-4 text-gray-400" />
-                       {format(startDate, 'yyyy년 M월 d일 (EEE)', { locale: ko })}
-                     </button>
-                   </PopoverTrigger>
-                   <PopoverContent className="w-auto p-0" align="start">
-                     <Calendar
-                       mode="single"
-                       selected={startDate}
-                       onSelect={(date) => {
-                         if (date) {
-                           setStartDate(date);
-                           setCalendarOpen(false);
-                         }
-                       }}
-                       locale={ko}
-                       initialFocus
-                     />
-                   </PopoverContent>
-                 </Popover>
-               </div>
+               {/* Start Date & Duration in one row */}
+               <div className="flex gap-4">
+                 <div className="flex-1 space-y-3">
+                   <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">복용 시작일</label>
+                   <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
+                     <PopoverTrigger asChild>
+                       <button
+                         className="w-full flex items-center gap-2 px-3 py-2.5 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all text-left"
+                       >
+                         <CalendarIcon className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                         <span className="truncate">{format(startDate, 'yyyy.M.d (EEE)', { locale: ko })}</span>
+                       </button>
+                     </PopoverTrigger>
+                     <PopoverContent className="w-auto p-0" align="start">
+                       <Calendar
+                         mode="single"
+                         selected={startDate}
+                         onSelect={(date) => {
+                           if (date) {
+                             setStartDate(date);
+                             setCalendarOpen(false);
+                           }
+                         }}
+                         locale={ko}
+                         initialFocus
+                       />
+                     </PopoverContent>
+                   </Popover>
+                 </div>
 
-               {/* Duration Days */}
-               <div className="space-y-3">
-                 <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">복용 기간</label>
-                 <div className="flex items-center gap-3">
-                   <button
-                     onClick={() => setDurationDays(prev => Math.max(1, prev - 1))}
-                     className="w-10 h-10 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 hover:border-gray-300 flex items-center justify-center transition-all text-gray-600"
-                   >
-                     <Minus className="w-4 h-4" />
-                   </button>
-                   <div className="flex-1 relative">
-                     <input
-                       type="number"
-                       min={1}
-                       max={365}
-                       value={durationDays}
-                       onChange={(e) => {
-                         const val = parseInt(e.target.value);
-                         if (!isNaN(val) && val >= 1 && val <= 365) setDurationDays(val);
-                       }}
-                       className="w-full text-center py-2.5 text-sm font-medium border border-gray-200 rounded-lg bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                     />
-                     <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-gray-400 pointer-events-none">일간</span>
+                 <div className="w-[160px] space-y-3 flex-shrink-0">
+                   <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">복용 기간</label>
+                   <div className="flex items-center gap-1.5">
+                     <button
+                       onClick={() => setDurationDays(prev => Math.max(1, prev - 1))}
+                       className="w-9 h-[42px] rounded-lg border border-gray-200 bg-white hover:bg-gray-50 hover:border-gray-300 flex items-center justify-center transition-all text-gray-600 flex-shrink-0"
+                     >
+                       <Minus className="w-3.5 h-3.5" />
+                     </button>
+                     <div className="flex-1 relative">
+                       <input
+                         type="number"
+                         min={1}
+                         max={365}
+                         value={durationDays}
+                         onChange={(e) => {
+                           const val = parseInt(e.target.value);
+                           if (!isNaN(val) && val >= 1 && val <= 365) setDurationDays(val);
+                         }}
+                         className="w-full text-center py-2.5 text-sm font-medium border border-gray-200 rounded-lg bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                       />
+                       <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-gray-400 pointer-events-none">일</span>
+                     </div>
+                     <button
+                       onClick={() => setDurationDays(prev => Math.min(365, prev + 1))}
+                       className="w-9 h-[42px] rounded-lg border border-gray-200 bg-white hover:bg-gray-50 hover:border-gray-300 flex items-center justify-center transition-all text-gray-600 flex-shrink-0"
+                     >
+                       <Plus className="w-3.5 h-3.5" />
+                     </button>
                    </div>
-                   <button
-                     onClick={() => setDurationDays(prev => Math.min(365, prev + 1))}
-                     className="w-10 h-10 rounded-lg border border-gray-200 bg-white hover:bg-gray-50 hover:border-gray-300 flex items-center justify-center transition-all text-gray-600"
-                   >
-                     <Plus className="w-4 h-4" />
-                   </button>
                  </div>
                </div>
 
