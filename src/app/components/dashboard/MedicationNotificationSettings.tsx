@@ -528,7 +528,7 @@ export const MedicationNotificationSettings = ({ onBack }: { onBack?: () => void
                   className="text-[var(--muted-foreground)]"
                   style={{ fontSize: '12px', fontWeight: 'var(--font-weight-normal)', lineHeight: 1.6 }}
                 >
-                  설정된 시간은 환자의 웰체크 앱으로 알림 설정이 전송될 때 기본값으로 사용됩니다.
+                  고객의 웰체크 앱으로 알림 설정이 전송될 때 기본값으로 사용됩니다. 고객이 앱에서 변경 할 수 있습니다.
                 </p>
               </div>
             </SectionCard>
