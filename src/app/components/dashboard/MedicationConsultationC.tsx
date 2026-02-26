@@ -472,6 +472,46 @@ export const MedicationConsultationC = () => {
                           </div>
                         </div>
                       ))}
+
+                      {/* 상호작용 체크 모듈 */}
+                      {medicines.length >= 3 && medicines.some(m => m.code === '201403634') && (() => {
+                        const otherMeds = medicines.filter(m => m.code !== '201403634');
+                        if (otherMeds.length < 2) return null;
+                        const drug1 = otherMeds[0];
+                        const drug2 = otherMeds[1];
+                        return (
+                          <div className="mt-2 p-3 bg-amber-50 border border-amber-200 rounded-lg animate-in fade-in slide-in-from-top-1 duration-200">
+                            <div className="flex items-center gap-1.5 mb-2.5">
+                              <AlertCircle className="w-4 h-4 text-amber-600" />
+                              <span className="text-xs font-bold text-amber-800">상호작용 체크</span>
+                            </div>
+                            <div className="flex items-center gap-3 mb-3">
+                              <div className="flex items-center gap-2 flex-1 min-w-0">
+                                <div className="w-10 h-10 rounded-md bg-white border border-amber-200 overflow-hidden shrink-0">
+                                  <img src={drug1.imageUrl} alt={drug1.name} className="w-full h-full object-cover" />
+                                </div>
+                                <div className="min-w-0">
+                                  <p className="text-xs font-bold text-gray-900 truncate">{drug1.name}</p>
+                                  <p className="text-[10px] text-gray-500 truncate">{drug1.category}</p>
+                                </div>
+                              </div>
+                              <span className="text-amber-400 text-lg font-bold shrink-0">+</span>
+                              <div className="flex items-center gap-2 flex-1 min-w-0">
+                                <div className="w-10 h-10 rounded-md bg-white border border-amber-200 overflow-hidden shrink-0">
+                                  <img src={drug2.imageUrl} alt={drug2.name} className="w-full h-full object-cover" />
+                                </div>
+                                <div className="min-w-0">
+                                  <p className="text-xs font-bold text-gray-900 truncate">{drug2.name}</p>
+                                  <p className="text-[10px] text-gray-500 truncate">{drug2.category}</p>
+                                </div>
+                              </div>
+                            </div>
+                            <p className="text-xs text-amber-900 leading-relaxed bg-white/60 rounded p-2 border border-amber-100">
+                              {drug1.name.split(' ')[0]}와 {drug2.name.split(' ')[0]}의 동시 복용은 혈압 강하 효과가 증가할 수 있어 주의가 필요합니다.
+                            </p>
+                          </div>
+                        );
+                      })()}
                     </div>
                   ) : (
                     <div className="flex flex-col items-center justify-center py-10 border-2 border-dashed border-gray-100 rounded-lg bg-gray-50/50 m-2">
