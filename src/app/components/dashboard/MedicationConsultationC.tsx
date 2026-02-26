@@ -19,6 +19,7 @@ interface DrugInfo {
   effect: string;
   usage: string;
   precautions: string;
+  smartTags?: string[];
 }
 
 interface ReminderSettings {
@@ -45,7 +46,8 @@ const MOCK_DRUG_DB: DrugInfo[] = [
     imageUrl: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?auto=format&fit=crop&q=80&w=200&h=200',
     effect: '근골격계 질환에 수반하는 동통성 근육연축',
     usage: '성인 : 1회 1정, 1일 3회 식후에 경구투여',
-    precautions: '간장애 환자, 신장애 환자 신중 투여'
+    precautions: '간장애 환자, 신장애 환자 신중 투여',
+    smartTags: ['1일 3회 식후 복용', '졸음이 올 수 있습니다', '간·신장 질환 시 주의']
   },
   {
     code: '199000001',
@@ -57,7 +59,8 @@ const MOCK_DRUG_DB: DrugInfo[] = [
     imageUrl: 'https://images.unsplash.com/photo-1628771065518-0d82f1938462?auto=format&fit=crop&q=80&w=200&h=200',
     effect: '해열 및 진통',
     usage: '1회 1~2정씩 1일 3~4회',
-    precautions: '매일 3잔 이상 술을 마시는 경우 의사와 상의'
+    precautions: '매일 3잔 이상 술을 마시는 경우 의사와 상의',
+    smartTags: ['1회 1~2정 복용', '음주 시 간 손상 위험', '하루 4g 초과 금지']
   },
   {
     code: '200502341',
@@ -69,7 +72,8 @@ const MOCK_DRUG_DB: DrugInfo[] = [
     imageUrl: 'https://images.unsplash.com/photo-1585435557343-3b092031a831?auto=format&fit=crop&q=80&w=200&h=200',
     effect: '고혈압, 관상동맥의 고정폐쇄',
     usage: '1일 1회 5mg',
-    precautions: '임부 또는 임신하고 있을 가능성이 있는 부인 금기'
+    precautions: '임부 또는 임신하고 있을 가능성이 있는 부인 금기',
+    smartTags: ['1일 1회 복용', '어지러움 주의', '임산부 복용 금지', '꾸준히 복용하세요']
   },
   {
     code: '202001234',
@@ -81,7 +85,8 @@ const MOCK_DRUG_DB: DrugInfo[] = [
     imageUrl: 'https://images.unsplash.com/photo-1587854692152-cbe660dbde88?auto=format&fit=crop&q=80&w=200&h=200',
     effect: '기능성소화불량으로 인한 소화기증상',
     usage: '1일 3회 식전 또는 식후',
-    precautions: '이 약은 유당을 함유하고 있음'
+    precautions: '이 약은 유당을 함유하고 있음',
+    smartTags: ['식전 또는 식후 복용', '유당 불내증 주의', '소화 개선 목적']
   },
   {
     code: '202105678',
@@ -93,7 +98,8 @@ const MOCK_DRUG_DB: DrugInfo[] = [
     imageUrl: 'https://images.unsplash.com/photo-1631549916768-4119b2e5f926?auto=format&fit=crop&q=80&w=200&h=200',
     effect: '혈전 생성 억제',
     usage: '1일 1회 1정',
-    precautions: '위장관 출혈 환자 금기'
+    precautions: '위장관 출혈 환자 금기',
+    smartTags: ['1일 1회 복용', '위장 출혈 주의', '식후에 드세요', '임의 중단 금지']
   }
 ];
 
@@ -729,24 +735,47 @@ export const MedicationConsultationC = () => {
                       placeholder="약품을 추가하면 상담 내용이 자동으로 작성됩니다."
                     />
                     <div className="p-3 bg-gray-50 border-t border-gray-100 flex flex-col gap-3">
-                      <div className="flex gap-2 flex-wrap">
-                        {[
-                          '식후 30분 복약하세요',
-                          '졸음이 올 수 있습니다',
-                          '충분한 물과 함께 드세요',
-                          '음주를 피하세요',
-                          '하루 3번 복약하세요',
-                          '증상이 호전되면 중단하세요'
-                        ].map(phrase => (
-                          <button 
-                            key={phrase}
-                            onClick={() => setMessage(prev => prev + `\n- ${phrase}`)}
-                            className="px-3 py-1.5 text-xs bg-white hover:bg-blue-50 text-gray-600 hover:text-blue-600 rounded-full transition-colors font-medium border border-gray-200 hover:border-blue-200 shadow-sm"
-                          >
-                            + {phrase}
-                          </button>
-                        ))}
-                      </div>
+                      {medicines.length > 0 ? (
+                        <>
+                          <div className="flex items-center gap-1.5 mb-0.5">
+                            <span className="text-[10px] font-bold uppercase tracking-wider text-blue-600 flex items-center gap-1">
+                              <Pill className="w-3 h-3" />
+                              스마트 태그
+                            </span>
+                            <span className="text-[10px] text-gray-400">— 선택 약물 기반 추천</span>
+                          </div>
+                          <div className="flex gap-2 flex-wrap">
+                            {Array.from(new Set(medicines.flatMap(m => m.smartTags || []))).map(phrase => (
+                              <button
+                                key={phrase}
+                                onClick={() => setMessage(prev => prev + `\n- ${phrase}`)}
+                                className="px-3 py-1.5 text-xs bg-blue-50 hover:bg-blue-100 text-blue-700 hover:text-blue-800 rounded-full transition-colors font-semibold border border-blue-200 hover:border-blue-300 shadow-sm"
+                              >
+                                + {phrase}
+                              </button>
+                            ))}
+                          </div>
+                        </>
+                      ) : (
+                        <div className="flex gap-2 flex-wrap">
+                          {[
+                            '식후 30분 복약하세요',
+                            '졸음이 올 수 있습니다',
+                            '충분한 물과 함께 드세요',
+                            '음주를 피하세요',
+                            '하루 3번 복약하세요',
+                            '증상이 호전되면 중단하세요'
+                          ].map(phrase => (
+                            <button
+                              key={phrase}
+                              onClick={() => setMessage(prev => prev + `\n- ${phrase}`)}
+                              className="px-3 py-1.5 text-xs bg-white hover:bg-blue-50 text-gray-600 hover:text-blue-600 rounded-full transition-colors font-medium border border-gray-200 hover:border-blue-200 shadow-sm"
+                            >
+                              + {phrase}
+                            </button>
+                          ))}
+                        </div>
+                      )}
                       <div className="text-xs text-gray-400 text-right border-t border-gray-100 pt-2">
                         {message.length}자 작성됨
                       </div>
