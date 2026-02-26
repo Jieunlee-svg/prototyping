@@ -70,7 +70,7 @@ function App() {
             </div>
           ) : view === 'consultation-history' ? (
             <div className="absolute inset-0 overflow-hidden">
-              <ConsultationHistory />
+              <ConsultationHistory onBack={() => setView('consultation-c')} />
             </div>
           ) : view === 'consultation-reminder' ? (
             <div className="absolute inset-0 overflow-hidden">

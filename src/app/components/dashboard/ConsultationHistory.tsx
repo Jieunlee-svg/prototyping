@@ -8,6 +8,11 @@ import {
   MessageSquare,
   Smartphone,
   Send,
+  ChevronLeft,
+  ChevronRight,
+  ArrowUpDown,
+  ArrowUp,
+  ArrowDown,
 } from 'lucide-react';
 import { clsx } from 'clsx';
 
@@ -136,18 +141,66 @@ const getSendMethodBadge = (method: string) => {
   }
 };
 
-export const ConsultationHistory: React.FC = () => {
+type SortKey = 'sentAt' | 'patientName';
+type SortDir = 'asc' | 'desc';
+
+export const ConsultationHistory = ({ onBack }: { onBack?: () => void }) => {
   const [selectedConsultation, setSelectedConsultation] = useState<Consultation | null>(null);
+  const [sortKey, setSortKey] = useState<SortKey>('sentAt');
+  const [sortDir, setSortDir] = useState<SortDir>('desc');
+
+  const toggleSort = (key: SortKey) => {
+    if (sortKey === key) {
+      setSortDir((prev) => (prev === 'asc' ? 'desc' : 'asc'));
+    } else {
+      setSortKey(key);
+      setSortDir(key === 'sentAt' ? 'desc' : 'asc');
+    }
+  };
+
+  const sortedConsultations = [...MOCK_CONSULTATIONS].sort((a, b) => {
+    const valA = a[sortKey];
+    const valB = b[sortKey];
+    const cmp = valA < valB ? -1 : valA > valB ? 1 : 0;
+    return sortDir === 'asc' ? cmp : -cmp;
+  });
+
+  const SortIcon = ({ column }: { column: SortKey }) => {
+    if (sortKey !== column) return <ArrowUpDown size={14} className="text-gray-400" />;
+    return sortDir === 'asc'
+      ? <ArrowUp size={14} className="text-blue-600" />
+      : <ArrowDown size={14} className="text-blue-600" />;
+  };
 
   return (
     <div className="flex flex-col h-full bg-gray-50 relative">
       <header className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-            <ClipboardList className="text-blue-600" />
-            복약 상담 내역
-          </h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <div className="flex items-center gap-1.5 mb-2 text-gray-500 text-[13px] font-normal">
+            {onBack && (
+              <button
+                onClick={onBack}
+                className="mr-1 p-1 rounded hover:bg-gray-100 transition-colors text-gray-500 hover:text-blue-600"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+            )}
+            <span
+              className={onBack ? "cursor-pointer hover:text-blue-600 transition-colors" : ""}
+              onClick={onBack}
+            >
+              복약 상담
+            </span>
+            <ChevronRight className="w-3.5 h-3.5" />
+            <span className="text-gray-900 font-medium">
+              복약 상담 내역
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <ClipboardList className="text-blue-600" size={22} />
+            <h1 className="text-2xl font-bold text-gray-900">복약 상담 내역</h1>
+          </div>
+          <p className="text-sm text-gray-500 mt-1 ml-8">
             고객별 복약 상담 이력을 조회하고 관리합니다.
           </p>
         </div>
@@ -169,29 +222,43 @@ export const ConsultationHistory: React.FC = () => {
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  고객명
+                <th
+                  scope="col"
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer select-none hover:text-gray-700"
+                  onClick={() => toggleSort('sentAt')}
+                >
+                  <span className="inline-flex items-center gap-1">
+                    상담 전송 시각
+                    <SortIcon column="sentAt" />
+                  </span>
+                </th>
+                <th
+                  scope="col"
+                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer select-none hover:text-gray-700"
+                  onClick={() => toggleSort('patientName')}
+                >
+                  <span className="inline-flex items-center gap-1">
+                    고객명
+                    <SortIcon column="patientName" />
+                  </span>
                 </th>
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   휴대폰 번호
                 </th>
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  상담 전송 방법
-                </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  상담 전송 시각
-                </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  상담 전송 내역
+                  전송 방법
                 </th>
                 <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  상세
+                  상담 상세 내역 보기
                 </th>
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {MOCK_CONSULTATIONS.map((consultation) => (
+              {sortedConsultations.map((consultation) => (
                 <tr key={consultation.id} className="hover:bg-gray-50 transition-colors">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    {consultation.sentAt}
+                  </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                     {consultation.patientName}
                   </td>
@@ -200,12 +267,6 @@ export const ConsultationHistory: React.FC = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     {getSendMethodBadge(consultation.sendMethod)}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {consultation.sentAt}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                    {consultation.summary}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-center">
                     <button
@@ -222,9 +283,9 @@ export const ConsultationHistory: React.FC = () => {
           </table>
 
           <div className="px-6 py-4 border-t border-gray-200 bg-gray-50 flex items-center justify-between">
-            <span className="text-xs text-gray-500">
-              총 {MOCK_CONSULTATIONS.length}건의 상담 내역이 조회되었습니다.
-            </span>
+            <h3 className="font-bold text-gray-800">
+              총 상담 내역 <span className="text-blue-600">({MOCK_CONSULTATIONS.length}건)</span>
+            </h3>
             <div className="flex gap-1">
               <button className="px-3 py-1 text-xs border border-gray-300 rounded bg-white hover:bg-gray-50 disabled:opacity-50">이전</button>
               <button className="px-3 py-1 text-xs border border-gray-300 rounded bg-white hover:bg-gray-50 disabled:opacity-50">다음</button>

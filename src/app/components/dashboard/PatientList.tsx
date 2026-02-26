@@ -70,46 +70,38 @@ export const PatientList: React.FC<PatientListProps> = ({ onPatientClick }) => {
 
   return (
     <div className="p-6 bg-gray-50 min-h-[calc(100vh-64px)]">
-      {/* Filters */}
-      <div className="bg-white p-5 rounded-lg border border-gray-200 shadow-sm mb-6">
-        <div className="flex items-center gap-4">
-          <div className="flex items-center space-x-4 flex-1">
-            <span className="text-sm font-bold text-gray-700 min-w-20">고객 조회</span>
-            <div className="flex flex-wrap gap-2 flex-1">
-
-              <select className="text-sm border border-gray-300 rounded px-3 py-1.5 bg-white focus:outline-none focus:ring-1 focus:ring-blue-500">
-                <option>복약 순응도</option>
-                <option>높음 (80% 이상)</option>
-                <option>낮음 (50% 미만)</option>
-              </select>
-              <select className="text-sm border border-gray-300 rounded px-3 py-1.5 bg-white focus:outline-none focus:ring-1 focus:ring-blue-500">
-                <option>연령대</option>
-                <option>20-30대</option>
-                <option>40-50대</option>
-                <option>60대 이상</option>
-              </select>
-              <select className="text-sm border border-gray-300 rounded px-3 py-1.5 bg-white focus:outline-none focus:ring-1 focus:ring-blue-500">
-                <option>성별</option>
-                <option>남성</option>
-                <option>여성</option>
-              </select>
-              <select className="text-sm border border-gray-300 rounded px-3 py-1.5 bg-white focus:outline-none focus:ring-1 focus:ring-blue-500">
-                <option>동반 질환</option>
-                <option>있음</option>
-                <option>없음</option>
-              </select>
-
-              
-              <div className="relative flex-1 min-w-[200px] ml-auto">
-                <input 
-                  type="text" 
-                  placeholder="이름 또는 휴대폰 번호 검색" 
-                  className="w-full pl-3 pr-9 py-1.5 border border-gray-300 rounded text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
-                />
-                <Search className="absolute right-3 top-2 text-gray-400" size={16} />
-              </div>
-            </div>
-          </div>
+      {/* Filters & Search */}
+      <div className="flex items-center justify-between gap-4 mb-6">
+        <div className="flex items-center gap-2">
+          <select className="bg-white border border-gray-300 text-gray-700 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5">
+            <option>복약 순응도</option>
+            <option>높음 (80% 이상)</option>
+            <option>낮음 (50% 미만)</option>
+          </select>
+          <select className="bg-white border border-gray-300 text-gray-700 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5">
+            <option>연령대</option>
+            <option>20-30대</option>
+            <option>40-50대</option>
+            <option>60대 이상</option>
+          </select>
+          <select className="bg-white border border-gray-300 text-gray-700 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5">
+            <option>성별</option>
+            <option>남성</option>
+            <option>여성</option>
+          </select>
+          <select className="bg-white border border-gray-300 text-gray-700 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5">
+            <option>동반 질환</option>
+            <option>있음</option>
+            <option>없음</option>
+          </select>
+        </div>
+        <div className="relative w-64">
+          <input
+            type="text"
+            placeholder="이름 또는 휴대폰 번호 검색"
+            className="w-full pl-9 pr-3 py-2 bg-white border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          />
+          <Search className="absolute left-3 top-2.5 text-gray-400" size={16} />
         </div>
       </div>
 
