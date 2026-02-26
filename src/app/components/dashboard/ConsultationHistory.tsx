@@ -1,151 +1,122 @@
 import React, { useState } from 'react';
 import {
-  FileText,
   Search,
-  CheckCircle2,
-  Clock,
-  XCircle,
   Eye,
   X,
   ClipboardList,
   HeartPulse,
+  MessageSquare,
   Smartphone,
+  Send,
 } from 'lucide-react';
 import { clsx } from 'clsx';
 
 interface Consultation {
   id: string;
   patientName: string;
-  patientRrn: string;
+  phone: string;
+  sendMethod: '알림톡' | '웰체크 앱' | '문자';
+  sentAt: string;
+  summary: string;
   frequency: number;
   times: string[];
   relation: string;
   duration: number;
-  status: 'completed' | 'in_progress' | 'cancelled';
-  appSent: boolean;
-  consultedAt: string;
-  pharmacist: string;
 }
 
 const MOCK_CONSULTATIONS: Consultation[] = [
   {
     id: 'CS-20240205-01',
     patientName: '김철수',
-    patientRrn: '800101-1******',
+    phone: '010-1234-5678',
+    sendMethod: '알림톡',
+    sentAt: '2024-02-05 14:30',
+    summary: '하루 3회 (아침, 점심, 저녁) · 식후 30분 · 7일',
     frequency: 3,
     times: ['아침', '점심', '저녁'],
     relation: '식후 30분',
     duration: 7,
-    status: 'completed',
-    appSent: true,
-    consultedAt: '2024-02-05 14:30',
-    pharmacist: '김약사',
   },
   {
     id: 'CS-20240205-02',
     patientName: '이영희',
-    patientRrn: '920315-2******',
+    phone: '010-2345-6789',
+    sendMethod: '웰체크 앱',
+    sentAt: '2024-02-05 14:15',
+    summary: '하루 2회 (아침, 저녁) · 식후 · 14일',
     frequency: 2,
     times: ['아침', '저녁'],
     relation: '식후',
     duration: 14,
-    status: 'completed',
-    appSent: true,
-    consultedAt: '2024-02-05 14:15',
-    pharmacist: '김약사',
   },
   {
     id: 'CS-20240205-03',
     patientName: '박지민',
-    patientRrn: '150505-3******',
+    phone: '010-3456-7890',
+    sendMethod: '문자',
+    sentAt: '2024-02-05 13:45',
+    summary: '하루 3회 (아침, 점심, 저녁) · 식전 · 5일',
     frequency: 3,
     times: ['아침', '점심', '저녁'],
     relation: '식전',
     duration: 5,
-    status: 'in_progress',
-    appSent: false,
-    consultedAt: '2024-02-05 13:45',
-    pharmacist: '김약사',
   },
   {
     id: 'CS-20240205-04',
     patientName: '최민수',
-    patientRrn: '751212-1******',
+    phone: '010-4567-8901',
+    sendMethod: '알림톡',
+    sentAt: '2024-02-05 11:20',
+    summary: '하루 1회 (아침) · 식후 30분 · 30일',
     frequency: 1,
     times: ['아침'],
     relation: '식후 30분',
     duration: 30,
-    status: 'cancelled',
-    appSent: false,
-    consultedAt: '2024-02-05 11:20',
-    pharmacist: '김약사',
   },
   {
     id: 'CS-20240205-05',
     patientName: '정수정',
-    patientRrn: '980707-2******',
+    phone: '010-5678-9012',
+    sendMethod: '웰체크 앱',
+    sentAt: '2024-02-05 10:10',
+    summary: '하루 2회 (아침, 저녁) · 식후 · 7일',
     frequency: 2,
     times: ['아침', '저녁'],
     relation: '식후',
     duration: 7,
-    status: 'completed',
-    appSent: true,
-    consultedAt: '2024-02-05 10:10',
-    pharmacist: '김약사',
   },
 ];
 
-export const ConsultationHistory: React.FC = () => {
-  const [statusFilter, setStatusFilter] = useState<'all' | 'completed' | 'in_progress' | 'cancelled'>('all');
-  const [selectedConsultation, setSelectedConsultation] = useState<Consultation | null>(null);
-
-  const filtered = MOCK_CONSULTATIONS.filter((c) => {
-    if (statusFilter === 'all') return true;
-    return c.status === statusFilter;
-  });
-
-  const getStatusBadge = (status: string) => {
-    switch (status) {
-      case 'completed':
-        return (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-            <CheckCircle2 size={12} className="mr-1" />
-            상담완료
-          </span>
-        );
-      case 'in_progress':
-        return (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-            <Clock size={12} className="mr-1" />
-            진행중
-          </span>
-        );
-      case 'cancelled':
-        return (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-            <XCircle size={12} className="mr-1" />
-            취소됨
-          </span>
-        );
-      default:
-        return null;
-    }
-  };
-
-  const getAppSentBadge = (sent: boolean) => {
-    if (sent) {
+const getSendMethodBadge = (method: string) => {
+  switch (method) {
+    case '알림톡':
       return (
-        <span className="flex items-center text-xs text-green-600 font-medium">
-          <Smartphone size={12} className="mr-1" /> 전송완료
+        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+          <MessageSquare size={12} />
+          알림톡
         </span>
       );
-    }
-    return (
-      <span className="flex items-center text-xs text-gray-400 font-medium">
-        <Smartphone size={12} className="mr-1" /> 미전송
-      </span>
-    );
-  };
+    case '웰체크 앱':
+      return (
+        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+          <Smartphone size={12} />
+          웰체크 앱
+        </span>
+      );
+    case '문자':
+      return (
+        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+          <Send size={12} />
+          문자
+        </span>
+      );
+    default:
+      return null;
+  }
+};
+
+export const ConsultationHistory: React.FC = () => {
+  const [selectedConsultation, setSelectedConsultation] = useState<Consultation | null>(null);
 
   return (
     <div className="flex flex-col h-full bg-gray-50 relative">
@@ -161,31 +132,7 @@ export const ConsultationHistory: React.FC = () => {
         </div>
       </header>
 
-      <div className="px-6 py-4 flex items-center justify-between gap-4">
-        <div className="flex items-center gap-2">
-          <div className="bg-white rounded-lg border border-gray-200 p-1 flex">
-            {([
-              { value: 'all', label: '전체' },
-              { value: 'completed', label: '상담완료' },
-              { value: 'in_progress', label: '진행중' },
-              { value: 'cancelled', label: '취소됨' },
-            ] as const).map((opt) => (
-              <button
-                key={opt.value}
-                onClick={() => setStatusFilter(opt.value)}
-                className={clsx(
-                  'px-3 py-1.5 text-sm font-medium rounded-md transition-colors',
-                  statusFilter === opt.value
-                    ? 'bg-blue-50 text-blue-600'
-                    : 'text-gray-600 hover:bg-gray-50'
-                )}
-              >
-                {opt.label}
-              </button>
-            ))}
-          </div>
-        </div>
-
+      <div className="px-6 py-4 flex items-center justify-end">
         <div className="relative w-64">
           <input
             type="text"
@@ -202,31 +149,19 @@ export const ConsultationHistory: React.FC = () => {
             <thead className="bg-gray-50">
               <tr>
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  상담일시
-                </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   고객명
                 </th>
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  주민등록번호
+                  휴대폰 번호
                 </th>
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  복용 횟수
+                  상담 전송 방법
                 </th>
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  복용 시간
+                  상담 전송 시각
                 </th>
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  복용 시점
-                </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  복약 일수
-                </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  상태
-                </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  앱 전송
+                  상담 전송 내역
                 </th>
                 <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
                   상세
@@ -234,36 +169,22 @@ export const ConsultationHistory: React.FC = () => {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {filtered.map((consultation) => (
+              {MOCK_CONSULTATIONS.map((consultation) => (
                 <tr key={consultation.id} className="hover:bg-gray-50 transition-colors">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {consultation.consultedAt}
-                  </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                     {consultation.patientName}
                   </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                    {consultation.phone}
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    {getSendMethodBadge(consultation.sendMethod)}
+                  </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {consultation.patientRrn}
+                    {consultation.sentAt}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                    <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-50 text-blue-700">
-                      하루 {consultation.frequency}회
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                    {consultation.times.join(', ')}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                    {consultation.relation}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                    {consultation.duration}일
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    {getStatusBadge(consultation.status)}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    {getAppSentBadge(consultation.appSent)}
+                    {consultation.summary}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-center">
                     <button
@@ -281,7 +202,7 @@ export const ConsultationHistory: React.FC = () => {
 
           <div className="px-6 py-4 border-t border-gray-200 bg-gray-50 flex items-center justify-between">
             <span className="text-xs text-gray-500">
-              총 {filtered.length}건의 상담 내역이 조회되었습니다.
+              총 {MOCK_CONSULTATIONS.length}건의 상담 내역이 조회되었습니다.
             </span>
             <div className="flex gap-1">
               <button className="px-3 py-1 text-xs border border-gray-300 rounded bg-white hover:bg-gray-50 disabled:opacity-50">이전</button>
@@ -321,16 +242,16 @@ export const ConsultationHistory: React.FC = () => {
                       <span className="text-sm font-medium text-gray-900">{selectedConsultation.patientName}</span>
                     </div>
                     <div>
-                      <span className="block text-xs text-gray-500 mb-1">주민등록번호</span>
-                      <span className="text-sm font-medium text-gray-900">{selectedConsultation.patientRrn}</span>
+                      <span className="block text-xs text-gray-500 mb-1">휴대폰 번호</span>
+                      <span className="text-sm font-medium text-gray-900">{selectedConsultation.phone}</span>
                     </div>
                     <div>
-                      <span className="block text-xs text-gray-500 mb-1">상담일시</span>
-                      <span className="text-sm font-medium text-gray-900">{selectedConsultation.consultedAt}</span>
+                      <span className="block text-xs text-gray-500 mb-1">전송 방법</span>
+                      {getSendMethodBadge(selectedConsultation.sendMethod)}
                     </div>
                     <div>
-                      <span className="block text-xs text-gray-500 mb-1">담당 약사</span>
-                      <span className="text-sm font-medium text-gray-900">{selectedConsultation.pharmacist}</span>
+                      <span className="block text-xs text-gray-500 mb-1">전송 시각</span>
+                      <span className="text-sm font-medium text-gray-900">{selectedConsultation.sentAt}</span>
                     </div>
                   </div>
 
@@ -354,19 +275,6 @@ export const ConsultationHistory: React.FC = () => {
                       <div>
                         <span className="block text-xs text-gray-500 mb-1">복약 일수</span>
                         <span className="text-sm font-medium text-gray-900">{selectedConsultation.duration}일</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="border-t border-gray-100 pt-4">
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <span className="block text-xs text-gray-500 mb-1">상태</span>
-                        {getStatusBadge(selectedConsultation.status)}
-                      </div>
-                      <div>
-                        <span className="block text-xs text-gray-500 mb-1">앱 전송</span>
-                        {getAppSentBadge(selectedConsultation.appSent)}
                       </div>
                     </div>
                   </div>
