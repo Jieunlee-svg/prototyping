@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { 
   Search, 
   ArrowRight,
@@ -44,24 +44,6 @@ interface PatientListProps {
 }
 
 export const PatientList: React.FC<PatientListProps> = ({ onPatientClick }) => {
-  const [selectedPatients, setSelectedPatients] = useState<string[]>([]);
-
-  const toggleAll = () => {
-    if (selectedPatients.length === MOCK_DATA.length) {
-      setSelectedPatients([]);
-    } else {
-      setSelectedPatients(MOCK_DATA.map(p => p.id));
-    }
-  };
-
-  const toggleOne = (id: string) => {
-    if (selectedPatients.includes(id)) {
-      setSelectedPatients(selectedPatients.filter(pid => pid !== id));
-    } else {
-      setSelectedPatients([...selectedPatients, id]);
-    }
-  };
-
   const handlePatientClick = (patientId: string) => {
     if (onPatientClick) {
       onPatientClick(patientId);
@@ -70,31 +52,8 @@ export const PatientList: React.FC<PatientListProps> = ({ onPatientClick }) => {
 
   return (
     <div className="p-6 bg-gray-50 min-h-[calc(100vh-64px)]">
-      {/* Filters & Search */}
-      <div className="flex items-center justify-between gap-4 mb-6">
-        <div className="flex items-center gap-2">
-          <select className="bg-white border border-gray-300 text-gray-700 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5">
-            <option>복약 순응도</option>
-            <option>높음 (80% 이상)</option>
-            <option>낮음 (50% 미만)</option>
-          </select>
-          <select className="bg-white border border-gray-300 text-gray-700 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5">
-            <option>연령대</option>
-            <option>20-30대</option>
-            <option>40-50대</option>
-            <option>60대 이상</option>
-          </select>
-          <select className="bg-white border border-gray-300 text-gray-700 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5">
-            <option>성별</option>
-            <option>남성</option>
-            <option>여성</option>
-          </select>
-          <select className="bg-white border border-gray-300 text-gray-700 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5">
-            <option>동반 질환</option>
-            <option>있음</option>
-            <option>없음</option>
-          </select>
-        </div>
+      {/* Search */}
+      <div className="flex items-center justify-end mb-6">
         <div className="relative w-64">
           <input
             type="text"
@@ -127,34 +86,17 @@ export const PatientList: React.FC<PatientListProps> = ({ onPatientClick }) => {
           <table className="w-full min-w-[1200px]">
             <thead className="bg-gray-50 border-b border-gray-200">
               <tr>
-                <th className="px-4 py-3 w-10 text-center">
-                  <input 
-                    type="checkbox" 
-                    checked={selectedPatients.length === MOCK_DATA.length}
-                    onChange={toggleAll}
-                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500" 
-                  />
-                </th>
                 <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider w-32">이름</th>
                 <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">휴대폰 번호</th>
                 <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">생년월일</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">성별</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">복약/질환 정보</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">관리질환</th>
                 <th className="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">복약 순응도<br/>(30일 이내)</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">최근 처방전 번호</th>
+                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">최근 복약 상담 일자</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
               {MOCK_DATA.map((patient) => (
                 <tr key={patient.id} className="hover:bg-blue-50/50 transition-colors">
-                  <td className="px-4 py-3 text-center">
-                    <input 
-                      type="checkbox" 
-                      checked={selectedPatients.includes(patient.id)}
-                      onChange={() => toggleOne(patient.id)}
-                      className="rounded border-gray-300 text-blue-600 focus:ring-blue-500" 
-                    />
-                  </td>
                   <td className="px-4 py-3">
                     <button 
                       onClick={() => handlePatientClick(patient.id)}
@@ -167,7 +109,6 @@ export const PatientList: React.FC<PatientListProps> = ({ onPatientClick }) => {
                   <td className="px-4 py-3 text-sm text-gray-600">
                     {patient.birthDate} <span className="text-gray-400">({patient.age})</span>
                   </td>
-                  <td className="px-4 py-3 text-sm text-gray-600">{patient.gender}</td>
                   <td className="px-4 py-3 text-sm text-gray-600">
                     <span className={clsx(
                         "px-2 py-0.5 rounded text-xs",
