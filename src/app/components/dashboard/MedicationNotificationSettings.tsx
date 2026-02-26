@@ -188,21 +188,15 @@ export const MedicationNotificationSettings = ({ onBack }: { onBack?: () => void
         const isSelected = item.defaultTimes.includes(time);
         const order = ['아침', '점심', '저녁', '취침전'];
 
-        if (isSelected) {
-          if (item.defaultTimes.length <= item.count) return item;
-          const next = item.defaultTimes.filter((t) => t !== time);
-          next.sort((a, b) => order.indexOf(a) - order.indexOf(b));
-          return { ...item, defaultTimes: next };
-        } else {
-          let next: string[];
-          if (item.defaultTimes.length >= item.count) {
-            next = [...item.defaultTimes.slice(1), time];
-          } else {
-            next = [...item.defaultTimes, time];
-          }
-          next.sort((a, b) => order.indexOf(a) - order.indexOf(b));
-          return { ...item, defaultTimes: next };
+        if (item.count === 1) {
+          return { ...item, defaultTimes: isSelected ? [] : [time] };
         }
+
+        let next = isSelected
+          ? item.defaultTimes.filter((t) => t !== time)
+          : [...item.defaultTimes, time];
+        next.sort((a, b) => order.indexOf(a) - order.indexOf(b));
+        return { ...item, defaultTimes: next };
       })
     );
   };
@@ -426,11 +420,15 @@ export const MedicationNotificationSettings = ({ onBack }: { onBack?: () => void
                               label={time}
                               selected={setting.defaultTimes.includes(time)}
                               variant="primary"
-                              disabled={setting.count === 4}
                               onClick={() => toggleFrequencyTime(setting.count, time)}
                             />
                           ))}
                         </div>
+                        {setting.defaultTimes.length !== setting.count && (
+                          <p className="mt-1.5 text-red-500" style={{ fontSize: '11px', fontWeight: 'var(--font-weight-medium)' }}>
+                            복용 시간을 {setting.count}개 선택해주세요 (현재 {setting.defaultTimes.length}개)
+                          </p>
+                        )}
                       </div>
 
                       <div>
