@@ -79,7 +79,7 @@ interface DrugInfo {
 interface ReminderSettings {
   frequency: number; // 1, 2, 3
   times: string[]; // '아침', '점심', '저녁', '취침전'
-  relation: string; // '식후 30분', '식전', '식후 즉시'
+  relation: string; // '식후 30분', '식전', '식후'
 }
 
 // --- Mock Data ---
@@ -1084,7 +1084,7 @@ export const PatientDetail: React.FC<PatientDetailProps> = ({ onBack, patientId 
                                   <div>
                                      <label className="text-[10px] font-bold text-gray-400 block mb-1">시점</label>
                                      <div className="flex gap-1">
-                                       {['식후 30분', '식전', '식후 즉시'].map(r => (
+                                       {['식후 30분', '식전', '식후'].map(r => (
                                          <button 
                                            key={r}
                                            onClick={() => setReminder({...reminder, relation: r})}

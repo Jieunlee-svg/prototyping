@@ -24,7 +24,7 @@ interface DrugInfo {
 interface ReminderSettings {
   frequency: number; // 1, 2, 3
   times: string[]; // '아침', '점심', '저녁', '취침전'
-  relation: string; // '식후 30분', '식전', '식후 즉시'
+  relation: string; // '식후 30분', '식전', '식후'
 }
 
 // --- Mock Data ---
@@ -532,7 +532,7 @@ export const MedicationConsultationC = () => {
                <div className="space-y-3">
                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">복약 시점</label>
                  <div className="grid grid-cols-3 gap-2">
-                   {['식사 전', '식후 즉시', '식후 30분'].map(rel => (
+                   {['식사 전', '식후', '식후 30분'].map(rel => (
                      <button
                        key={rel}
                        onClick={() => setReminder({...reminder, relation: rel})}

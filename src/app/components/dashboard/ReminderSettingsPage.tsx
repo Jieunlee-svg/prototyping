@@ -202,7 +202,7 @@ export const ReminderSettingsPage: React.FC = () => {
             </div>
             <div className="p-6">
               <div className="grid grid-cols-3 gap-3">
-                {['식사 전', '식후 즉시', '식후 30분'].map(rel => (
+                {['식사 전', '식후', '식후 30분'].map(rel => (
                   <button
                     key={rel}
                     onClick={() => setRelation(rel)}

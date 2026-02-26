@@ -28,12 +28,13 @@ interface TimeSetting {
 
 /* ─── Constants ─── */
 const TIME_OPTIONS = ['아침', '점심', '저녁', '취침전'] as const;
-const RELATION_OPTIONS = ['식전', '식후 즉시', '식후 30분'] as const;
+const RELATION_OPTIONS = ['식전', '식후', '식후 30분'] as const;
 
 const INITIAL_FREQUENCY_SETTINGS: FrequencySetting[] = [
   { count: 1, defaultTimes: ['아침'], defaultRelation: '식후 30분' },
   { count: 2, defaultTimes: ['아침', '저녁'], defaultRelation: '식후 30분' },
   { count: 3, defaultTimes: ['아침', '점심', '저녁'], defaultRelation: '식후 30분' },
+  { count: 4, defaultTimes: ['아침', '점심', '저녁', '취침전'], defaultRelation: '식후 30분' },
 ];
 
 const INITIAL_TIME_MAPPINGS: TimeSetting[] = [
@@ -227,12 +228,9 @@ export const MedicationNotificationSettings = ({ onBack }: { onBack?: () => void
     ? RELATION_OPTIONS
     : RELATION_OPTIONS.filter((r) => r !== '식후 30분');
 
-  const timeEmojiMap: Record<string, string> = {
-    아침: '🌅',
-    점심: '☀️',
-    저녁: '🌇',
-    취침전: '🌙',
-  };
+  const displayedSettings = showFourTimes
+    ? frequencySettings
+    : frequencySettings.filter((s) => s.count <= 3);
 
   return (
     <div
@@ -367,55 +365,6 @@ export const MedicationNotificationSettings = ({ onBack }: { onBack?: () => void
                   />
                 </div>
 
-                {/* Preview */}
-                <div
-                  className="mt-2 p-3 rounded-[var(--radius)] border border-dashed border-[var(--border)]"
-                  style={{ backgroundColor: 'rgba(245,246,249,0.5)' }}
-                >
-                  <p
-                    className="text-[var(--muted-foreground)] mb-2"
-                    style={{ fontSize: '11px', fontWeight: 'var(--font-weight-medium)' }}
-                  >
-                    미리보기 — 상담 화면에 표시되는 버튼
-                  </p>
-                  <div className="flex flex-wrap gap-1.5">
-                    {['1회', '2회', '3회'].map((b) => (
-                      <span
-                        key={b}
-                        className="px-3 py-1 rounded-[var(--radius-button)] border border-[var(--border)] bg-white text-[var(--foreground)]"
-                        style={{ fontSize: '12px', fontWeight: 'var(--font-weight-medium)' }}
-                      >
-                        {b}
-                      </span>
-                    ))}
-                    {showFourTimes && (
-                      <span
-                        className="px-3 py-1 rounded-[var(--radius-button)] border border-[var(--primary)] text-[var(--primary)] bg-[var(--accent)]"
-                        style={{ fontSize: '12px', fontWeight: 'var(--font-weight-medium)' }}
-                      >
-                        4회
-                      </span>
-                    )}
-                    <span className="mx-1 text-[var(--border)]">|</span>
-                    {visibleRelations.map((r) => (
-                      <span
-                        key={r}
-                        className="px-3 py-1 rounded-[var(--radius-button)] border border-[var(--border)] bg-white text-[var(--foreground)]"
-                        style={{ fontSize: '12px', fontWeight: 'var(--font-weight-medium)' }}
-                      >
-                        {r}
-                      </span>
-                    ))}
-                    {!showAfterMeal30 && (
-                      <span
-                        className="px-3 py-1 rounded-[var(--radius-button)] border border-dashed border-[var(--border)] text-[var(--muted-foreground)] line-through"
-                        style={{ fontSize: '12px', fontWeight: 'var(--font-weight-normal)' }}
-                      >
-                        식후 30분
-                      </span>
-                    )}
-                  </div>
-                </div>
               </div>
             </SectionCard>
 
@@ -423,15 +372,14 @@ export const MedicationNotificationSettings = ({ onBack }: { onBack?: () => void
             <SectionCard
               icon={<Bell className="w-[18px] h-[18px]" style={{ color: 'var(--primary)' }} />}
               title="복용 횟수별 기본 설정"
-              badge="상담 화면 진입 시 자동 선택됩니다"
             >
               <div className="space-y-0">
-                {frequencySettings.map((setting, idx) => (
+                {displayedSettings.map((setting, idx) => (
                   <div
                     key={setting.count}
                     className={clsx(
                       'flex gap-4 py-4',
-                      idx < frequencySettings.length - 1 &&
+                      idx < displayedSettings.length - 1 &&
                         'border-b border-dashed border-[var(--border)]'
                     )}
                   >
@@ -524,44 +472,6 @@ export const MedicationNotificationSettings = ({ onBack }: { onBack?: () => void
                 />
               </div>
 
-              <div
-                className="mt-5 p-4 rounded-[var(--radius)] border"
-                style={{
-                  backgroundColor: defaultAppSend ? 'var(--accent)' : 'var(--muted)',
-                  borderColor: defaultAppSend ? 'var(--primary)' : 'var(--border)',
-                }}
-              >
-                <div className="flex gap-3">
-                  <div
-                    className="w-9 h-9 rounded-full flex items-center justify-center shrink-0"
-                    style={{ backgroundColor: defaultAppSend ? 'var(--primary)' : 'var(--border)' }}
-                  >
-                    <Smartphone
-                      className="w-4 h-4"
-                      style={{ color: defaultAppSend ? 'var(--primary-foreground)' : 'var(--muted-foreground)' }}
-                    />
-                  </div>
-                  <div>
-                    <p
-                      style={{
-                        fontSize: 'var(--text-base)',
-                        fontWeight: 'var(--font-weight-medium)',
-                        color: defaultAppSend ? 'var(--accent-foreground)' : 'var(--foreground)',
-                      }}
-                    >
-                      {defaultAppSend ? '기본값: 전송함 (ON)' : '기본값: 전송 안 함 (OFF)'}
-                    </p>
-                    <p
-                      className="mt-1"
-                      style={{ fontSize: '12px', fontWeight: 'var(--font-weight-normal)', lineHeight: 1.6, color: 'var(--muted-foreground)' }}
-                    >
-                      {defaultAppSend
-                        ? '상담 화면 진입 시 앱 전송 토글이 자동으로 켜져, 앱 사용 환자에게 알림이 자동 설정됩니다.'
-                        : '상담 화면 진입 시 앱 전송 토글이 꺼져 있습니다. 필요 시 약사가 수동으로 전송을 켭니다.'}
-                    </p>
-                  </div>
-                </div>
-              </div>
             </SectionCard>
 
             {/* 웰체크 앱 전송 시간 설정 */}
@@ -575,17 +485,12 @@ export const MedicationNotificationSettings = ({ onBack }: { onBack?: () => void
                     key={mapping.label}
                     className="flex items-center justify-between px-4 py-3 rounded-[var(--radius)] border border-[var(--border)] bg-white hover:border-[var(--primary)] transition-colors"
                   >
-                    <div className="flex items-center gap-3">
-                      <span className="text-base select-none" style={{ lineHeight: 1 }}>
-                        {timeEmojiMap[mapping.label]}
-                      </span>
-                      <span
-                        className="text-[var(--foreground)]"
-                        style={{ fontSize: 'var(--text-base)', fontWeight: 'var(--font-weight-medium)' }}
-                      >
-                        {mapping.label}
-                      </span>
-                    </div>
+                    <span
+                      className="text-[var(--foreground)]"
+                      style={{ fontSize: 'var(--text-base)', fontWeight: 'var(--font-weight-medium)' }}
+                    >
+                      {mapping.label}
+                    </span>
                     <input
                       type="time"
                       value={mapping.defaultTime}
