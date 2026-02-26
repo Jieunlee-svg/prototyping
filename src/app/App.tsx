@@ -9,6 +9,7 @@ import { PharmacySettings } from './components/dashboard/PharmacySettings';
 import { NoticeList } from './components/dashboard/NoticeList';
 import { MedicationConsultationC } from './components/dashboard/MedicationConsultationC';
 import { ReminderSettingsPage } from './components/dashboard/ReminderSettingsPage';
+import { MedicationNotificationSettings } from './components/dashboard/MedicationNotificationSettings';
 import { LoginScreen } from './components/auth/LoginScreen';
 
 function App() {
@@ -75,7 +76,7 @@ function App() {
             </div>
           ) : view === 'consultation-reminder' ? (
             <div className="absolute inset-0 overflow-hidden">
-              <ReminderSettingsPage />
+              <MedicationNotificationSettings onBack={() => setView('consultation-c')} />
             </div>
           ) : view === 'settings' ? (
             <div className="absolute inset-0 overflow-hidden">
