@@ -183,12 +183,26 @@ export const MedicationNotificationSettings = ({ onBack }: { onBack?: () => void
     setFrequencySettings((prev) =>
       prev.map((item) => {
         if (item.count !== count) return item;
+        if (item.count === 4) return item;
+
+        const isSelected = item.defaultTimes.includes(time);
         const order = ['아침', '점심', '저녁', '취침전'];
-        let next = item.defaultTimes.includes(time)
-          ? item.defaultTimes.filter((t) => t !== time)
-          : [...item.defaultTimes, time];
-        next.sort((a, b) => order.indexOf(a) - order.indexOf(b));
-        return { ...item, defaultTimes: next };
+
+        if (isSelected) {
+          if (item.defaultTimes.length <= item.count) return item;
+          const next = item.defaultTimes.filter((t) => t !== time);
+          next.sort((a, b) => order.indexOf(a) - order.indexOf(b));
+          return { ...item, defaultTimes: next };
+        } else {
+          let next: string[];
+          if (item.defaultTimes.length >= item.count) {
+            next = [...item.defaultTimes.slice(1), time];
+          } else {
+            next = [...item.defaultTimes, time];
+          }
+          next.sort((a, b) => order.indexOf(a) - order.indexOf(b));
+          return { ...item, defaultTimes: next };
+        }
       })
     );
   };
@@ -412,6 +426,7 @@ export const MedicationNotificationSettings = ({ onBack }: { onBack?: () => void
                               label={time}
                               selected={setting.defaultTimes.includes(time)}
                               variant="primary"
+                              disabled={setting.count === 4}
                               onClick={() => toggleFrequencyTime(setting.count, time)}
                             />
                           ))}
@@ -431,7 +446,7 @@ export const MedicationNotificationSettings = ({ onBack }: { onBack?: () => void
                               key={rel}
                               label={rel}
                               selected={setting.defaultRelation === rel}
-                              variant="secondary"
+                              variant="primary"
                               onClick={() => setFrequencyRelation(setting.count, rel)}
                             />
                           ))}
