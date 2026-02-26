@@ -72,46 +72,8 @@ export const PatientList: React.FC<PatientListProps> = ({ onPatientClick }) => {
     <div className="p-6 bg-gray-50 min-h-[calc(100vh-64px)]">
       {/* Filters */}
       <div className="bg-white p-5 rounded-lg border border-gray-200 shadow-sm mb-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-y-4 gap-x-6">
-          
-          {/* Row 1 */}
-          <div className="flex items-center space-x-4">
-            <span className="text-sm font-bold text-gray-700 min-w-20">질환/상태</span>
-            <div className="flex space-x-3">
-              <label className="flex items-center space-x-2 text-sm text-gray-600 cursor-pointer">
-                <input type="checkbox" className="rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
-                <span>당뇨</span>
-              </label>
-              <label className="flex items-center space-x-2 text-sm text-gray-600 cursor-pointer">
-                <input type="checkbox" className="rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
-                <span>고혈압</span>
-              </label>
-              <label className="flex items-center space-x-2 text-sm text-gray-600 cursor-pointer">
-                <input type="checkbox" className="rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
-                <span>당뇨 전단계</span>
-              </label>
-              <label className="flex items-center space-x-2 text-sm text-gray-600 cursor-pointer">
-                <input type="checkbox" className="rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
-                <span>고혈압 전단계</span>
-              </label>
-            </div>
-          </div>
-
-          <div className="flex items-center space-x-4">
-            <span className="text-sm font-bold text-gray-700 min-w-20">최근 방문일</span>
-            <div className="flex items-center space-x-2 flex-1">
-              <div className="relative flex-1">
-                <input type="date" className="w-full text-sm border border-gray-300 rounded px-3 py-1.5 focus:outline-none focus:ring-1 focus:ring-blue-500" />
-              </div>
-              <span className="text-gray-400">~</span>
-              <div className="relative flex-1">
-                <input type="date" defaultValue="2026-02-05" className="w-full text-sm border border-gray-300 rounded px-3 py-1.5 focus:outline-none focus:ring-1 focus:ring-blue-500" />
-              </div>
-            </div>
-          </div>
-
-          {/* Row 2 */}
-          <div className="flex items-center space-x-4 col-span-2">
+        <div className="flex items-center gap-4">
+          <div className="flex items-center space-x-4 flex-1">
             <span className="text-sm font-bold text-gray-700 min-w-20">고객 조회</span>
             <div className="flex flex-wrap gap-2 flex-1">
 
