@@ -407,6 +407,21 @@ export const PharmacySettings: React.FC = () => {
                   </p>
                 </div>
               )}
+
+              <div className="mt-6 pt-6 border-t border-gray-200">
+                <label htmlFor="notifyPhone" className="block text-sm font-medium text-gray-900 mb-1">
+                  알림 수신 휴대폰 번호
+                </label>
+                <input
+                  type="tel"
+                  id="notifyPhone"
+                  placeholder="010-0000-0000"
+                  className="w-full max-w-xs px-4 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm"
+                />
+                <p className="text-xs text-gray-500 mt-2 leading-relaxed">
+                  휴대폰 번호를 입력하면 앱으로 처방전이 전송되었을 때 알림톡을 받을 수 있습니다.
+                </p>
+              </div>
             </div>
           </section>
         </div>
