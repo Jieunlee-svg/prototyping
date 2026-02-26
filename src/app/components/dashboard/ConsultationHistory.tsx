@@ -22,7 +22,23 @@ interface Consultation {
   times: string[];
   relation: string;
   duration: number;
+  messageContent: string;
 }
+
+const DEFAULT_MESSAGE = `[복약 상담 안내]
+안녕하세요, 서울종로약국입니다.
+처방받으신 약품 안내드립니다.
+
+[처방 약품]
+1. 타이레놀정 500mg ((주)한국얀센)
+
+[복약 알림 설정]
+하루 3번, 아침, 점심, 저녁 식후 30분에 복약하세요.
+
+[주의사항]
+- 타이레놀정 500mg: 매일 3잔 이상 술을 마시는 경우 의사와 상의
+
+문의사항은 약국으로 연락주세요.`;
 
 const MOCK_CONSULTATIONS: Consultation[] = [
   {
@@ -36,6 +52,7 @@ const MOCK_CONSULTATIONS: Consultation[] = [
     times: ['아침', '점심', '저녁'],
     relation: '식후 30분',
     duration: 7,
+    messageContent: DEFAULT_MESSAGE,
   },
   {
     id: 'CS-20240205-02',
@@ -48,6 +65,7 @@ const MOCK_CONSULTATIONS: Consultation[] = [
     times: ['아침', '저녁'],
     relation: '식후',
     duration: 14,
+    messageContent: DEFAULT_MESSAGE,
   },
   {
     id: 'CS-20240205-03',
@@ -60,6 +78,7 @@ const MOCK_CONSULTATIONS: Consultation[] = [
     times: ['아침', '점심', '저녁'],
     relation: '식전',
     duration: 5,
+    messageContent: DEFAULT_MESSAGE,
   },
   {
     id: 'CS-20240205-04',
@@ -72,6 +91,7 @@ const MOCK_CONSULTATIONS: Consultation[] = [
     times: ['아침'],
     relation: '식후 30분',
     duration: 30,
+    messageContent: DEFAULT_MESSAGE,
   },
   {
     id: 'CS-20240205-05',
@@ -84,6 +104,7 @@ const MOCK_CONSULTATIONS: Consultation[] = [
     times: ['아침', '저녁'],
     relation: '식후',
     duration: 7,
+    messageContent: DEFAULT_MESSAGE,
   },
 ];
 
@@ -220,7 +241,7 @@ export const ConsultationHistory: React.FC = () => {
               onClick={() => setSelectedConsultation(null)}
             />
             <span className="hidden sm:inline-block sm:align-middle sm:h-screen">&#8203;</span>
-            <div className="relative inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+            <div className="relative inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-xl sm:w-full">
               <div className="bg-white px-6 pt-5 pb-4">
                 <div className="flex justify-between items-center mb-5">
                   <h3 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
@@ -276,6 +297,13 @@ export const ConsultationHistory: React.FC = () => {
                         <span className="block text-xs text-gray-500 mb-1">복약 일수</span>
                         <span className="text-sm font-medium text-gray-900">{selectedConsultation.duration}일</span>
                       </div>
+                    </div>
+                  </div>
+
+                  <div className="border-t border-gray-100 pt-4">
+                    <h4 className="text-sm font-semibold text-gray-700 mb-3">전송 내용</h4>
+                    <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 text-sm text-gray-700 whitespace-pre-line leading-relaxed">
+                      {selectedConsultation.messageContent}
                     </div>
                   </div>
                 </div>
