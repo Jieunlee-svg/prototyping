@@ -10,7 +10,6 @@ import {
   Smartphone,
   Info,
   RotateCcw,
-  Eye,
   Save,
 } from 'lucide-react';
 
@@ -285,170 +284,154 @@ export const MedicationNotificationSettings = ({ onBack }: { onBack?: () => void
       <div className="flex-1 overflow-y-auto px-6 py-6">
         <div className="max-w-[1200px] mx-auto space-y-6">
 
-          {/* ── Row 1: 버튼 표시 설정 + 복용 횟수별 기본 설정 ── */}
-          <div className="grid grid-cols-[1fr_2fr] gap-6 items-start">
-            {/* 버튼 표시 설정 */}
-            <SectionCard
-              icon={<Eye className="w-[18px] h-[18px]" style={{ color: 'var(--primary)' }} />}
-              title="버튼 표시 설정"
-            >
-              <div className="space-y-5">
-                <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <p className="text-[var(--foreground)] text-[15px] font-medium">
-                      복용 횟수 4회 버튼
-                    </p>
-                    <p className="text-[var(--muted-foreground)] mt-0.5 text-xs font-normal leading-normal">
-                      복용 횟수 선택에 '4회' 버튼을 추가합니다
-                    </p>
-                  </div>
-                  <Toggle checked={showFourTimes} onChange={() => setShowFourTimes(!showFourTimes)} />
-                </div>
-
-                <div className="border-t border-[var(--border)]" />
-
-                <div className="flex items-start justify-between gap-4">
-                  <div>
-                    <p className="text-[var(--foreground)] text-[15px] font-medium">
-                      식후 30분 버튼
-                    </p>
-                    <p className="text-[var(--muted-foreground)] mt-0.5 text-xs font-normal leading-normal">
-                      복용 시점 선택에 '식후 30분' 버튼을 표시합니다
-                    </p>
-                  </div>
-                  <Toggle
-                    checked={showAfterMeal30}
-                    onChange={() => setShowAfterMeal30(!showAfterMeal30)}
-                  />
-                </div>
-
-              </div>
-            </SectionCard>
-
-            {/* 복용 횟수별 기본 설정 */}
-            <SectionCard
-              icon={<Bell className="w-[18px] h-[18px]" style={{ color: 'var(--primary)' }} />}
-              title="복용 횟수별 기본 설정"
-            >
-              <div className="space-y-0">
-                {displayedSettings.map((setting, idx) => (
-                  <div
-                    key={setting.count}
-                    className={clsx(
-                      'flex gap-4 py-4',
-                      idx < displayedSettings.length - 1 &&
-                        'border-b border-dashed border-[var(--border)]'
-                    )}
-                  >
-                    <div className="w-14 shrink-0 flex flex-col items-center pt-1">
-                      <span className="inline-flex items-center justify-center w-10 h-10 rounded-full text-[var(--primary)] bg-[var(--accent)] text-[15px] font-medium">
-                        {setting.count}회
-                      </span>
-                    </div>
-
-                    {/* 복용 시간 + 복용 시점 on the same line */}
-                    <div className="flex-1 flex items-start gap-6">
-                      <div>
-                        <label className="block mb-2 text-[var(--muted-foreground)] text-xs font-medium tracking-wide">
-                          복용 시간
-                        </label>
-                        <div className="flex gap-2 flex-wrap">
-                          {TIME_OPTIONS.map((time) => (
-                            <PillButton
-                              key={time}
-                              label={time}
-                              selected={setting.defaultTimes.includes(time)}
-                              variant="primary"
-                              onClick={() => toggleFrequencyTime(setting.count, time)}
-                            />
-                          ))}
-                        </div>
-                        {setting.defaultTimes.length !== setting.count && (
-                          <p className="mt-1.5 text-red-500 text-[11px] font-medium">
-                            복용 시간을 {setting.count}개 선택해주세요 (현재 {setting.defaultTimes.length}개)
-                          </p>
-                        )}
-                      </div>
-
-                      <div>
-                        <label className="block mb-2 text-[var(--muted-foreground)] text-xs font-medium tracking-wide">
-                          복용 시점
-                        </label>
-                        <div className="flex gap-2 flex-wrap">
-                          {visibleRelations.map((rel) => (
-                            <PillButton
-                              key={rel}
-                              label={rel}
-                              selected={setting.defaultRelation === rel}
-                              variant="primary"
-                              onClick={() => setFrequencyRelation(setting.count, rel)}
-                            />
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </SectionCard>
-          </div>
-
-          {/* ── Row 2: 웰체크 앱 전송 설정 + 웰체크 앱 전송 시간 설정 ── */}
-          <div className="grid grid-cols-2 gap-6 items-start">
-            {/* 웰체크 앱 전송 설정 */}
-            <SectionCard
-              icon={<Smartphone className="w-[18px] h-[18px]" style={{ color: 'var(--primary)' }} />}
-              title="웰체크 앱 전송 설정"
-            >
+          {/* ── 복용 횟수별 기본 설정 (토글 포함) ── */}
+          <SectionCard
+            icon={<Bell className="w-[18px] h-[18px]" style={{ color: 'var(--primary)' }} />}
+            title="복용 횟수별 기본 설정"
+          >
+            {/* 토글 설정 영역 */}
+            <div className="grid grid-cols-2 gap-6 pb-5 mb-5 border-b border-[var(--border)]">
               <div className="flex items-start justify-between gap-4">
                 <div>
                   <p className="text-[var(--foreground)] text-[15px] font-medium">
-                    앱 전송 기본값
+                    복용 횟수 4회 버튼
                   </p>
                   <p className="text-[var(--muted-foreground)] mt-0.5 text-xs font-normal leading-normal">
-                    상담 화면 진입 시 '앱으로 설정 전송' 토글 기본 상태
+                    복용 횟수 선택에 '4회' 버튼을 추가합니다
+                  </p>
+                </div>
+                <Toggle checked={showFourTimes} onChange={() => setShowFourTimes(!showFourTimes)} />
+              </div>
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <p className="text-[var(--foreground)] text-[15px] font-medium">
+                    식후 30분 버튼
+                  </p>
+                  <p className="text-[var(--muted-foreground)] mt-0.5 text-xs font-normal leading-normal">
+                    복용 시점 선택에 '식후 30분' 버튼을 표시합니다
                   </p>
                 </div>
                 <Toggle
-                  checked={defaultAppSend}
-                  onChange={() => setDefaultAppSend(!defaultAppSend)}
+                  checked={showAfterMeal30}
+                  onChange={() => setShowAfterMeal30(!showAfterMeal30)}
                 />
               </div>
+            </div>
 
-            </SectionCard>
-
-            {/* 웰체크 앱 전송 시간 설정 */}
-            <SectionCard
-              icon={<Clock className="w-[18px] h-[18px]" style={{ color: 'var(--primary)' }} />}
-              title="웰체크 앱 전송 시간 설정"
-            >
-              <div className="grid grid-cols-2 gap-3">
-                {timeMappings.map((mapping) => (
-                  <div
-                    key={mapping.label}
-                    className="flex items-center justify-between px-4 py-3 rounded-[var(--radius)] border border-[var(--border)] bg-white hover:border-[var(--primary)] transition-colors"
-                  >
-                    <span className="text-[var(--foreground)] text-[15px] font-medium">
-                      {mapping.label}
+            {/* 횟수별 설정 */}
+            <div className="space-y-0">
+              {displayedSettings.map((setting, idx) => (
+                <div
+                  key={setting.count}
+                  className={clsx(
+                    'flex gap-4 py-4',
+                    idx < displayedSettings.length - 1 &&
+                      'border-b border-dashed border-[var(--border)]'
+                  )}
+                >
+                  <div className="w-14 shrink-0 flex flex-col items-center pt-1">
+                    <span className="inline-flex items-center justify-center w-10 h-10 rounded-full text-[var(--primary)] bg-[var(--accent)] text-[15px] font-medium">
+                      {setting.count}회
                     </span>
-                    <input
-                      type="time"
-                      value={mapping.defaultTime}
-                      onChange={(e) => updateTimeMapping(mapping.label, e.target.value)}
-                      className="px-3 py-1.5 border border-[var(--border)] rounded-[var(--radius-input)] bg-[var(--input-background)] text-[var(--foreground)] focus:ring-2 focus:ring-[var(--ring)]/20 focus:border-[var(--primary)] outline-none cursor-pointer w-[120px] text-right text-[13px] font-medium"
-                    />
                   </div>
-                ))}
-              </div>
 
-              <div className="mt-4 flex items-start gap-2 p-3 rounded-[var(--radius)] border border-[var(--border)] bg-[rgba(245,246,249,0.7)]">
-                <Info className="w-4 h-4 mt-0.5 shrink-0 text-[var(--muted-foreground)]" />
-                <p className="text-[var(--muted-foreground)] text-xs font-normal leading-relaxed">
-                  고객의 웰체크 앱으로 알림 설정이 전송될 때 기본값으로 사용됩니다. 고객이 앱에서 변경 할 수 있습니다.
+                  <div className="flex-1 flex items-start gap-6">
+                    <div>
+                      <label className="block mb-2 text-[var(--muted-foreground)] text-xs font-medium tracking-wide">
+                        복용 시간
+                      </label>
+                      <div className="flex gap-2 flex-wrap">
+                        {TIME_OPTIONS.map((time) => (
+                          <PillButton
+                            key={time}
+                            label={time}
+                            selected={setting.defaultTimes.includes(time)}
+                            variant="primary"
+                            onClick={() => toggleFrequencyTime(setting.count, time)}
+                          />
+                        ))}
+                      </div>
+                      {setting.defaultTimes.length !== setting.count && (
+                        <p className="mt-1.5 text-red-500 text-[11px] font-medium">
+                          복용 시간을 {setting.count}개 선택해주세요 (현재 {setting.defaultTimes.length}개)
+                        </p>
+                      )}
+                    </div>
+
+                    <div>
+                      <label className="block mb-2 text-[var(--muted-foreground)] text-xs font-medium tracking-wide">
+                        복용 시점
+                      </label>
+                      <div className="flex gap-2 flex-wrap">
+                        {visibleRelations.map((rel) => (
+                          <PillButton
+                            key={rel}
+                            label={rel}
+                            selected={setting.defaultRelation === rel}
+                            variant="primary"
+                            onClick={() => setFrequencyRelation(setting.count, rel)}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </SectionCard>
+
+          {/* ── 웰체크 앱 전송 시간 설정 ── */}
+          <SectionCard
+            icon={<Clock className="w-[18px] h-[18px]" style={{ color: 'var(--primary)' }} />}
+            title="웰체크 앱 전송 시간 설정"
+          >
+            <div className="grid grid-cols-2 gap-3">
+              {timeMappings.map((mapping) => (
+                <div
+                  key={mapping.label}
+                  className="flex items-center justify-between px-4 py-3 rounded-[var(--radius)] border border-[var(--border)] bg-white hover:border-[var(--primary)] transition-colors"
+                >
+                  <span className="text-[var(--foreground)] text-[15px] font-medium">
+                    {mapping.label}
+                  </span>
+                  <input
+                    type="time"
+                    value={mapping.defaultTime}
+                    onChange={(e) => updateTimeMapping(mapping.label, e.target.value)}
+                    className="px-3 py-1.5 border border-[var(--border)] rounded-[var(--radius-input)] bg-[var(--input-background)] text-[var(--foreground)] focus:ring-2 focus:ring-[var(--ring)]/20 focus:border-[var(--primary)] outline-none cursor-pointer w-[120px] text-right text-[13px] font-medium"
+                  />
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-4 flex items-start gap-2 p-3 rounded-[var(--radius)] border border-[var(--border)] bg-[rgba(245,246,249,0.7)]">
+              <Info className="w-4 h-4 mt-0.5 shrink-0 text-[var(--muted-foreground)]" />
+              <p className="text-[var(--muted-foreground)] text-xs font-normal leading-relaxed">
+                고객의 웰체크 앱으로 알림 설정이 전송될 때 기본값으로 사용됩니다. 고객이 앱에서 변경 할 수 있습니다.
+              </p>
+            </div>
+          </SectionCard>
+
+          {/* ── 웰체크 앱 전송 설정 ── */}
+          <SectionCard
+            icon={<Smartphone className="w-[18px] h-[18px]" style={{ color: 'var(--primary)' }} />}
+            title="웰체크 앱 전송 설정"
+          >
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <p className="text-[var(--foreground)] text-[15px] font-medium">
+                  앱 전송 기본값
+                </p>
+                <p className="text-[var(--muted-foreground)] mt-0.5 text-xs font-normal leading-normal">
+                  상담 화면 진입 시 '앱으로 설정 전송' 토글 기본 상태
                 </p>
               </div>
-            </SectionCard>
-          </div>
+              <Toggle
+                checked={defaultAppSend}
+                onChange={() => setDefaultAppSend(!defaultAppSend)}
+              />
+            </div>
+          </SectionCard>
 
         </div>
       </div>

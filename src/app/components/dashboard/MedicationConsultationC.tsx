@@ -27,6 +27,12 @@ interface ReminderSettings {
   relation: string; // '식후 30분', '식전', '식후'
 }
 
+const FREQUENCY_DEFAULTS: Record<number, { times: string[]; relation: string }> = {
+  1: { times: ['아침'], relation: '식후 30분' },
+  2: { times: ['아침', '저녁'], relation: '식후 30분' },
+  3: { times: ['아침', '점심', '저녁'], relation: '식후 30분' },
+};
+
 // --- Mock Data ---
 const MOCK_DRUG_DB: DrugInfo[] = [
   {
@@ -206,8 +212,8 @@ export const MedicationConsultationC = () => {
 
   const [reminder, setReminder] = useState<ReminderSettings>({
     frequency: 3,
-    times: ['아침', '점심', '저녁'],
-    relation: '식후 30분'
+    times: FREQUENCY_DEFAULTS[3].times,
+    relation: FREQUENCY_DEFAULTS[3].relation,
   });
 
   const [startDate, setStartDate] = useState<Date>(new Date());
@@ -493,7 +499,14 @@ export const MedicationConsultationC = () => {
                    {[1, 2, 3].map(freq => (
                      <button
                        key={freq}
-                       onClick={() => setReminder({...reminder, frequency: freq})}
+                       onClick={() => {
+                         const defaults = FREQUENCY_DEFAULTS[freq];
+                         setReminder({
+                           frequency: freq,
+                           times: defaults.times,
+                           relation: defaults.relation,
+                         });
+                       }}
                        className={clsx(
                          "py-2.5 rounded-lg text-sm font-medium border transition-all",
                          reminder.frequency === freq 
@@ -511,7 +524,7 @@ export const MedicationConsultationC = () => {
                <div className="space-y-3">
                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">복약 시간</label>
                  <div className="grid grid-cols-4 gap-2">
-                   {['아침', '점심', '저녁', '취침 전'].map(time => (
+                   {['아침', '점심', '저녁', '취침전'].map(time => (
                      <button
                        key={time}
                        onClick={() => toggleTime(time)}
@@ -532,7 +545,7 @@ export const MedicationConsultationC = () => {
                <div className="space-y-3">
                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">복약 시점</label>
                  <div className="grid grid-cols-3 gap-2">
-                   {['식사 전', '식후', '식후 30분'].map(rel => (
+                   {['식전', '식후', '식후 30분'].map(rel => (
                      <button
                        key={rel}
                        onClick={() => setReminder({...reminder, relation: rel})}
