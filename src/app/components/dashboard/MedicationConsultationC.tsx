@@ -728,13 +728,7 @@ export const MedicationConsultationC = () => {
          <div className="flex-1 p-6 overflow-y-auto bg-gray-50/30">
              <div className="h-full flex flex-col gap-4 max-w-3xl mx-auto">
                  <div className="flex-1 border border-input rounded-xl bg-white shadow-sm overflow-hidden flex flex-col focus-within:ring-2 focus-within:ring-ring/50 transition-all">
-                    <textarea 
-                      value={message}
-                      onChange={(e) => setMessage(e.target.value)}
-                      className="flex-1 w-full p-6 bg-transparent resize-none outline-none text-base leading-relaxed text-gray-800 placeholder:text-gray-300"
-                      placeholder="약품을 추가하면 상담 내용이 자동으로 작성됩니다."
-                    />
-                    <div className="p-3 bg-gray-50 border-t border-gray-100 flex flex-col gap-3">
+                    <div className="p-3 bg-gray-50 border-b border-gray-100 flex flex-col gap-3 shrink-0">
                       {medicines.length > 0 ? (
                         <>
                           <div className="flex items-center gap-1.5 mb-0.5">
@@ -776,7 +770,15 @@ export const MedicationConsultationC = () => {
                           ))}
                         </div>
                       )}
-                      <div className="text-xs text-gray-400 text-right border-t border-gray-100 pt-2">
+                    </div>
+                    <textarea 
+                      value={message}
+                      onChange={(e) => setMessage(e.target.value)}
+                      className="flex-1 w-full p-6 bg-transparent resize-none outline-none text-base leading-relaxed text-gray-800 placeholder:text-gray-300"
+                      placeholder="약품을 추가하면 상담 내용이 자동으로 작성됩니다."
+                    />
+                    <div className="px-3 py-2 bg-gray-50 border-t border-gray-100 shrink-0">
+                      <div className="text-xs text-gray-400 text-right">
                         {message.length}자 작성됨
                       </div>
                     </div>
