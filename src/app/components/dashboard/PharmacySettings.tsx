@@ -8,7 +8,8 @@ import {
   Search,
   Check,
   Copy,
-  Sparkles
+  Sparkles,
+  Smartphone
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -26,6 +27,7 @@ interface DaySchedule {
 export const PharmacySettings: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [showTemplates, setShowTemplates] = useState(false);
+  const [allowAppPrescription, setAllowAppPrescription] = useState(true);
   const [formData, setFormData] = useState({
     name: '서울종로약국',
     phone: '02-1234-5678',
@@ -358,6 +360,53 @@ export const PharmacySettings: React.FC = () => {
               </div>
 
 
+            </div>
+          </section>
+
+          {/* App Prescription Section */}
+          <section className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+            <div className="px-6 py-4 border-b border-gray-100 bg-gray-50/50">
+              <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                <Smartphone size={18} className="text-gray-500" />
+                웰체크 앱으로 처방전 받기 허용
+              </h2>
+            </div>
+            <div className="p-6">
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <p className="text-sm font-medium text-gray-900">
+                    앱 처방전 접수 허용
+                  </p>
+                  <p className="text-xs text-gray-500 mt-1 leading-relaxed">
+                    웰체크 앱 사용자가 처방전을 촬영하여 이 약국으로 접수할 수 있도록 허용합니다.<br />
+                    허용 시 [웰체크 앱] &gt; [약국 찾기]에서 처방전 접수 가능 약국으로 표시됩니다.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={allowAppPrescription}
+                  onClick={() => setAllowAppPrescription(!allowAppPrescription)}
+                  className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 ${
+                    allowAppPrescription ? 'bg-blue-600' : 'bg-gray-200'
+                  }`}
+                >
+                  <span
+                    className={`inline-block h-4 w-4 transform rounded-full bg-white shadow-sm transition-transform ${
+                      allowAppPrescription ? 'translate-x-6' : 'translate-x-1'
+                    }`}
+                  />
+                </button>
+              </div>
+
+              {allowAppPrescription && (
+                <div className="mt-4 bg-blue-50 p-4 rounded-lg flex items-start gap-3 animate-in fade-in slide-in-from-top-1 duration-200">
+                  <Check className="text-blue-600 mt-0.5 flex-shrink-0" size={16} />
+                  <p className="text-sm text-blue-800">
+                    현재 웰체크 앱에서 처방전 접수가 <strong>허용</strong>된 상태입니다.
+                  </p>
+                </div>
+              )}
             </div>
           </section>
         </div>
