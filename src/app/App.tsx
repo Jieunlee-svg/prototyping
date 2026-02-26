@@ -13,7 +13,7 @@ import { MedicationNotificationSettings } from './components/dashboard/Medicatio
 import { LoginScreen } from './components/auth/LoginScreen';
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [view, setView] = useState<'list' | 'detail' | 'sms' | 'prescription' | 'settings' | 'notice' | 'consultation-c' | 'consultation-history' | 'consultation-reminder'>('list');
   const [selectedPatientId, setSelectedPatientId] = useState<string | null>(null);
 
