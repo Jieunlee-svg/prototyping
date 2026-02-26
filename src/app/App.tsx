@@ -17,6 +17,7 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [view, setView] = useState<'list' | 'detail' | 'sms' | 'prescription' | 'settings' | 'notice' | 'consultation-c' | 'consultation-history' | 'consultation-reminder'>('consultation-c');
   const [selectedPatientId, setSelectedPatientId] = useState<string | null>(null);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   const handlePatientClick = (id: string) => {
     setSelectedPatientId(id);
@@ -35,6 +36,8 @@ function App() {
   return (
     <div className="flex h-screen bg-gray-50 overflow-hidden font-sans">
       <Sidebar 
+        collapsed={sidebarCollapsed}
+        onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
         activeView={view} 
         onSmsClick={() => setView('sms')} 
         onDashboardClick={() => setView('list')}

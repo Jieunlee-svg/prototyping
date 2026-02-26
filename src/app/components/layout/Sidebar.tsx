@@ -13,7 +13,7 @@ import {
   ChevronLeft,
   ChevronDown,
   ChevronRight as ChevronRightIcon,
-  Search,
+  Menu,
   PlayCircle,
   ClipboardList,
   BellRing
@@ -22,6 +22,8 @@ import { clsx } from 'clsx';
 
 interface SidebarProps {
   className?: string;
+  collapsed?: boolean;
+  onToggleCollapse?: () => void;
   onSmsClick?: () => void;
   onDashboardClick?: () => void;
   onPrescriptionClick?: () => void;
@@ -36,6 +38,8 @@ interface SidebarProps {
 
 export const Sidebar: React.FC<SidebarProps> = ({ 
   className, 
+  collapsed = false,
+  onToggleCollapse,
   onSmsClick, 
   onDashboardClick, 
   onPrescriptionClick,
@@ -71,26 +75,31 @@ export const Sidebar: React.FC<SidebarProps> = ({
     return false;
   };
 
+  if (collapsed) {
+    return (
+      <div className={clsx("w-16 bg-white border-r border-gray-200 flex flex-col h-screen items-center py-4 shrink-0", className)}>
+        <button
+          onClick={onToggleCollapse}
+          className="p-2 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-blue-600 transition-colors mb-4"
+        >
+          <Menu size={20} />
+        </button>
+        <span className="text-xs font-bold text-blue-600 writing-mode-vertical select-none tracking-widest">W</span>
+      </div>
+    );
+  }
+
   return (
-    <div className={clsx("w-64 bg-white border-r border-gray-200 flex flex-col h-screen", className)}>
+    <div className={clsx("w-64 bg-white border-r border-gray-200 flex flex-col h-screen shrink-0 transition-all", className)}>
       {/* Logo Area */}
       <div className="p-5 border-b border-gray-100 flex items-center justify-between">
         <h1 className="text-2xl font-bold text-blue-600">Wellcheck</h1>
-        <button className="text-gray-400 hover:text-gray-600">
+        <button
+          onClick={onToggleCollapse}
+          className="text-gray-400 hover:text-gray-600 transition-colors"
+        >
           <ChevronLeft size={20} />
         </button>
-      </div>
-
-      {/* Search */}
-      <div className="p-4">
-        <div className="relative">
-          <input 
-            type="text" 
-            placeholder="고객 검색" 
-            className="w-full pl-9 pr-3 py-2 bg-gray-50 border border-gray-200 rounded-md text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
-          />
-          <Search className="absolute left-3 top-2.5 text-gray-400" size={16} />
-        </div>
       </div>
 
       {/* Navigation */}
