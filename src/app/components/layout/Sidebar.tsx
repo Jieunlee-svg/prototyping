@@ -102,8 +102,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
               href="#"
               onClick={(e) => {
                 e.preventDefault();
-                setConsultationOpen(!consultationOpen);
-                if (!isConsultationActive && onConsultationCClick) {
+                const willOpen = !consultationOpen;
+                setConsultationOpen(willOpen);
+                if (willOpen && onConsultationCClick) {
                   onConsultationCClick();
                 }
               }}
@@ -123,7 +124,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             {consultationOpen && (
               <ul className="mt-1 space-y-0.5">
                 {[
-                  { icon: PlayCircle, label: '복약 상담 시작', view: 'consultation-c' as const, onClick: onConsultationCClick },
+                  { icon: PlayCircle, label: '복약 상담', view: 'consultation-c' as const, onClick: onConsultationCClick },
                   { icon: ClipboardList, label: '복약 상담 내역', view: 'consultation-history' as const, onClick: onConsultationHistoryClick },
                   { icon: BellRing, label: '복약 알림 설정', view: 'consultation-reminder' as const, onClick: onConsultationReminderClick },
                 ].map((sub) => (
