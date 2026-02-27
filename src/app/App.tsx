@@ -12,10 +12,11 @@ import { ReminderSettingsPage } from './components/dashboard/ReminderSettingsPag
 import { MedicationNotificationSettings } from './components/dashboard/MedicationNotificationSettings';
 import { ConsultationHistory } from './components/dashboard/ConsultationHistory';
 import { LoginScreen } from './components/auth/LoginScreen';
+import { MyInfo } from './components/dashboard/MyInfo';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [view, setView] = useState<'list' | 'detail' | 'sms' | 'prescription' | 'settings' | 'notice' | 'consultation-c' | 'consultation-history' | 'consultation-reminder'>('consultation-c');
+  const [view, setView] = useState<'list' | 'detail' | 'sms' | 'prescription' | 'settings' | 'notice' | 'consultation-c' | 'consultation-history' | 'consultation-reminder' | 'my-info'>('consultation-c');
   const [selectedPatientId, setSelectedPatientId] = useState<string | null>(null);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
@@ -35,11 +36,11 @@ function App() {
 
   return (
     <div className="flex h-screen bg-gray-50 overflow-hidden font-sans">
-      <Sidebar 
+      <Sidebar
         collapsed={sidebarCollapsed}
         onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
-        activeView={view} 
-        onSmsClick={() => setView('sms')} 
+        activeView={view}
+        onSmsClick={() => setView('sms')}
         onDashboardClick={() => setView('list')}
         onPrescriptionClick={() => setView('prescription')}
         onConsultationCClick={() => setView('consultation-c')}
@@ -47,6 +48,7 @@ function App() {
         onConsultationReminderClick={() => setView('consultation-reminder')}
         onSettingsClick={() => setView('settings')}
         onNoticeClick={() => setView('notice')}
+        onMyInfoClick={() => setView('my-info')}
         onLogout={() => setIsLoggedIn(false)}
       />
       <div className="flex-1 flex flex-col h-screen overflow-hidden">
@@ -83,6 +85,10 @@ function App() {
           ) : view === 'notice' ? (
             <div className="absolute inset-0 overflow-hidden">
               <NoticeList />
+            </div>
+          ) : view === 'my-info' ? (
+            <div className="absolute inset-0 overflow-hidden">
+              <MyInfo />
             </div>
           ) : (
             <div className="absolute inset-0 overflow-hidden">
