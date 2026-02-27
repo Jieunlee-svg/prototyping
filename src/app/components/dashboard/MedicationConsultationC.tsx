@@ -253,6 +253,20 @@ export const MedicationConsultationC = () => {
       ? 'non_app'
       : 'app';
 
+  // 단골 검색 목업 (이름/번호로 필터)
+  const MOCK_PATIENTS = [
+    { name: '김철수', condition: '고혈압 관리', phone: '010-1234-5678', lastVisit: '2024.02.05' },
+    { name: '이영희', condition: '당뇨', phone: '010-2345-6789', lastVisit: '2024.02.04' },
+    { name: '박지민', condition: '감기', phone: '010-3456-7890', lastVisit: '2024.02.03' },
+  ];
+  const searchPatientResults = patientSearchQuery.trim()
+    ? MOCK_PATIENTS.filter(
+        p =>
+          p.name.includes(patientSearchQuery.trim()) ||
+          p.phone.replace(/\D/g, '').includes(patientSearchQuery.replace(/\D/g, ''))
+      )
+    : [];
+
   // --- Effects ---
   
   // Search Logic
@@ -848,8 +862,26 @@ export const MedicationConsultationC = () => {
                       선택 취소
                     </button>
                   </div>
+                ) : searchPatientResults.length > 0 ? (
+                  <div className="space-y-2">
+                    {searchPatientResults.map((p) => (
+                      <button
+                        key={p.phone}
+                        type="button"
+                        onClick={() => setSelectedPatient(p)}
+                        className="w-full text-left p-3 rounded-lg border border-gray-200 bg-white hover:bg-blue-50 hover:border-blue-200 transition-colors"
+                      >
+                        <div className="font-medium text-gray-900">{p.name}</div>
+                        <div className="text-xs text-gray-500 mt-0.5">
+                          {p.phone} · {p.condition}
+                        </div>
+                      </button>
+                    ))}
+                  </div>
                 ) : (
-                  <div className="text-center py-8 text-muted-foreground bg-gray-50 rounded-xl border border-dashed text-xs border-gray-200">검색 결과 없음</div>
+                  <div className="text-center py-8 text-muted-foreground bg-gray-50 rounded-xl border border-dashed text-xs border-gray-200">
+                    {patientSearchQuery.trim() ? '검색 결과 없음' : '이름 또는 휴대폰 번호를 검색해주세요'}
+                  </div>
                 )}
               </div>
             ) : (
