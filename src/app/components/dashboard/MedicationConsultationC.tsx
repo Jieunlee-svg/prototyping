@@ -697,9 +697,14 @@ export const MedicationConsultationC = () => {
 
                  {/* Extra Box and Controls when Toggle is ON */}
                  {sendAppReminder && (
-                   <div className="mt-3 p-3 bg-blue-50 border border-blue-100 rounded-lg animate-in fade-in slide-in-from-top-1 duration-200">
+                   <div className={clsx(
+                     "mt-3 p-3 rounded-lg animate-in fade-in slide-in-from-top-1 duration-200",
+                     appReminderHelperState === 'select' || appReminderHelperState === 'non_app'
+                       ? "bg-red-50 border border-red-200"
+                       : "bg-blue-50 border border-blue-100"
+                   )}>
                      {appReminderHelperState === 'select' && (
-                       <p className="text-sm font-medium text-blue-800 flex items-center gap-1.5">
+                       <p className="text-sm font-medium text-red-600 flex items-center gap-1.5">
                          <Info className="w-4 h-4" />
                          수신자를 선택하세요.
                        </p>
