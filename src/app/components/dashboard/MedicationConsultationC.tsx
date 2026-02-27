@@ -234,7 +234,6 @@ export const MedicationConsultationC = () => {
   
   // App Notification Settings State
   const [sendAppReminder, setSendAppReminder] = useState(false);
-  const [isAppUser, setIsAppUser] = useState<boolean | null>(null);
 
   const [pharmacyName, setPharmacyName] = useState('서울종로약국');
 
@@ -242,36 +241,19 @@ export const MedicationConsultationC = () => {
 
   const [isFullListOpen, setIsFullListOpen] = useState(false);
 
+  // 받는 사람 상태에 따른 헬퍼 메시지 (웰체크 앱으로 설정 전송 ON 일 때)
+  const directPhoneDigits = directPhone.replace(/\D/g, '').length;
+  const hasRecipient = recipientMode === 'direct'
+    ? directPhoneDigits === 11
+    : !!selectedPatient;
+
+  const appReminderHelperState: 'none' | 'select' | 'non_app' | 'app' = !hasRecipient
+    ? 'select'
+    : recipientMode === 'direct'
+      ? 'non_app'
+      : 'app';
+
   // --- Effects ---
-  
-  // Check if user is app user (Mock)
-  useEffect(() => {
-    // Determine phone number based on mode
-    const phoneToCheck = recipientMode === 'search' 
-      ? (selectedPatient?.phone || '') 
-      : directPhone;
-
-    // Reset status when phone changes
-    setIsAppUser(null);
-    
-    // Simulate API check with debounce
-    const timer = setTimeout(() => {
-      if (phoneToCheck.length >= 10) {
-        // Mock logic: Ends with even number = App User
-        const isUser = ['0', '2', '4', '6', '8'].includes(phoneToCheck.slice(-1));
-        setIsAppUser(isUser);
-      }
-    }, 500);
-
-    return () => clearTimeout(timer);
-  }, [recipientMode, selectedPatient, directPhone]);
-
-  // If user is not app user, auto-turn off app reminder
-  // useEffect(() => {
-  //   if (isAppUser === false) {
-  //     setSendAppReminder(false);
-  //   }
-  // }, [isAppUser]);
   
   // Search Logic
   useEffect(() => {
@@ -701,54 +683,26 @@ export const MedicationConsultationC = () => {
 
                  {/* Extra Box and Controls when Toggle is ON */}
                  {sendAppReminder && (
-                   <>
-                     <div className="mt-3 p-3 bg-blue-50 border border-blue-100 rounded-lg animate-in fade-in slide-in-from-top-1 duration-200">
-                       {!selectedPatient ? (
-                         <p className="text-sm font-medium text-blue-800 flex items-center gap-1.5">
-                           <Info className="w-4 h-4" />
-                           수신자를 선택하세요.
-                         </p>
-                       ) : isAppUser === false ? (
-                         <p className="text-sm font-medium text-red-600 flex items-center gap-1.5">
-                           <AlertCircle className="w-4 h-4" />
-                           웰체크 앱 미가입자입니다. 문자/알림톡으로만 발송됩니다.
-                         </p>
-                       ) : (
-                         <p className="text-sm font-medium text-blue-800 flex items-center gap-1.5">
-                           <CheckCircle className="w-4 h-4" />
-                           웰체크 앱 가입자입니다. 복약 설정이 앱으로 자동 연동됩니다.
-                         </p>
-                       )}
-                     </div>
-
-                     {/* Debug Handler for Testing */}
-                     <div className="mt-4 pt-3 border-t border-dashed border-gray-200 flex gap-2 animate-in fade-in slide-in-from-top-1 duration-200">
-                       <button 
-                         onClick={() => setSelectedPatient(null)}
-                         className="flex-1 py-2 text-[10px] font-medium bg-white border border-gray-200 text-gray-500 rounded hover:bg-gray-50 hover:border-gray-300 hover:text-gray-900 transition-all shadow-sm"
-                       >
-                         Test: 수신자 미선택
-                       </button>
-                       <button 
-                         onClick={() => {
-                           if (!selectedPatient) setSelectedPatient({ name: '김철수', condition: '고혈압 관리', phone: '010-1234-5678', lastVisit: '2023.10.15' });
-                           setIsAppUser(false);
-                         }}
-                         className="flex-1 py-2 text-[10px] font-medium bg-white border border-gray-200 text-gray-500 rounded hover:bg-gray-50 hover:border-gray-300 hover:text-gray-900 transition-all shadow-sm"
-                       >
-                         Test: 미가입자 설정
-                       </button>
-                       <button 
-                         onClick={() => {
-                           if (!selectedPatient) setSelectedPatient({ name: '김철수', condition: '고혈압 관리', phone: '010-1234-5678', lastVisit: '2023.10.15' });
-                           setIsAppUser(true);
-                         }}
-                         className="flex-1 py-2 text-[10px] font-medium bg-white border border-gray-200 text-gray-500 rounded hover:bg-gray-50 hover:border-gray-300 hover:text-gray-900 transition-all shadow-sm"
-                       >
-                         Test: 가입자 설정
-                       </button>
-                     </div>
-                   </>
+                   <div className="mt-3 p-3 bg-blue-50 border border-blue-100 rounded-lg animate-in fade-in slide-in-from-top-1 duration-200">
+                     {appReminderHelperState === 'select' && (
+                       <p className="text-sm font-medium text-blue-800 flex items-center gap-1.5">
+                         <Info className="w-4 h-4" />
+                         수신자를 선택하세요.
+                       </p>
+                     )}
+                     {appReminderHelperState === 'non_app' && (
+                       <p className="text-sm font-medium text-red-600 flex items-center gap-1.5">
+                         <AlertCircle className="w-4 h-4" />
+                         웰체크 앱 미가입자입니다. 문자/알림톡으로만 발송됩니다.
+                       </p>
+                     )}
+                     {appReminderHelperState === 'app' && (
+                       <p className="text-sm font-medium text-blue-800 flex items-center gap-1.5">
+                         <CheckCircle className="w-4 h-4" />
+                         웰체크 앱 가입자입니다. 복약 설정이 앱으로 자동 연동됩니다.
+                       </p>
+                     )}
+                   </div>
                  )}
                </div>
             </div>
@@ -938,7 +892,7 @@ export const MedicationConsultationC = () => {
              )}
              onClick={() => {
                 let msg = '메시지가 전송되었습니다.';
-                if (sendAppReminder && isAppUser) {
+                if (sendAppReminder && appReminderHelperState === 'app') {
                   msg += '\n(앱 알림 설정값 포함)';
                 }
                 alert(msg);
