@@ -189,6 +189,9 @@ export const PrescriptionList: React.FC = () => {
 
       {/* Filters & Actions */}
       <div className="px-6 py-4 flex items-center justify-between gap-4">
+        <h3 className="font-bold text-gray-800 shrink-0">
+          총 처방전 접수 <span className="text-blue-600">({MOCK_PRESCRIPTIONS.length}건)</span>
+        </h3>
         <div className="flex items-center gap-2">
           <div className="bg-white rounded-lg border border-gray-200 p-1 flex">
             <button
@@ -335,10 +338,7 @@ export const PrescriptionList: React.FC = () => {
           </table>
           
           {/* Empty State / Pagination (Placeholder) */}
-          <div className="px-6 py-4 border-t border-gray-200 bg-gray-50 flex items-center justify-between">
-            <h3 className="font-bold text-gray-800">
-              총 처방전 접수 <span className="text-blue-600">({MOCK_PRESCRIPTIONS.length}건)</span>
-            </h3>
+          <div className="px-6 py-4 border-t border-gray-200 bg-gray-50 flex items-center justify-end">
             <div className="flex gap-1">
               <button className="px-3 py-1 text-xs border border-gray-300 rounded bg-white hover:bg-gray-50 disabled:opacity-50">이전</button>
               <button className="px-3 py-1 text-xs border border-gray-300 rounded bg-white hover:bg-gray-50 disabled:opacity-50">다음</button>

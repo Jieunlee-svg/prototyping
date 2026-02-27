@@ -206,7 +206,10 @@ export const ConsultationHistory = ({ onBack }: { onBack?: () => void }) => {
         </div>
       </header>
 
-      <div className="px-6 py-4 flex items-center justify-end">
+      <div className="px-6 py-4 flex items-center justify-between gap-4">
+        <h3 className="font-bold text-gray-800">
+          총 상담 내역 <span className="text-blue-600">({MOCK_CONSULTATIONS.length}건)</span>
+        </h3>
         <div className="relative w-64">
           <input
             type="text"
@@ -282,10 +285,7 @@ export const ConsultationHistory = ({ onBack }: { onBack?: () => void }) => {
             </tbody>
           </table>
 
-          <div className="px-6 py-4 border-t border-gray-200 bg-gray-50 flex items-center justify-between">
-            <h3 className="font-bold text-gray-800">
-              총 상담 내역 <span className="text-blue-600">({MOCK_CONSULTATIONS.length}건)</span>
-            </h3>
+          <div className="px-6 py-4 border-t border-gray-200 bg-gray-50 flex items-center justify-end">
             <div className="flex gap-1">
               <button className="px-3 py-1 text-xs border border-gray-300 rounded bg-white hover:bg-gray-50 disabled:opacity-50">이전</button>
               <button className="px-3 py-1 text-xs border border-gray-300 rounded bg-white hover:bg-gray-50 disabled:opacity-50">다음</button>
