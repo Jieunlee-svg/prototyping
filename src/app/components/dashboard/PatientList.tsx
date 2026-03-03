@@ -2,8 +2,7 @@ import React from 'react';
 import { 
   Search, 
   ArrowRight,
-  ExternalLink,
-  HelpCircle
+  ExternalLink
 } from 'lucide-react';
 import { clsx } from 'clsx';
 
@@ -65,19 +64,13 @@ export const PatientList: React.FC<PatientListProps> = ({ onPatientClick }) => {
       </div>
 
       {/* Summary */}
-      <div className="flex justify-between items-center mb-4">
+      <div className="mb-4">
         <h3 className="font-bold text-gray-800">
           총 등록 고객 수 <span className="text-blue-600">(560)</span>
         </h3>
-        <div className="relative group">
-            <button className="text-gray-400 hover:text-gray-600 text-sm flex items-center">
-                도움말 <HelpCircleIcon className="ml-1 w-4 h-4" />
-            </button>
-            <div className="hidden group-hover:block absolute right-0 bottom-full mb-2 w-max max-w-xs p-3 bg-gray-800 border border-gray-700 rounded shadow-lg text-xs text-white z-10">
-                키오스크에 휴대폰 번호를 입력 했거나, <br/>
-                웰체크 앱에 회원가입한 고객입니다.
-            </div>
-        </div>
+        <p className="text-sm text-gray-500 mt-1">
+          키오스크에 휴대폰 번호를 입력했거나 웰체크 앱에 회원가입한 고객입니다.
+        </p>
       </div>
 
       {/* Table */}
@@ -155,6 +148,3 @@ export const PatientList: React.FC<PatientListProps> = ({ onPatientClick }) => {
   );
 };
 
-const HelpCircleIcon = ({ className }: { className?: string }) => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>
-);

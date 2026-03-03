@@ -7,8 +7,6 @@ import {
   Pill, 
   FileText, 
   Send, 
-  Mic, 
-  Video, 
   Paperclip,
   CheckCircle,
   MessageSquare,
@@ -831,14 +829,6 @@ export const PatientDetail: React.FC<PatientDetailProps> = ({ onBack, patientId 
                    통합 상담 채널
                  </h3>
                  <InfoTooltip text="웰체크 앱 > 주치의 메시지 > 약국명 채팅방" position="bottom" />
-             </div>
-             <div className="flex gap-2">
-                <button className="p-1.5 bg-white border border-gray-200 rounded text-gray-600 hover:text-blue-600 hover:border-blue-300">
-                    <Video size={16} />
-                </button>
-                <button className="p-1.5 bg-white border border-gray-200 rounded text-gray-600 hover:text-blue-600 hover:border-blue-300">
-                    <Mic size={16} />
-                </button>
              </div>
            </div>
 
