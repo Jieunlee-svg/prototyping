@@ -101,6 +101,7 @@ export const MyInfo: React.FC = () => {
                             <div className="flex items-center text-lg font-semibold text-gray-900">
                                 <User className="w-5 h-5 mr-2 text-blue-600" />
                                 계정 아이디
+                                <span className="ml-3 px-2 py-0.5 text-xs font-semibold text-indigo-600 bg-indigo-50 border border-indigo-100 rounded-full">엠서클 통합 회원</span>
                             </div>
                             {!isEditingId && (
                                 <button
