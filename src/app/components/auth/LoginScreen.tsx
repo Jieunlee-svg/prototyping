@@ -100,6 +100,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin }) => {
           </p>
           <button
             type="button"
+            onClick={() => window.location.href = 'https://mims-account.mcircle.co.kr/regist'}
             className="w-full bg-white border border-[#4460C3] text-[#4460C3] font-medium py-3.5 rounded-full hover:bg-blue-50 transition-colors"
           >
             통합회원 가입하기
