@@ -541,19 +541,12 @@ export const MedicationConsultationC = () => {
               {/* Cycle */}
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <label className="text-[15px] font-bold text-gray-800 flex items-center">
-                    복약 주기<span className="text-red-500 ml-0.5">*</span>
-                  </label>
+                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">복약 주기</label>
                   <button
                     onClick={() => setReminder({ ...reminder, isEveryday: !reminder.isEveryday, cycleDays: !reminder.isEveryday ? ['월', '화', '수', '목', '금', '토', '일'] : [] })}
-                    className="flex items-center gap-1.5 text-[15px] font-medium text-gray-800 transition-colors"
+                    className="flex items-center gap-1.5 text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
                   >
-                    <div className={clsx(
-                      "w-[22px] h-[22px] rounded-full flex items-center justify-center transition-colors border",
-                      reminder.isEveryday ? "bg-blue-500 border-blue-500 text-white" : "bg-white border-gray-300 text-transparent"
-                    )}>
-                      <Check className="w-3.5 h-3.5" strokeWidth={3} />
-                    </div>
+                    <CheckCircle className={clsx("w-4 h-4", reminder.isEveryday ? "text-blue-500" : "text-gray-300")} />
                     매일
                   </button>
                 </div>
@@ -569,10 +562,10 @@ export const MedicationConsultationC = () => {
                         setReminder({ ...reminder, cycleDays: newDays, isEveryday });
                       }}
                       className={clsx(
-                        "flex-1 aspect-square rounded-xl text-[15px] font-medium border transition-all flex items-center justify-center",
+                        "flex-1 py-2.5 rounded-lg text-sm font-medium border transition-all flex items-center justify-center",
                         reminder.cycleDays.includes(day)
-                          ? "bg-white text-blue-600 border-blue-500 ring-1 ring-blue-500/20"
-                          : "bg-white text-gray-400 border-gray-200 hover:bg-gray-50 hover:border-gray-300"
+                          ? "bg-white text-blue-600 border-blue-500 ring-1 ring-blue-500"
+                          : "bg-white text-gray-600 border-gray-200 hover:bg-gray-50 hover:border-gray-300"
                       )}
                     >
                       {day}
