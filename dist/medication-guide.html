@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>나의 복약 안내문</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    width: 210mm;
+    height: 297mm;
+    margin: 0 auto;
+  }
+
+  body {
+    font-family: 'Noto Sans KR', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+    background: #fff;
+    color: #222;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: column;
+    flex-direction: column;
+    padding: 14mm 16mm;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    flex-shrink: 0;
+    padding-bottom: 12px;
+    border-bottom: 2.5px solid #1a5276;
+    margin-bottom: 20px;
+  }
+  .header-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+  .header-title h1 {
+    font-size: 28px;
+    font-weight: 900;
+    color: #1a1a1a;
+    letter-spacing: -0.5px;
+  }
+  .patient-info {
+    font-size: 14px;
+    color: #333;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .patient-info strong { font-weight: 700; }
+  .patient-info span { color: #777; }
+
+  /* ── MAIN CONTENT ── */
+  .content {
+    -webkit-flex: 1;
+    flex: 1;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: column;
+    flex-direction: column;
+    -webkit-justify-content: space-between;
+    justify-content: space-between;
+    gap: 0;
+  }
+
+  /* ── SECTION TITLE ── */
+  .section-title {
+    font-size: 17px;
+    font-weight: 700;
+    color: #1a1a1a;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin-bottom: 10px;
+  }
+
+  /* ── TODAY'S MED ── */
+  .today-desc {
+    font-size: 15px;
+    color: #333;
+    padding-left: 28px;
+    line-height: 1.6;
+  }
+  .today-desc strong { font-weight: 900; color: #1a1a1a; }
+
+  /* ── WHEN CARDS ── */
+  .when-cards {
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: row;
+    flex-direction: row;
+    gap: 10px;
+  }
+  .when-card {
+    -webkit-flex: 1;
+    flex: 1;
+    border: 1.5px solid #dde3ea;
+    border-radius: 12px;
+    padding: 14px 10px;
+    text-align: center;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-direction: column;
+    flex-direction: column;
+    -webkit-align-items: center;
+    align-items: center;
+    -webkit-justify-content: center;
+    justify-content: center;
+    min-height: 100px;
+    background: #fff;
+  }
+  .when-card .label {
+    font-size: 12px; color: #888; margin-bottom: 4px; font-weight: 500;
+  }
+  .when-card .big-number {
+    font-size: 50px; font-weight: 900; color: #2980e8;
+    line-height: 1; letter-spacing: -2px;
+  }
+  .when-card .big-unit {
+    font-size: 34px; font-weight: 900; color: #2980e8; line-height: 1;
+  }
+  .when-card .sun-emoji { font-size: 48px; line-height: 1; }
+  .when-card .meal-row {
+    display: flex; align-items: center; gap: 8px; justify-content: center;
+  }
+  .when-card .meal-emoji { font-size: 32px; }
+  .when-card .arrow { font-size: 20px; color: #2980e8; font-weight: 700; }
+  .when-card .meal-text {
+    font-size: 30px; font-weight: 900; color: #2980e8;
+    line-height: 1; white-space: nowrap;
+  }
+
+  /* ── DRUG TABLE ── */
+  table.drug-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+  }
+  .drug-table th {
+    background: #1a5276;
+    color: #fff;
+    padding: 8px 10px;
+    font-weight: 700;
+    font-size: 13px;
+    text-align: left;
+  }
+  .drug-table th.center, .drug-table td.center { text-align: center; }
+  .drug-table td {
+    padding: 8px 10px;
+    border-bottom: 1px solid #e8edf2;
+    vertical-align: middle;
+  }
+  .drug-table tr:nth-child(odd) td { background: #f6f8fb; }
+  .drug-table tr:nth-child(even) td { background: #fff; }
+  .drug-name { font-weight: 700; color: #1a1a1a; }
+  .badge-new {
+    display: inline-block; background: #e67e22; color: #fff;
+    border-radius: 4px; font-size: 11px; font-weight: 700;
+    padding: 1px 6px; margin-right: 4px; vertical-align: middle;
+  }
+  .badge-warn {
+    display: inline-block; background: #e74c3c; color: #fff;
+    border-radius: 4px; font-size: 11px; font-weight: 700;
+    padding: 1px 6px; margin-right: 4px; vertical-align: middle;
+  }
+  .badge-stop {
+    display: inline-block; background: #95a5a6; color: #fff;
+    border-radius: 4px; font-size: 11px; font-weight: 700;
+    padding: 1px 6px; margin-right: 4px; vertical-align: middle;
+  }
+  .row-new td { background: #fef5ec !important; }
+  .row-warn td { background: #fdf0ef !important; }
+  .row-stop td { background: #f0f0f0 !important; color: #999 !important; }
+  .row-stop .drug-name { color: #999; text-decoration: line-through; }
+
+  /* ── NOTICE BOX ── */
+  .notice-box {
+    background: #fff;
+    border: 1.5px solid transparent;
+    border-radius: 12px;
+    padding: 14px 16px;
+  }
+  .notice-title {
+    font-size: 17px; font-weight: 700; color: #e74c3c;
+    margin-bottom: 10px; display: flex; align-items: center; gap: 6px;
+  }
+  .notice-box ul {
+    list-style: disc; padding-left: 18px;
+    font-size: 13.5px; color: #444; line-height: 1.85;
+  }
+
+  /* ── FOOTER ── */
+  .footer {
+    flex-shrink: 0;
+    margin-top: 20px;
+    padding-top: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 20px;
+  }
+  .qr-section {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-end;
+    gap: 10px;
+  }
+  .qr-box {
+    width: 80px; height: 80px;
+    border: 2px solid #333;
+    border-radius: 8px;
+    overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+    background: #fff;
+    flex-shrink: 0;
+  }
+  .qr-svg { width: 72px; height: 72px; }
+  .qr-label {
+    font-size: 12px; color: #555;
+    text-align: left; line-height: 1.6;
+  }
+  .supplement-section {
+    text-align: center;
+  }
+  .supplement-section .sup-title {
+    font-size: 12px; font-weight: 700; color: #1e7e34; margin-bottom: 4px;
+  }
+  .supplement-section .sup-items {
+    font-size: 12px; color: #333;
+  }
+  .pharmacy-info { text-align: right; }
+  .pharmacy-name {
+    font-size: 18px; font-weight: 900; color: #1a5276; margin-bottom: 4px;
+  }
+  .pharmacy-detail { font-size: 13px; color: #444; line-height: 1.8; }
+
+  @media print {
+    html, body { width: 210mm; height: 297mm; }
+    @page { size: A4; margin: 0; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<div class="header">
+  <p class="patient-info" style="margin-bottom:8px;">
+    <span></span>
+    <span>조제일: 2026년 2월 24일</span>
+  </p>
+  <div class="header-title">
+    <h1>홍길동 고객님,<br>오늘 받아 가시는 약은 이렇게 드세요.</h1>
+  </div>
+</div>
+
+<!-- ── CONTENT ── -->
+<div class="content">
+
+  <!-- 오늘 받으신 약은요 -->
+  <div>
+    <div class="section-title"><span>💊</span> 오늘 받으신 약은요</div>
+    <p class="today-desc">무릎 염증을 가라앉히고 통증을 잡아주는 약 <strong>5일치</strong> 입니다.</p>
+  </div>
+
+  <!-- 이렇게 드세요 -->
+  <div>
+    <div class="section-title"><span>⏰</span> 이렇게 드세요</div>
+    <div style="font-size:0; white-space:nowrap; margin-top:0;">
+      <div style="display:inline-block; width:32%; height:120px; vertical-align:top; border:1.5px solid #dde3ea; border-radius:12px; padding:14px 10px; text-align:center; background:#fff; box-sizing:border-box; margin-right:2%;">
+        <div style="font-size:12px; color:#888; margin-bottom:4px; font-weight:500;">하루</div>
+        <div style="font-size:0;">
+          <span style="font-size:50px; font-weight:900; color:#2980e8; line-height:1; letter-spacing:-2px;">3</span><span style="font-size:34px; font-weight:900; color:#2980e8; line-height:1;">번</span>
+        </div>
+      </div>
+      <div style="display:inline-block; width:32%; height:120px; vertical-align:top; border:1.5px solid #dde3ea; border-radius:12px; padding:10px 6px; text-align:center; background:#fff; box-sizing:border-box; margin-right:2%; font-size:14px;">
+        <table style="width:100%; border-collapse:collapse;">
+          <tr>
+            <td style="text-align:center; padding:0 2px;"><span style="font-size:11px; color:#e67e22; font-weight:700;">아침</span></td>
+            <td style="text-align:center; padding:0 2px;"><span style="font-size:11px; color:#2980e8; font-weight:700;">점심</span></td>
+            <td style="text-align:center; padding:0 2px;"><span style="font-size:11px; color:#7b5ea7; font-weight:700;">저녁</span></td>
+          </tr>
+          <tr>
+            <td style="text-align:center; padding:4px 2px 0;"><span style="font-size:34px; line-height:1;">☀️</span></td>
+            <td style="text-align:center; padding:4px 2px 0;"><span style="font-size:34px; line-height:1;">🌤️</span></td>
+            <td style="text-align:center; padding:4px 2px 0;"><span style="font-size:34px; line-height:1;">🌙</span></td>
+          </tr>
+        </table>
+      </div>
+      <div style="display:inline-block; width:32%; height:120px; vertical-align:top; border:1.5px solid #dde3ea; border-radius:12px; padding:14px 10px; text-align:center; background:#fff; box-sizing:border-box;">
+        <div style="font-size:0; margin-bottom:4px;">
+          <span style="font-size:32px;">💊</span>
+          <span style="font-size:20px; color:#2980e8; font-weight:700;"> → </span>
+          <span style="font-size:32px;">🍚</span>
+        </div>
+        <div style="font-size:30px; font-weight:900; color:#2980e8; line-height:1; white-space:nowrap;">식사 전</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 약마다 복용법이 달라요 -->
+  <div>
+    <div class="section-title"><span>📋</span> 약마다 복용법이 달라요</div>
+    <table class="drug-table">
+      <thead>
+        <tr>
+          <th class="center" style="width:30%">약 이름 (성분)</th>
+          <th class="center" style="width:30%">어떤 약인가요?</th>
+          <th class="center" style="width:40%">기타</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="background:#fff;"><div class="drug-name">케이페리정 50mg</div></td>
+          <td style="background:#fff;">동통성 근육 연축</td>
+          <td style="background:#fff;">취침 전 복용</td>
+        </tr>
+        <tr class="row-new">
+          <td>
+            <span class="badge-new">🆕 새로추가</span>
+            <div class="drug-name" style="color:#c0392b; margin-top:3px;">타이레놀정 500mg</div>
+          </td>
+          <td>해열 및 진통</td>
+          <td>5알 미만 복용</td>
+        </tr>
+        <tr class="row-warn">
+          <td>
+            <span class="badge-warn">⚠️ 주의</span>
+            <div class="drug-name" style="color:#c0392b; margin-top:3px;">와파린 2mg</div>
+          </td>
+          <td>혈액 응고 방지</td>
+          <td>증상이 없으면 복용하지 마세요</td>
+        </tr>
+        <tr>
+          <td><div class="drug-name">가스모틴정 5mg</div></td>
+          <td>기능성 소화불량의 증상 완화</td>
+          <td>2시간 마다</td>
+        </tr>
+        <tr class="row-stop">
+          <td>
+            <span class="badge-stop">❌ 중단</span>
+            <div class="drug-name">글리메피리드 1mg</div>
+          </td>
+          <td style="color:#aaa;">췌장의 인슐린 분비 촉진</td>
+          <td style="color:#aaa;">복용을 중단하세요</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 꼭 읽어주세요 -->
+  <div class="notice-box">
+    <div class="notice-title">⚠️ &nbsp;주의 해주세요</div>
+    <div>
+      <ul>
+        <li>자몽(주스)은 약 성분 흡수를 과하게 높여 부작용을 일으키니 피해주세요.</li>
+        <li>임의로 중단하면 내성이 생기거나 반동 작용이 오니 지시대로 다 드세요.</li>
+        <li>복용약과 상호작용을 고려해 <strong>"오메가 3"</strong>를 추천 드립니다.</li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+
+<!-- ── FOOTER ── -->
+<div class="footer" style="border-top: 2.5px solid #1a5276; padding-top: 14px;">
+  <!-- QR + 문구 -->
+  <div class="qr-section">
+    <div class="qr-box">
+      <svg class="qr-svg" viewBox="0 0 82 82" xmlns="http://www.w3.org/2000/svg" fill="#000">
+        <rect x="4" y="4" width="22" height="22" rx="2" fill="none" stroke="#000" stroke-width="2.5"/>
+        <rect x="9" y="9" width="12" height="12" rx="1"/>
+        <rect x="56" y="4" width="22" height="22" rx="2" fill="none" stroke="#000" stroke-width="2.5"/>
+        <rect x="61" y="9" width="12" height="12" rx="1"/>
+        <rect x="4" y="56" width="22" height="22" rx="2" fill="none" stroke="#000" stroke-width="2.5"/>
+        <rect x="9" y="61" width="12" height="12" rx="1"/>
+        <rect x="30" y="4" width="4" height="4"/><rect x="36" y="4" width="4" height="4"/>
+        <rect x="42" y="4" width="4" height="4"/><rect x="30" y="10" width="4" height="4"/>
+        <rect x="42" y="10" width="4" height="4"/><rect x="36" y="16" width="4" height="4"/>
+        <rect x="4" y="30" width="4" height="4"/><rect x="10" y="30" width="4" height="4"/>
+        <rect x="4" y="36" width="4" height="4"/><rect x="16" y="36" width="4" height="4"/>
+        <rect x="4" y="42" width="4" height="4"/><rect x="10" y="42" width="4" height="4"/>
+        <rect x="30" y="30" width="4" height="4"/><rect x="36" y="30" width="4" height="4"/>
+        <rect x="42" y="30" width="4" height="4"/><rect x="48" y="30" width="4" height="4"/>
+        <rect x="30" y="36" width="4" height="4"/><rect x="48" y="36" width="4" height="4"/>
+        <rect x="36" y="42" width="4" height="4"/><rect x="42" y="42" width="4" height="4"/>
+        <rect x="56" y="30" width="4" height="4"/><rect x="62" y="30" width="4" height="4"/>
+        <rect x="74" y="30" width="4" height="4"/><rect x="56" y="36" width="4" height="4"/>
+        <rect x="68" y="36" width="4" height="4"/><rect x="74" y="36" width="4" height="4"/>
+        <rect x="62" y="42" width="4" height="4"/><rect x="68" y="42" width="4" height="4"/>
+        <rect x="30" y="56" width="4" height="4"/><rect x="42" y="56" width="4" height="4"/>
+        <rect x="48" y="56" width="4" height="4"/><rect x="30" y="62" width="4" height="4"/>
+        <rect x="36" y="62" width="4" height="4"/><rect x="48" y="62" width="4" height="4"/>
+        <rect x="42" y="68" width="4" height="4"/><rect x="30" y="74" width="4" height="4"/>
+        <rect x="48" y="74" width="4" height="4"/><rect x="56" y="56" width="4" height="4"/>
+        <rect x="68" y="56" width="4" height="4"/><rect x="74" y="56" width="4" height="4"/>
+        <rect x="62" y="62" width="4" height="4"/><rect x="74" y="62" width="4" height="4"/>
+        <rect x="56" y="68" width="4" height="4"/><rect x="68" y="68" width="4" height="4"/>
+        <rect x="62" y="74" width="4" height="4"/><rect x="74" y="74" width="4" height="4"/>
+      </svg>
+    </div>
+    <div class="qr-label">약 드실 시간에<br>알려드릴게요!</div>
+  </div>
+
+
+  <!-- 약국 정보 -->
+  <div class="pharmacy-info">
+    <div class="pharmacy-name">웰체크 약국</div>
+    <div class="pharmacy-detail">
+      <div>📞 02-1234-5678</div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, X, Plus, Phone, Send, User, ChevronRight, Trash2, Bell, Clock, Info, CheckCircle, AlertCircle, Smartphone, Users, Calendar as CalendarIcon, Pill, FileText, Minus } from 'lucide-react';
+import { Search, X, Plus, Phone, Send, User, ChevronRight, Trash2, Bell, Clock, Info, CheckCircle, AlertCircle, Smartphone, Users, Calendar as CalendarIcon, Pill, FileText, Minus, Check } from 'lucide-react';
 import { clsx } from 'clsx';
 import { ImageWithFallback } from '../figma/ImageWithFallback';
 import { Calendar } from '../ui/calendar';
@@ -26,6 +26,8 @@ interface ReminderSettings {
   frequency: number; // 1, 2, 3
   times: string[]; // '아침', '점심', '저녁', '취침전'
   relation: string; // '식후 30분', '식전', '식후'
+  isEveryday: boolean;
+  cycleDays: string[];
 }
 
 const FREQUENCY_DEFAULTS: Record<number, { times: string[]; relation: string }> = {
@@ -103,22 +105,22 @@ const MOCK_DRUG_DB: DrugInfo[] = [
   }
 ];
 
-const FullDrugListModal = ({ 
-  isOpen, 
-  onClose, 
+const FullDrugListModal = ({
+  isOpen,
+  onClose,
   onSelect,
   selectedCodes
-}: { 
-  isOpen: boolean; 
-  onClose: () => void; 
+}: {
+  isOpen: boolean;
+  onClose: () => void;
   onSelect: (drug: DrugInfo) => void;
   selectedCodes: string[];
 }) => {
   const [query, setQuery] = useState('');
-  
+
   if (!isOpen) return null;
 
-  const filteredDrugs = MOCK_DRUG_DB.filter(d => 
+  const filteredDrugs = MOCK_DRUG_DB.filter(d =>
     d.name.includes(query) || d.company.includes(query)
   );
 
@@ -136,12 +138,12 @@ const FullDrugListModal = ({
             <X className="w-5 h-5" />
           </button>
         </div>
-        
+
         <div className="p-4 bg-gray-50 border-b border-gray-100">
           <div className="relative">
             <Search className="absolute left-3 top-2.5 w-4 h-4 text-gray-400" />
-            <input 
-              type="text" 
+            <input
+              type="text"
               placeholder="약품명, 성분명, 제약사, 증상, 모양, 색깔로 검색"
               className="w-full pl-9 pr-4 py-2 text-sm border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 outline-none bg-white"
               value={query}
@@ -156,12 +158,12 @@ const FullDrugListModal = ({
             {filteredDrugs.map((drug) => {
               const isSelected = selectedCodes.includes(drug.code);
               return (
-                <div 
-                  key={drug.code} 
+                <div
+                  key={drug.code}
                   className={clsx(
                     "flex items-center gap-4 p-3 rounded-lg border transition-all",
-                    isSelected 
-                      ? "bg-blue-50 border-blue-200 opacity-70" 
+                    isSelected
+                      ? "bg-blue-50 border-blue-200 opacity-70"
                       : "bg-white border-gray-200 hover:border-blue-300 hover:shadow-sm cursor-pointer"
                   )}
                   onClick={() => !isSelected && onSelect(drug)}
@@ -194,9 +196,9 @@ const FullDrugListModal = ({
             })}
           </div>
         </div>
-        
+
         <div className="p-4 border-t border-gray-100 bg-white flex justify-end">
-          <button 
+          <button
             onClick={onClose}
             className="px-6 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition-colors font-medium text-sm"
           >
@@ -211,7 +213,7 @@ const FullDrugListModal = ({
 export const MedicationConsultationC = () => {
   // --- State ---
   const [medicines, setMedicines] = useState<DrugInfo[]>([]);
-  
+
   // Search State
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<DrugInfo[]>([]);
@@ -220,6 +222,8 @@ export const MedicationConsultationC = () => {
     frequency: 3,
     times: FREQUENCY_DEFAULTS[3].times,
     relation: FREQUENCY_DEFAULTS[3].relation,
+    isEveryday: true,
+    cycleDays: ['월', '화', '수', '목', '금', '토', '일'],
   });
 
   const [startDate, setStartDate] = useState<Date>(new Date());
@@ -230,8 +234,8 @@ export const MedicationConsultationC = () => {
   const [recipientMode, setRecipientMode] = useState<'search' | 'direct'>('direct');
   const [patientSearchQuery, setPatientSearchQuery] = useState('');
   const [directPhone, setDirectPhone] = useState('');
-  const [selectedPatient, setSelectedPatient] = useState<{name: string, condition: string, phone: string, lastVisit: string} | null>(null);
-  
+  const [selectedPatient, setSelectedPatient] = useState<{ name: string, condition: string, phone: string, lastVisit: string } | null>(null);
+
   // App Notification Settings State
   const [sendAppReminder, setSendAppReminder] = useState(false);
 
@@ -261,24 +265,24 @@ export const MedicationConsultationC = () => {
   ];
   const searchPatientResults = patientSearchQuery.trim()
     ? MOCK_PATIENTS.filter(
-        p =>
-          p.name.includes(patientSearchQuery.trim()) ||
-          p.phone.replace(/\D/g, '').includes(patientSearchQuery.replace(/\D/g, ''))
-      )
+      p =>
+        p.name.includes(patientSearchQuery.trim()) ||
+        p.phone.replace(/\D/g, '').includes(patientSearchQuery.replace(/\D/g, ''))
+    )
     : [];
 
   // --- Effects ---
-  
+
   // Search Logic
   useEffect(() => {
     if (!searchQuery.trim()) {
       setSearchResults([]);
       return;
     }
-    
+
     const query = searchQuery.toLowerCase();
-    const results = MOCK_DRUG_DB.filter(d => 
-      d.name.toLowerCase().includes(query) || 
+    const results = MOCK_DRUG_DB.filter(d =>
+      d.name.toLowerCase().includes(query) ||
       d.company.toLowerCase().includes(query) ||
       d.category.toLowerCase().includes(query)
     );
@@ -292,14 +296,14 @@ export const MedicationConsultationC = () => {
       return;
     }
 
-    const medList = medicines.map((m, i) => `${i+1}. ${m.name} (${m.company})`).join('\n');
+    const medList = medicines.map((m, i) => `${i + 1}. ${m.name} (${m.company})`).join('\n');
     const times = reminder.times.join(', ');
     const usage = `하루 ${reminder.frequency}번, ${times} ${reminder.relation}에 복약하세요.`;
-    
+
     const precautions = medicines.map(m => `- ${m.name}: ${m.precautions}`).join('\n');
 
     const newMsg = `[복약 상담 안내]\n안녕하세요, ${pharmacyName}입니다.\n처방받으신 약품 안내드립니다.\n\n[처방 약품]\n${medList}\n\n[복약 알림 설정]\n${usage}\n\n[주의사항]\n${precautions}\n\n문의사항은 약국으로 연락주세요.`;
-    
+
     setMessage(newMsg);
   }, [medicines, reminder, pharmacyName]);
 
@@ -325,7 +329,7 @@ export const MedicationConsultationC = () => {
 
   return (
     <div className="flex h-full bg-background font-sans overflow-hidden">
-      <FullDrugListModal 
+      <FullDrugListModal
         isOpen={isFullListOpen}
         onClose={() => setIsFullListOpen(false)}
         onSelect={handleAddMedicine}
@@ -335,12 +339,12 @@ export const MedicationConsultationC = () => {
       {/* Left Column: Medication Selection & Reminder */}
       <div className="w-[500px] flex flex-col border-r border-border bg-gray-50/30 flex-shrink-0 h-full overflow-hidden">
         <div className="p-5 border-b border-border bg-white flex-shrink-0">
-                      <div className="flex items-center">
-              <Pill className="mr-2 text-primary w-5 h-5" />
-              <h1 className="text-xl font-bold text-foreground">복약 상담</h1>
-            </div>
+          <div className="flex items-center">
+            <Pill className="mr-2 text-primary w-5 h-5" />
+            <h1 className="text-xl font-bold text-foreground">복약 상담</h1>
+          </div>
         </div>
-        
+
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
           {/* Upper Left: Medication Selection & Search */}
           <div className="bg-card rounded-[var(--radius-card)] border border-border shadow-sm overflow-hidden flex flex-col min-h-[300px]">
@@ -358,16 +362,16 @@ export const MedicationConsultationC = () => {
             <div className="p-3 border-b border-border bg-white sticky top-0 z-10 flex gap-2">
               <div className="relative group focus-within:ring-2 focus-within:ring-primary/20 rounded-md transition-all flex-1">
                 <Search className="absolute left-3 top-2.5 w-4 h-4 text-gray-400 group-focus-within:text-primary transition-colors" />
-                <input 
-                  type="text" 
-                  placeholder="약품명, 성분명, 제약사 검색 (예: 타이레놀)" 
+                <input
+                  type="text"
+                  placeholder="약품명, 성분명, 제약사 검색 (예: 타이레놀)"
                   className="w-full pl-9 pr-8 py-2 text-sm border border-input rounded-md focus:border-primary outline-none bg-gray-50 focus:bg-white transition-all placeholder:text-gray-400"
                   value={searchQuery}
                   onChange={e => setSearchQuery(e.target.value)}
                   autoFocus
                 />
                 {searchQuery && (
-                  <button 
+                  <button
                     onClick={() => setSearchQuery('')}
                     className="absolute right-2 top-2 text-gray-400 hover:text-gray-600 p-0.5 rounded-full hover:bg-gray-100"
                   >
@@ -375,8 +379,8 @@ export const MedicationConsultationC = () => {
                   </button>
                 )}
               </div>
-              
-              <button 
+
+              <button
                 onClick={() => setIsFullListOpen(true)}
                 className="px-3 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-md border border-gray-200 transition-colors flex items-center gap-1.5 whitespace-nowrap"
                 title="전체 리스트 보기"
@@ -401,12 +405,12 @@ export const MedicationConsultationC = () => {
                     searchResults.map((drug) => {
                       const isSelected = medicines.some(m => m.code === drug.code);
                       return (
-                        <div 
-                          key={drug.code} 
+                        <div
+                          key={drug.code}
                           className={clsx(
                             "flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-all group",
-                            isSelected 
-                              ? "bg-blue-50 border-blue-200 opacity-60 cursor-default" 
+                            isSelected
+                              ? "bg-blue-50 border-blue-200 opacity-60 cursor-default"
                               : "bg-white border-border hover:border-primary hover:shadow-sm hover:translate-x-0.5"
                           )}
                           onClick={() => !isSelected && handleAddMedicine(drug)}
@@ -455,7 +459,7 @@ export const MedicationConsultationC = () => {
                                 <h4 className="font-bold text-foreground text-sm">{med.name}</h4>
                                 <p className="text-xs text-muted-foreground mt-0.5">{med.company}</p>
                               </div>
-                              <button 
+                              <button
                                 onClick={() => removeMedicine(med.code)}
                                 className="text-gray-400 hover:text-red-500 p-1 rounded-md hover:bg-red-50 transition-colors"
                               >
@@ -516,7 +520,7 @@ export const MedicationConsultationC = () => {
                       </div>
                       <p className="text-sm font-medium text-gray-600 mb-1">약품을 검색해보세요</p>
                       <p className="text-xs text-gray-400 text-center px-4">
-                        상단의 검색창에 약품명이나 성분을<br/>입력하여 추가할 수 있습니다.
+                        상단의 검색창에 약품명이나 성분을<br />입력하여 추가할 수 있습니다.
                       </p>
                     </div>
                   )}
@@ -534,196 +538,240 @@ export const MedicationConsultationC = () => {
               </h2>
             </div>
             <div className="p-4 space-y-6">
-               {/* Frequency */}
-               <div className="space-y-3">
-                 <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">복약 횟수</label>
-                 <div className="grid grid-cols-3 gap-2">
-                   {[1, 2, 3].map(freq => (
-                     <button
-                       key={freq}
-                       onClick={() => {
-                         const defaults = FREQUENCY_DEFAULTS[freq];
-                         setReminder({
-                           frequency: freq,
-                           times: defaults.times,
-                           relation: defaults.relation,
-                         });
-                       }}
-                       className={clsx(
-                         "py-2.5 rounded-lg text-sm font-medium border transition-all",
-                         reminder.frequency === freq 
-                           ? "bg-primary text-primary-foreground border-primary shadow-sm ring-1 ring-primary/20" 
-                           : "bg-white text-gray-600 border-gray-200 hover:bg-gray-50 hover:border-gray-300"
-                       )}
-                     >
-                       {freq}회
-                     </button>
-                   ))}
-                 </div>
-               </div>
+              {/* Cycle */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <label className="text-[15px] font-bold text-gray-800 flex items-center">
+                    복약 주기<span className="text-red-500 ml-0.5">*</span>
+                  </label>
+                  <button
+                    onClick={() => setReminder({ ...reminder, isEveryday: !reminder.isEveryday, cycleDays: !reminder.isEveryday ? ['월', '화', '수', '목', '금', '토', '일'] : [] })}
+                    className="flex items-center gap-1.5 text-[15px] font-medium text-gray-800 transition-colors"
+                  >
+                    <div className={clsx(
+                      "w-[22px] h-[22px] rounded-full flex items-center justify-center transition-colors border",
+                      reminder.isEveryday ? "bg-blue-500 border-blue-500 text-white" : "bg-white border-gray-300 text-transparent"
+                    )}>
+                      <Check className="w-3.5 h-3.5" strokeWidth={3} />
+                    </div>
+                    매일
+                  </button>
+                </div>
+                <div className="flex gap-2">
+                  {['월', '화', '수', '목', '금', '토', '일'].map(day => (
+                    <button
+                      key={day}
+                      onClick={() => {
+                        const newDays = reminder.cycleDays.includes(day)
+                          ? reminder.cycleDays.filter(d => d !== day)
+                          : [...reminder.cycleDays, day];
+                        const isEveryday = newDays.length === 7;
+                        setReminder({ ...reminder, cycleDays: newDays, isEveryday });
+                      }}
+                      className={clsx(
+                        "flex-1 aspect-square rounded-xl text-[15px] font-medium border transition-all flex items-center justify-center",
+                        reminder.cycleDays.includes(day)
+                          ? "bg-white text-blue-600 border-blue-500 ring-1 ring-blue-500/20"
+                          : "bg-white text-gray-400 border-gray-200 hover:bg-gray-50 hover:border-gray-300"
+                      )}
+                    >
+                      {day}
+                    </button>
+                  ))}
+                </div>
+              </div>
 
-               {/* Times */}
-               <div className="space-y-3">
-                 <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">복약 시간</label>
-                 <div className="grid grid-cols-4 gap-2">
-                   {['아침', '점심', '저녁', '취침전'].map(time => (
-                     <button
-                       key={time}
-                       onClick={() => toggleTime(time)}
-                       className={clsx(
-                         "py-2.5 rounded-lg text-sm font-medium border transition-all",
-                         reminder.times.includes(time)
-                           ? "bg-primary text-primary-foreground border-primary shadow-sm ring-1 ring-primary/20" 
-                           : "bg-white text-gray-600 border-gray-200 hover:bg-gray-50 hover:border-gray-300"
-                       )}
-                     >
-                       {time}
-                     </button>
-                   ))}
-                 </div>
-               </div>
+              {/* Frequency */}
+              <div className="space-y-3">
+                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">복약 횟수</label>
+                <div className="grid grid-cols-3 gap-2">
+                  {[1, 2, 3].map(freq => (
+                    <button
+                      key={freq}
+                      onClick={() => {
+                        const defaults = FREQUENCY_DEFAULTS[freq];
+                        setReminder({
+                          ...reminder,
+                          frequency: freq,
+                          times: defaults.times,
+                          relation: defaults.relation,
+                        });
+                      }}
+                      className={clsx(
+                        "py-2.5 rounded-lg text-sm font-medium border transition-all",
+                        reminder.frequency === freq
+                          ? "bg-primary text-primary-foreground border-primary shadow-sm ring-1 ring-primary/20"
+                          : "bg-white text-gray-600 border-gray-200 hover:bg-gray-50 hover:border-gray-300"
+                      )}
+                    >
+                      {freq}회
+                    </button>
+                  ))}
+                </div>
+              </div>
 
-               {/* Relation */}
-               <div className="space-y-3">
-                 <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">복약 시점</label>
-                 <div className="grid grid-cols-3 gap-2">
-                   {['식전', '식후', '식후 30분'].map(rel => (
-                     <button
-                       key={rel}
-                       onClick={() => setReminder({...reminder, relation: rel})}
-                       className={clsx(
-                         "py-2.5 rounded-lg text-sm font-medium border transition-all flex items-center justify-center whitespace-nowrap font-sans",
-                         reminder.relation === rel
-                           ? "bg-primary text-primary-foreground border-primary shadow-sm ring-1 ring-primary/20" 
-                           : "bg-white text-gray-600 border-gray-200 hover:bg-gray-50 hover:border-gray-300"
-                       )}
-                     >
-                       {rel}
-                     </button>
-                   ))}
-                 </div>
-               </div>
+              {/* Times */}
+              <div className="space-y-3">
+                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">복약 시간</label>
+                <div className="grid grid-cols-4 gap-2">
+                  {['아침', '점심', '저녁', '취침전'].map(time => (
+                    <button
+                      key={time}
+                      onClick={() => toggleTime(time)}
+                      className={clsx(
+                        "py-2.5 rounded-lg text-sm font-medium border transition-all",
+                        reminder.times.includes(time)
+                          ? "bg-primary text-primary-foreground border-primary shadow-sm ring-1 ring-primary/20"
+                          : "bg-white text-gray-600 border-gray-200 hover:bg-gray-50 hover:border-gray-300"
+                      )}
+                    >
+                      {time}
+                    </button>
+                  ))}
+                </div>
+              </div>
 
-               {/* Start Date & Duration in one row */}
-               <div className="flex gap-4">
-                 <div className="flex-1 space-y-3">
-                   <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">복약 시작일</label>
-                   <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
-                     <PopoverTrigger asChild>
-                       <button
-                         className="w-full flex items-center gap-2 px-3 py-2.5 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all text-left"
-                       >
-                         <CalendarIcon className="w-4 h-4 text-gray-400 flex-shrink-0" />
-                         <span className="truncate">{format(startDate, 'yyyy.M.d (EEE)', { locale: ko })}</span>
-                       </button>
-                     </PopoverTrigger>
-                     <PopoverContent className="w-auto p-0" align="start">
-                       <Calendar
-                         mode="single"
-                         selected={startDate}
-                         onSelect={(date) => {
-                           if (date) {
-                             setStartDate(date);
-                             setCalendarOpen(false);
-                           }
-                         }}
-                         locale={ko}
-                         initialFocus
-                       />
-                     </PopoverContent>
-                   </Popover>
-                 </div>
+              {/* Relation */}
+              <div className="space-y-3">
+                <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">복약 시점</label>
+                <div className="grid grid-cols-3 gap-2">
+                  {['식전', '식후', '식후 30분'].map(rel => (
+                    <button
+                      key={rel}
+                      onClick={() => setReminder({ ...reminder, relation: rel })}
+                      className={clsx(
+                        "py-2.5 rounded-lg text-sm font-medium border transition-all flex items-center justify-center whitespace-nowrap font-sans",
+                        reminder.relation === rel
+                          ? "bg-primary text-primary-foreground border-primary shadow-sm ring-1 ring-primary/20"
+                          : "bg-white text-gray-600 border-gray-200 hover:bg-gray-50 hover:border-gray-300"
+                      )}
+                    >
+                      {rel}
+                    </button>
+                  ))}
+                </div>
+              </div>
 
-                 <div className="w-[160px] space-y-3 flex-shrink-0">
-                   <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">복약 기간</label>
-                   <div className="flex items-center gap-1.5">
-                     <button
-                       onClick={() => setDurationDays(prev => Math.max(1, prev - 1))}
-                       className="w-9 h-[42px] rounded-lg border border-gray-200 bg-white hover:bg-gray-50 hover:border-gray-300 flex items-center justify-center transition-all text-gray-600 flex-shrink-0"
-                     >
-                       <Minus className="w-3.5 h-3.5" />
-                     </button>
-                     <div className="flex-1 relative">
-                       <input
-                         type="number"
-                         min={1}
-                         max={365}
-                         value={durationDays}
-                         onChange={(e) => {
-                           const val = parseInt(e.target.value);
-                           if (!isNaN(val) && val >= 1 && val <= 365) setDurationDays(val);
-                         }}
-                         className="w-full text-center py-2.5 text-sm font-medium border border-gray-200 rounded-lg bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
-                       />
-                       <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-gray-400 pointer-events-none">일</span>
-                     </div>
-                     <button
-                       onClick={() => setDurationDays(prev => Math.min(365, prev + 1))}
-                       className="w-9 h-[42px] rounded-lg border border-gray-200 bg-white hover:bg-gray-50 hover:border-gray-300 flex items-center justify-center transition-all text-gray-600 flex-shrink-0"
-                     >
-                       <Plus className="w-3.5 h-3.5" />
-                     </button>
-                   </div>
-                 </div>
-               </div>
+              {/* Start Date & Duration in one row */}
+              <div className="flex gap-4">
+                <div className="flex-1 space-y-3">
+                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">복약 시작일</label>
+                  <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
+                    <PopoverTrigger asChild>
+                      <button
+                        className="w-full flex items-center gap-2 px-3 py-2.5 bg-white border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 hover:border-gray-300 transition-all text-left"
+                      >
+                        <CalendarIcon className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                        <span className="truncate">{format(startDate, 'yyyy.M.d (EEE)', { locale: ko })}</span>
+                      </button>
+                    </PopoverTrigger>
+                    <PopoverContent className="w-auto p-0" align="start">
+                      <Calendar
+                        mode="single"
+                        selected={startDate}
+                        onSelect={(date) => {
+                          if (date) {
+                            setStartDate(date);
+                            setCalendarOpen(false);
+                          }
+                        }}
+                        locale={ko}
+                        initialFocus
+                      />
+                    </PopoverContent>
+                  </Popover>
+                </div>
 
-               {/* App Reminder Setting Toggle */}
-               <div className="pt-4 border-t border-gray-100">
-                 <div className="flex items-center justify-between mb-2">
-                   <label className="text-sm font-bold text-gray-800 flex items-center gap-1.5">
-                     <Smartphone className="w-4 h-4 text-blue-500" />
-                     웰체크 앱으로 설정 전송
-                   </label>
-                   <div 
-                     className={clsx(
-                       "relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 cursor-pointer",
-                       sendAppReminder ? "bg-blue-600" : "bg-gray-200"
-                     )}
-                     onClick={() => setSendAppReminder(!sendAppReminder)}
-                   >
-                     <span
-                       className={clsx(
-                         "inline-block h-4 w-4 transform rounded-full bg-white transition-transform",
-                         sendAppReminder ? "translate-x-6" : "translate-x-1"
-                       )}
-                     />
-                   </div>
-                 </div>
-                 
-                 {/* Default Help Message */}
-                 <p className="text-xs text-gray-400">
-                   웰체크 앱 가입자인 경우 복약 알림 설정 값을 전송합니다.
-                 </p>
+                <div className="w-[160px] space-y-3 flex-shrink-0">
+                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">복약 기간</label>
+                  <div className="flex items-center gap-1.5">
+                    <button
+                      onClick={() => setDurationDays(prev => Math.max(1, prev - 1))}
+                      className="w-9 h-[42px] rounded-lg border border-gray-200 bg-white hover:bg-gray-50 hover:border-gray-300 flex items-center justify-center transition-all text-gray-600 flex-shrink-0"
+                    >
+                      <Minus className="w-3.5 h-3.5" />
+                    </button>
+                    <div className="flex-1 relative">
+                      <input
+                        type="number"
+                        min={1}
+                        max={365}
+                        value={durationDays}
+                        onChange={(e) => {
+                          const val = parseInt(e.target.value);
+                          if (!isNaN(val) && val >= 1 && val <= 365) setDurationDays(val);
+                        }}
+                        className="w-full text-center py-2.5 text-sm font-medium border border-gray-200 rounded-lg bg-white focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                      />
+                      <span className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-gray-400 pointer-events-none">일</span>
+                    </div>
+                    <button
+                      onClick={() => setDurationDays(prev => Math.min(365, prev + 1))}
+                      className="w-9 h-[42px] rounded-lg border border-gray-200 bg-white hover:bg-gray-50 hover:border-gray-300 flex items-center justify-center transition-all text-gray-600 flex-shrink-0"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+              </div>
 
-                 {/* Extra Box and Controls when Toggle is ON */}
-                 {sendAppReminder && (
-                   <div className={clsx(
-                     "mt-3 p-3 rounded-lg animate-in fade-in slide-in-from-top-1 duration-200",
-                     appReminderHelperState === 'select' || appReminderHelperState === 'non_app'
-                       ? "bg-red-50 border border-red-200"
-                       : "bg-blue-50 border border-blue-100"
-                   )}>
-                     {appReminderHelperState === 'select' && (
-                       <p className="text-sm font-medium text-red-600 flex items-center gap-1.5">
-                         <Info className="w-4 h-4" />
-                         수신자를 선택하세요.
-                       </p>
-                     )}
-                     {appReminderHelperState === 'non_app' && (
-                       <p className="text-sm font-medium text-red-600 flex items-center gap-1.5">
-                         <AlertCircle className="w-4 h-4" />
-                         웰체크 앱 미가입자입니다. 문자/알림톡으로만 발송됩니다.
-                       </p>
-                     )}
-                     {appReminderHelperState === 'app' && (
-                       <p className="text-sm font-medium text-blue-800 flex items-center gap-1.5">
-                         <CheckCircle className="w-4 h-4" />
-                         웰체크 앱 가입자입니다. 복약 설정이 앱으로 자동 연동됩니다.
-                       </p>
-                     )}
-                   </div>
-                 )}
-               </div>
+              {/* App Reminder Setting Toggle */}
+              <div className="pt-4 border-t border-gray-100">
+                <div className="flex items-center justify-between mb-2">
+                  <label className="text-sm font-bold text-gray-800 flex items-center gap-1.5">
+                    <Smartphone className="w-4 h-4 text-blue-500" />
+                    웰체크 앱으로 설정 전송
+                  </label>
+                  <div
+                    className={clsx(
+                      "relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 cursor-pointer",
+                      sendAppReminder ? "bg-blue-600" : "bg-gray-200"
+                    )}
+                    onClick={() => setSendAppReminder(!sendAppReminder)}
+                  >
+                    <span
+                      className={clsx(
+                        "inline-block h-4 w-4 transform rounded-full bg-white transition-transform",
+                        sendAppReminder ? "translate-x-6" : "translate-x-1"
+                      )}
+                    />
+                  </div>
+                </div>
+
+                {/* Default Help Message */}
+                <p className="text-xs text-gray-400">
+                  웰체크 앱 가입자인 경우 복약 알림 설정 값을 전송합니다.
+                </p>
+
+                {/* Extra Box and Controls when Toggle is ON */}
+                {sendAppReminder && (
+                  <div className={clsx(
+                    "mt-3 p-3 rounded-lg animate-in fade-in slide-in-from-top-1 duration-200",
+                    appReminderHelperState === 'select' || appReminderHelperState === 'non_app'
+                      ? "bg-red-50 border border-red-200"
+                      : "bg-blue-50 border border-blue-100"
+                  )}>
+                    {appReminderHelperState === 'select' && (
+                      <p className="text-sm font-medium text-red-600 flex items-center gap-1.5">
+                        <Info className="w-4 h-4" />
+                        수신자를 선택하세요.
+                      </p>
+                    )}
+                    {appReminderHelperState === 'non_app' && (
+                      <p className="text-sm font-medium text-red-600 flex items-center gap-1.5">
+                        <AlertCircle className="w-4 h-4" />
+                        웰체크 앱 미가입자입니다. 문자/알림톡으로만 발송됩니다.
+                      </p>
+                    )}
+                    {appReminderHelperState === 'app' && (
+                      <p className="text-sm font-medium text-blue-800 flex items-center gap-1.5">
+                        <CheckCircle className="w-4 h-4" />
+                        웰체크 앱 가입자입니다. 복약 설정이 앱으로 자동 연동됩니다.
+                      </p>
+                    )}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -731,214 +779,214 @@ export const MedicationConsultationC = () => {
 
       {/* Middle Column: Consultation Content Preview */}
       <div className="flex-1 flex flex-col min-w-0 bg-white relative h-full overflow-hidden">
-         <div className="p-5 border-b border-border flex justify-between items-center flex-shrink-0 h-[72px]">
-             <h2 className="text-lg font-bold text-foreground flex items-center">
+        <div className="p-5 border-b border-border flex justify-between items-center flex-shrink-0 h-[72px]">
+          <h2 className="text-lg font-bold text-foreground flex items-center">
             <FileText className="mr-2 text-primary w-5 h-5" />
             상담 내용 미리보기
           </h2>
-         </div>
-         
-         <div className="flex-1 p-6 overflow-y-auto bg-gray-50/30">
-             <div className="h-full flex flex-col gap-4 max-w-3xl mx-auto">
-                 <div className="flex-1 border border-input rounded-xl bg-white shadow-sm overflow-hidden flex flex-col focus-within:ring-2 focus-within:ring-ring/50 transition-all">
-                    <div className="p-3 bg-gray-50 border-b border-gray-100 flex flex-col gap-3 shrink-0">
-                      {medicines.length > 0 ? (
-                        <>
-                          <div className="flex items-center gap-1.5 mb-0.5">
-                            <span className="text-[10px] font-bold uppercase tracking-wider text-blue-600 flex items-center gap-1">
-                              <Pill className="w-3 h-3" />
-                              스마트 태그
-                            </span>
-                            <span className="text-[10px] text-gray-400">— 선택 약물 기반 추천</span>
-                          </div>
-                          <div className="flex gap-2 flex-wrap">
-                            {Array.from(new Set(medicines.flatMap(m => m.smartTags || []))).map(phrase => (
-                              <button
-                                key={phrase}
-                                onClick={() => setMessage(prev => prev + `\n- ${phrase}`)}
-                                className="px-3 py-1.5 text-xs bg-blue-50 hover:bg-blue-100 text-blue-700 hover:text-blue-800 rounded-full transition-colors font-semibold border border-blue-200 hover:border-blue-300 shadow-sm"
-                              >
-                                + {phrase}
-                              </button>
-                            ))}
-                          </div>
-                        </>
-                      ) : (
-                        <div className="flex gap-2 flex-wrap">
-                          {[
-                            '식후 30분 복약하세요',
-                            '졸음이 올 수 있습니다',
-                            '충분한 물과 함께 드세요',
-                            '음주를 피하세요',
-                            '하루 3번 복약하세요',
-                            '증상이 호전되면 중단하세요'
-                          ].map(phrase => (
-                            <button
-                              key={phrase}
-                              onClick={() => setMessage(prev => prev + `\n- ${phrase}`)}
-                              className="px-3 py-1.5 text-xs bg-white hover:bg-blue-50 text-gray-600 hover:text-blue-600 rounded-full transition-colors font-medium border border-gray-200 hover:border-blue-200 shadow-sm"
-                            >
-                              + {phrase}
-                            </button>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                    <textarea 
-                      value={message}
-                      onChange={(e) => setMessage(e.target.value)}
-                      className="flex-1 w-full p-6 bg-transparent resize-none outline-none text-base leading-relaxed text-gray-800 placeholder:text-gray-300"
-                      placeholder="약품을 추가하면 상담 내용이 자동으로 작성됩니다."
-                    />
-                    <div className="px-3 py-2 bg-gray-50 border-t border-gray-100 shrink-0">
-                      <div className="text-xs text-gray-400 text-right">
-                        {message.length}자 작성됨
-                      </div>
-                    </div>
-                 </div>
-                 
-                 {/* Static Tips Removed */}
+        </div>
 
-             </div>
-         </div>
+        <div className="flex-1 p-6 overflow-y-auto bg-gray-50/30">
+          <div className="h-full flex flex-col gap-4 max-w-3xl mx-auto">
+            <div className="flex-1 border border-input rounded-xl bg-white shadow-sm overflow-hidden flex flex-col focus-within:ring-2 focus-within:ring-ring/50 transition-all">
+              <div className="p-3 bg-gray-50 border-b border-gray-100 flex flex-col gap-3 shrink-0">
+                {medicines.length > 0 ? (
+                  <>
+                    <div className="flex items-center gap-1.5 mb-0.5">
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-blue-600 flex items-center gap-1">
+                        <Pill className="w-3 h-3" />
+                        스마트 태그
+                      </span>
+                      <span className="text-[10px] text-gray-400">— 선택 약물 기반 추천</span>
+                    </div>
+                    <div className="flex gap-2 flex-wrap">
+                      {Array.from(new Set(medicines.flatMap(m => m.smartTags || []))).map(phrase => (
+                        <button
+                          key={phrase}
+                          onClick={() => setMessage(prev => prev + `\n- ${phrase}`)}
+                          className="px-3 py-1.5 text-xs bg-blue-50 hover:bg-blue-100 text-blue-700 hover:text-blue-800 rounded-full transition-colors font-semibold border border-blue-200 hover:border-blue-300 shadow-sm"
+                        >
+                          + {phrase}
+                        </button>
+                      ))}
+                    </div>
+                  </>
+                ) : (
+                  <div className="flex gap-2 flex-wrap">
+                    {[
+                      '식후 30분 복약하세요',
+                      '졸음이 올 수 있습니다',
+                      '충분한 물과 함께 드세요',
+                      '음주를 피하세요',
+                      '하루 3번 복약하세요',
+                      '증상이 호전되면 중단하세요'
+                    ].map(phrase => (
+                      <button
+                        key={phrase}
+                        onClick={() => setMessage(prev => prev + `\n- ${phrase}`)}
+                        className="px-3 py-1.5 text-xs bg-white hover:bg-blue-50 text-gray-600 hover:text-blue-600 rounded-full transition-colors font-medium border border-gray-200 hover:border-blue-200 shadow-sm"
+                      >
+                        + {phrase}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+              <textarea
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                className="flex-1 w-full p-6 bg-transparent resize-none outline-none text-base leading-relaxed text-gray-800 placeholder:text-gray-300"
+                placeholder="약품을 추가하면 상담 내용이 자동으로 작성됩니다."
+              />
+              <div className="px-3 py-2 bg-gray-50 border-t border-gray-100 shrink-0">
+                <div className="text-xs text-gray-400 text-right">
+                  {message.length}자 작성됨
+                </div>
+              </div>
+            </div>
+
+            {/* Static Tips Removed */}
+
+          </div>
+        </div>
       </div>
 
       {/* Right Column: Customer Info */}
       <div className="w-[400px] bg-white border-l border-border flex flex-col shadow-sm shrink-0 h-full overflow-hidden z-10">
-         {/* 타이틀 영역 */}
-         <div className="p-5 border-b border-border h-[72px] flex items-center">
-            <h3 className="text-lg font-bold text-foreground flex items-center">
-              <User className="mr-2 text-primary w-5 h-5" />
-              받는 사람
-            </h3>
-         </div>
+        {/* 타이틀 영역 */}
+        <div className="p-5 border-b border-border h-[72px] flex items-center">
+          <h3 className="text-lg font-bold text-foreground flex items-center">
+            <User className="mr-2 text-primary w-5 h-5" />
+            받는 사람
+          </h3>
+        </div>
 
-         {/* 모드 전환 탭 (직접 입력 vs 단골 검색) */}
-         <div className="p-2 bg-gray-50 flex gap-1 m-4 rounded-lg border border-border">
-            <button
-              onClick={() => setRecipientMode('direct')}
-              className={clsx(
-                "flex-1 py-2 text-xs font-medium rounded-md transition-all flex items-center justify-center gap-1",
-                recipientMode === 'direct' ? "bg-white text-primary shadow-sm border border-border" : "text-muted-foreground hover:text-foreground"
-              )}
-            >
-              <Smartphone className="w-3.5 h-3.5" /> 직접 입력
-            </button>
-            <button
-              onClick={() => setRecipientMode('search')}
-              className={clsx(
-                "flex-1 py-2 text-xs font-medium rounded-md transition-all flex items-center justify-center gap-1",
-                recipientMode === 'search' ? "bg-white text-primary shadow-sm border border-border" : "text-muted-foreground hover:text-foreground"
-              )}
-            >
-              <Users className="w-3.5 h-3.5" /> 단골 검색
-            </button>
-         </div>
-
-         <div className="flex-1 px-5 pb-5 overflow-y-auto">
-            {/* CASE 1: 단골 검색 모드 */}
-            {recipientMode === 'search' ? (
-              <div className="space-y-4">
-                <div className="relative">
-                  <input 
-                    type="text" 
-                    value={patientSearchQuery}
-                    onChange={(e) => setPatientSearchQuery(e.target.value)}
-                    className="w-full pl-9 pr-3 py-2 bg-white border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
-                    placeholder="이름/번호 검색"
-                  />
-                  <Search className="absolute left-3 top-2.5 text-muted-foreground w-4 h-4" />
-                </div>
-
-                {selectedPatient ? (
-                  /* 선택된 환자 정보 카드 */
-                  <div className="bg-blue-50 p-4 rounded-xl border border-blue-100">
-                    <div className="flex justify-between items-start mb-2">
-                      <span className="font-bold text-blue-900">{selectedPatient.name}</span>
-                    </div>
-                    <div className="space-y-2 text-xs text-blue-800/80">
-                      <div className="flex items-center"><Phone className="mr-2 w-3 h-3" />{selectedPatient.phone}</div>
-                      <div className="flex items-center"><CalendarIcon className="mr-2 w-3 h-3" />최근: {selectedPatient.lastVisit}</div>
-                    </div>
-                    <button 
-                      onClick={() => setSelectedPatient(null)}
-                      className="mt-3 w-full py-1.5 text-xs text-red-500 hover:bg-red-50 rounded border border-transparent hover:border-red-100 transition-colors"
-                    >
-                      선택 취소
-                    </button>
-                  </div>
-                ) : searchPatientResults.length > 0 ? (
-                  <div className="space-y-2">
-                    {searchPatientResults.map((p) => (
-                      <button
-                        key={p.phone}
-                        type="button"
-                        onClick={() => setSelectedPatient(p)}
-                        className="w-full text-left p-3 rounded-lg border border-gray-200 bg-white hover:bg-blue-50 hover:border-blue-200 transition-colors"
-                      >
-                        <div className="font-medium text-gray-900">{p.name}</div>
-                        <div className="text-xs text-gray-500 mt-0.5">
-                          {p.phone} · {p.condition}
-                        </div>
-                      </button>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-8 text-muted-foreground bg-gray-50 rounded-xl border border-dashed text-xs border-gray-200">
-                    {patientSearchQuery.trim() ? '검색 결과 없음' : '이름 또는 휴대폰 번호를 검색해주세요'}
-                  </div>
-                )}
-              </div>
-            ) : (
-              /* CASE 2: 직접 입력 모드 (전화번호 자동 포맷팅 포함) */
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-xs font-bold text-muted-foreground mb-1.5 uppercase tracking-wider">휴대폰 번호</label>
-                  <input 
-                    type="tel" 
-                    value={directPhone}
-                    maxLength={13}
-                    onChange={(e) => {
-                      const raw = e.target.value.replace(/[^0-9]/g, '');
-                      let formatted = raw;
-                      if (raw.length > 3 && raw.length <= 7) formatted = `${raw.slice(0, 3)}-${raw.slice(3)}`;
-                      else if (raw.length > 7) formatted = `${raw.slice(0, 3)}-${raw.slice(3, 7)}-${raw.slice(7, 11)}`;
-                      setDirectPhone(formatted);
-                    }}
-                    className="w-full px-3 py-2.5 bg-white border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
-                    placeholder="010-0000-0000"
-                  />
-                  <p className="mt-2 text-xs text-muted-foreground flex items-center gap-1">
-                    <Info className="w-3 h-3" />
-                    메시지는 카카오 알림톡으로 우선 발송되며, 실패 시 문자로 발송됩니다.
-                  </p>
-                </div>
-              </div>
+        {/* 모드 전환 탭 (직접 입력 vs 단골 검색) */}
+        <div className="p-2 bg-gray-50 flex gap-1 m-4 rounded-lg border border-border">
+          <button
+            onClick={() => setRecipientMode('direct')}
+            className={clsx(
+              "flex-1 py-2 text-xs font-medium rounded-md transition-all flex items-center justify-center gap-1",
+              recipientMode === 'direct' ? "bg-white text-primary shadow-sm border border-border" : "text-muted-foreground hover:text-foreground"
             )}
-         </div>
+          >
+            <Smartphone className="w-3.5 h-3.5" /> 직접 입력
+          </button>
+          <button
+            onClick={() => setRecipientMode('search')}
+            className={clsx(
+              "flex-1 py-2 text-xs font-medium rounded-md transition-all flex items-center justify-center gap-1",
+              recipientMode === 'search' ? "bg-white text-primary shadow-sm border border-border" : "text-muted-foreground hover:text-foreground"
+            )}
+          >
+            <Users className="w-3.5 h-3.5" /> 단골 검색
+          </button>
+        </div>
 
-         {/* 전송 버튼 활성화 로직 */}
-         <div className="p-5 border-t border-gray-100 bg-gray-50/50">
-           <button
-             disabled={!(message.trim().length > 0 && (recipientMode === 'search' ? !!selectedPatient : directPhone.trim().length > 0))}
-             className={clsx(
-               "w-full py-3.5 text-sm font-bold rounded-xl flex items-center justify-center shadow-lg transition-all",
-               (message.trim().length > 0 && (recipientMode === 'search' ? !!selectedPatient : directPhone.trim().length > 0))
-                 ? "text-primary-foreground bg-primary hover:bg-blue-600 hover:shadow-xl hover:translate-y-[-1px] active:translate-y-[0px]" 
-                 : "text-muted-foreground bg-gray-200 cursor-not-allowed shadow-none"
-             )}
-             onClick={() => {
-                let msg = '메시지가 전송되었습니다.';
-                if (sendAppReminder && appReminderHelperState === 'app') {
-                  msg += '\n(앱 알림 설정값 포함)';
-                }
-                alert(msg);
-             }}
-           >
-             <Send className="w-4 h-4 mr-2" /> 상담 메시지 전송
-           </button>
+        <div className="flex-1 px-5 pb-5 overflow-y-auto">
+          {/* CASE 1: 단골 검색 모드 */}
+          {recipientMode === 'search' ? (
+            <div className="space-y-4">
+              <div className="relative">
+                <input
+                  type="text"
+                  value={patientSearchQuery}
+                  onChange={(e) => setPatientSearchQuery(e.target.value)}
+                  className="w-full pl-9 pr-3 py-2 bg-white border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+                  placeholder="이름/번호 검색"
+                />
+                <Search className="absolute left-3 top-2.5 text-muted-foreground w-4 h-4" />
+              </div>
 
-         </div>
+              {selectedPatient ? (
+                /* 선택된 환자 정보 카드 */
+                <div className="bg-blue-50 p-4 rounded-xl border border-blue-100">
+                  <div className="flex justify-between items-start mb-2">
+                    <span className="font-bold text-blue-900">{selectedPatient.name}</span>
+                  </div>
+                  <div className="space-y-2 text-xs text-blue-800/80">
+                    <div className="flex items-center"><Phone className="mr-2 w-3 h-3" />{selectedPatient.phone}</div>
+                    <div className="flex items-center"><CalendarIcon className="mr-2 w-3 h-3" />최근: {selectedPatient.lastVisit}</div>
+                  </div>
+                  <button
+                    onClick={() => setSelectedPatient(null)}
+                    className="mt-3 w-full py-1.5 text-xs text-red-500 hover:bg-red-50 rounded border border-transparent hover:border-red-100 transition-colors"
+                  >
+                    선택 취소
+                  </button>
+                </div>
+              ) : searchPatientResults.length > 0 ? (
+                <div className="space-y-2">
+                  {searchPatientResults.map((p) => (
+                    <button
+                      key={p.phone}
+                      type="button"
+                      onClick={() => setSelectedPatient(p)}
+                      className="w-full text-left p-3 rounded-lg border border-gray-200 bg-white hover:bg-blue-50 hover:border-blue-200 transition-colors"
+                    >
+                      <div className="font-medium text-gray-900">{p.name}</div>
+                      <div className="text-xs text-gray-500 mt-0.5">
+                        {p.phone} · {p.condition}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-8 text-muted-foreground bg-gray-50 rounded-xl border border-dashed text-xs border-gray-200">
+                  {patientSearchQuery.trim() ? '검색 결과 없음' : '이름 또는 휴대폰 번호를 검색해주세요'}
+                </div>
+              )}
+            </div>
+          ) : (
+            /* CASE 2: 직접 입력 모드 (전화번호 자동 포맷팅 포함) */
+            <div className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-muted-foreground mb-1.5 uppercase tracking-wider">휴대폰 번호</label>
+                <input
+                  type="tel"
+                  value={directPhone}
+                  maxLength={13}
+                  onChange={(e) => {
+                    const raw = e.target.value.replace(/[^0-9]/g, '');
+                    let formatted = raw;
+                    if (raw.length > 3 && raw.length <= 7) formatted = `${raw.slice(0, 3)}-${raw.slice(3)}`;
+                    else if (raw.length > 7) formatted = `${raw.slice(0, 3)}-${raw.slice(3, 7)}-${raw.slice(7, 11)}`;
+                    setDirectPhone(formatted);
+                  }}
+                  className="w-full px-3 py-2.5 bg-white border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
+                  placeholder="010-0000-0000"
+                />
+                <p className="mt-2 text-xs text-muted-foreground flex items-center gap-1">
+                  <Info className="w-3 h-3" />
+                  메시지는 카카오 알림톡으로 우선 발송되며, 실패 시 문자로 발송됩니다.
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* 전송 버튼 활성화 로직 */}
+        <div className="p-5 border-t border-gray-100 bg-gray-50/50">
+          <button
+            disabled={!(message.trim().length > 0 && (recipientMode === 'search' ? !!selectedPatient : directPhone.trim().length > 0))}
+            className={clsx(
+              "w-full py-3.5 text-sm font-bold rounded-xl flex items-center justify-center shadow-lg transition-all",
+              (message.trim().length > 0 && (recipientMode === 'search' ? !!selectedPatient : directPhone.trim().length > 0))
+                ? "text-primary-foreground bg-primary hover:bg-blue-600 hover:shadow-xl hover:translate-y-[-1px] active:translate-y-[0px]"
+                : "text-muted-foreground bg-gray-200 cursor-not-allowed shadow-none"
+            )}
+            onClick={() => {
+              let msg = '메시지가 전송되었습니다.';
+              if (sendAppReminder && appReminderHelperState === 'app') {
+                msg += '\n(앱 알림 설정값 포함)';
+              }
+              alert(msg);
+            }}
+          >
+            <Send className="w-4 h-4 mr-2" /> 상담 메시지 전송
+          </button>
+
+        </div>
       </div>
     </div>
   );
