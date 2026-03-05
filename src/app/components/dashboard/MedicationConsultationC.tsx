@@ -538,42 +538,6 @@ export const MedicationConsultationC = () => {
               </h2>
             </div>
             <div className="p-4 space-y-6">
-              {/* Cycle */}
-              <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">복약 주기</label>
-                  <button
-                    onClick={() => setReminder({ ...reminder, isEveryday: !reminder.isEveryday, cycleDays: !reminder.isEveryday ? ['월', '화', '수', '목', '금', '토', '일'] : [] })}
-                    className="flex items-center gap-1.5 text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors"
-                  >
-                    <CheckCircle className={clsx("w-4 h-4", reminder.isEveryday ? "text-blue-500" : "text-gray-300")} />
-                    매일
-                  </button>
-                </div>
-                <div className="flex gap-2">
-                  {['월', '화', '수', '목', '금', '토', '일'].map(day => (
-                    <button
-                      key={day}
-                      onClick={() => {
-                        const newDays = reminder.cycleDays.includes(day)
-                          ? reminder.cycleDays.filter(d => d !== day)
-                          : [...reminder.cycleDays, day];
-                        const isEveryday = newDays.length === 7;
-                        setReminder({ ...reminder, cycleDays: newDays, isEveryday });
-                      }}
-                      className={clsx(
-                        "flex-1 py-2.5 rounded-lg text-sm font-medium border transition-all flex items-center justify-center",
-                        reminder.cycleDays.includes(day)
-                          ? "bg-white text-blue-600 border-blue-500 ring-1 ring-blue-500"
-                          : "bg-white text-gray-600 border-gray-200 hover:bg-gray-50 hover:border-gray-300"
-                      )}
-                    >
-                      {day}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
               {/* Frequency */}
               <div className="space-y-3">
                 <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">복약 횟수</label>
