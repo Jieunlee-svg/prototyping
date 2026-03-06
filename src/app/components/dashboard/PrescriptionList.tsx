@@ -252,74 +252,55 @@ export const PrescriptionList: React.FC = () => {
         </div>
       </header>
 
-      {/* Filters & Actions */}
-      <div className="px-6 pt-4 pb-2 flex items-center gap-2">
-        <div className="bg-white rounded-lg border border-gray-200 p-1 flex">
-          <button
-            onClick={() => setFilter('all')}
-            className={clsx(
-              "px-3 py-1.5 text-sm font-medium rounded-md transition-colors",
-              filter === 'all' ? "bg-blue-50 text-blue-600" : "text-gray-600 hover:bg-gray-50"
-            )}
+      {/* Filter & Search Toolbar */}
+      <div className="px-6 py-2.5 bg-white border-b border-gray-100 flex items-center justify-between gap-3">
+        {/* Left: filter chips */}
+        <div className="flex items-center gap-1.5 flex-wrap">
+          {([
+            { value: 'all', label: '전체', icon: undefined as React.ReactNode },
+            { value: 'app_camera', label: '고객 앱', icon: <Camera size={13} /> as React.ReactNode },
+            { value: 'fax_telemed', label: '의사 웹', icon: <Printer size={13} /> as React.ReactNode },
+            { value: 'kiosk', label: '키오스크', icon: <Monitor size={13} /> as React.ReactNode },
+          ]).map(({ value, label, icon }) => (
+            <button
+              key={value}
+              onClick={() => setFilter(value as 'all' | 'app_camera' | 'fax_telemed' | 'kiosk')}
+              className={clsx(
+                'inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[13px] font-medium border transition-all',
+                filter === value
+                  ? 'border-blue-500 text-blue-600 bg-blue-50'
+                  : 'border-gray-200 text-gray-500 bg-white hover:border-gray-400 hover:text-gray-700'
+              )}
+            >
+              {icon}
+              {label}
+            </button>
+          ))}
+          <div className="w-px h-4 bg-gray-200 mx-1" />
+          <select
+            className="text-[13px] border border-gray-200 text-gray-500 rounded-full px-3 py-1 bg-white focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none cursor-pointer"
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value as any)}
           >
-            전체
-          </button>
-          <button
-            onClick={() => setFilter('app_camera')}
-            className={clsx(
-              "px-3 py-1.5 text-sm font-medium rounded-md transition-colors flex items-center gap-1.5",
-              filter === 'app_camera' ? "bg-blue-50 text-blue-600" : "text-gray-600 hover:bg-gray-50"
-            )}
-          >
-            <Camera size={14} />
-            고객 앱
-          </button>
-          <button
-            onClick={() => setFilter('fax_telemed')}
-            className={clsx(
-              "px-3 py-1.5 text-sm font-medium rounded-md transition-colors flex items-center gap-1.5",
-              filter === 'fax_telemed' ? "bg-blue-50 text-blue-600" : "text-gray-600 hover:bg-gray-50"
-            )}
-          >
-            <Printer size={14} />
-            의사 웹
-          </button>
-          <button
-            onClick={() => setFilter('kiosk')}
-            className={clsx(
-              "px-3 py-1.5 text-sm font-medium rounded-md transition-colors flex items-center gap-1.5",
-              filter === 'kiosk' ? "bg-blue-50 text-blue-600" : "text-gray-600 hover:bg-gray-50"
-            )}
-          >
-            <Monitor size={14} />
-            키오스크
-          </button>
+            <option value="all">모든 상태</option>
+            <option value="received">접수</option>
+            <option value="dispensing">조제중</option>
+            <option value="done">조제완료</option>
+          </select>
         </div>
-        <div className="h-6 w-px bg-gray-300 mx-1"></div>
-        <select
-          className="bg-white border border-gray-300 text-gray-700 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block px-2.5 py-1.5"
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value as any)}
-        >
-          <option value="all">모든 상태</option>
-          <option value="received">접수</option>
-          <option value="dispensing">조제중</option>
-          <option value="done">조제완료</option>
-        </select>
-      </div>
-
-      <div className="px-6 pb-4 flex items-center justify-between gap-4">
-        <h3 className="font-bold text-gray-800 shrink-0">
-          총 처방전 접수 <span className="text-blue-600">({MOCK_PRESCRIPTIONS.length}건)</span>
-        </h3>
-
-        <div className="relative w-64">
-          <input
-            type="text"
-            placeholder="고객명, 병원명 검색"
-            className="w-full pl-9 pr-3 py-2 bg-white border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
-          <Search className="absolute left-3 top-2.5 text-gray-400" size={16} />
+        {/* Right: count + search */}
+        <div className="flex items-center gap-3 flex-shrink-0">
+          <span className="text-[13px] text-gray-400">
+            총 <span className="text-blue-600 font-semibold">{MOCK_PRESCRIPTIONS.length}</span>건
+          </span>
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="고객명, 병원명 검색"
+              className="w-52 pl-8 pr-3 py-1.5 text-[13px] border border-gray-200 rounded-full bg-gray-50 focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none transition-all placeholder:text-gray-400"
+            />
+            <Search className="absolute left-2.5 top-2 text-gray-400" size={14} />
+          </div>
         </div>
       </div>
 

@@ -50,106 +50,114 @@ export const PatientList: React.FC<PatientListProps> = ({ onPatientClick }) => {
   };
 
   return (
-    <div className="p-6 bg-gray-50 min-h-[calc(100vh-64px)]">
-      {/* Search */}
-      <div className="flex items-center justify-end mb-6">
-        <div className="relative w-64">
-          <input
-            type="text"
-            placeholder="이름 또는 휴대폰 번호 검색"
-            className="w-full pl-9 pr-3 py-2 bg-white border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-          />
-          <Search className="absolute left-3 top-2.5 text-gray-400" size={16} />
+    <div className="bg-gray-50 min-h-[calc(100vh-64px)]">
+      {/* Header */}
+      <header className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
+            <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+            단골 고객 현황
+          </h1>
+          <p className="text-sm text-gray-500 mt-1">
+            키오스크 또는 웰체크 앱에 등록된 단골 고객을 관리합니다.
+          </p>
         </div>
-      </div>
+      </header>
 
-      {/* Summary */}
-      <div className="mb-4">
-        <h3 className="font-bold text-gray-800">
-          총 등록 고객 수 <span className="text-blue-600">(560)</span>
-        </h3>
-        <p className="text-sm text-gray-500 mt-1">
-          키오스크에 휴대폰 번호를 입력했거나 웰체크 앱에 회원가입한 고객입니다.
-        </p>
-      </div>
-
-      {/* Table */}
-      <div className="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[1200px]">
-            <thead className="bg-gray-50 border-b border-gray-200">
-              <tr>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider w-32">이름</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">휴대폰 번호</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">생년월일(나이)</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">관리질환</th>
-                <th className="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">복약 순응도<br />(30일 이내)</th>
-                <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">최근 복약 상담 일자</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200">
-              {MOCK_DATA.map((patient) => (
-                <tr key={patient.id} className="hover:bg-blue-50/50 transition-colors">
-                  <td className="px-4 py-3">
-                    <button
-                      onClick={() => handlePatientClick(patient.id)}
-                      className="flex items-center space-x-2 text-left group"
-                    >
-                      <span className="font-medium text-gray-900 group-hover:text-blue-600 group-hover:underline">{patient.name}</span>
-                    </button>
-                  </td>
-                  <td className="px-4 py-3 text-sm text-gray-600">{patient.phone}</td>
-                  <td className="px-4 py-3 text-sm text-gray-600">
-                    {patient.birthDate} <span className="text-gray-400">({patient.age})</span>
-                  </td>
-                  <td className="px-4 py-3 text-sm text-gray-600">
-                    <span className={clsx(
-                      "px-2 py-0.5 rounded text-xs",
-                      patient.medicationStatus === '미실시' ? 'bg-gray-100 text-gray-500' :
-                        patient.medicationStatus.includes('당뇨') || patient.medicationStatus.includes('고혈압') ? 'bg-orange-50 text-orange-700 border border-orange-100' :
-                          'text-gray-600'
-                    )}>
-                      {patient.medicationStatus}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 text-center">
-                    <div className="flex flex-col items-center">
-                      <span className={clsx(
-                        "text-sm font-bold",
-                        patient.adherenceRate >= 80 ? "text-green-600" :
-                          patient.adherenceRate >= 50 ? "text-orange-500" : "text-gray-400"
-                      )}>
-                        {patient.adherenceRate}%
-                      </span>
-                    </div>
-                  </td>
-                  <td className="px-4 py-3 text-sm text-gray-400">{patient.prescriptionNo}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-
-        {/* Pagination */}
-        <div className="px-4 py-3 border-t border-gray-200 bg-white flex items-center relative">
-          {/* Center: page buttons */}
-          <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-1">
-            <button className="w-7 h-7 flex items-center justify-center rounded text-gray-400 hover:bg-gray-100 text-xs disabled:opacity-30" disabled>«</button>
-            <button className="w-7 h-7 flex items-center justify-center rounded text-gray-400 hover:bg-gray-100 text-xs disabled:opacity-30" disabled>‹</button>
-            {[1, 2, 3, 4, 5].map((p) => (
-              <button key={p} className={`w-7 h-7 flex items-center justify-center rounded text-xs font-medium ${p === 1 ? 'bg-blue-600 text-white' : 'text-gray-600 hover:bg-gray-100'}`}>{p}</button>
-            ))}
-            <button className="w-7 h-7 flex items-center justify-center rounded text-gray-400 hover:bg-gray-100 text-xs">›</button>
-            <button className="w-7 h-7 flex items-center justify-center rounded text-gray-400 hover:bg-gray-100 text-xs">»</button>
+      <div className="p-6">
+        {/* Filter & Search Toolbar */}
+        <div className="px-4 py-2.5 bg-white border border-gray-100 rounded-t-xl flex items-center justify-between gap-3 mb-0">
+          <div className="text-[13px] text-gray-400">
+            총 <span className="text-blue-600 font-semibold">560</span>건 · 키오스크 또는 웰체크 앱에 등록된 고객
           </div>
-          {/* Right: rows per page */}
-          <div className="ml-auto flex items-center gap-1.5">
-            <select className="border border-gray-300 rounded text-xs text-gray-600 px-2 py-1 bg-white focus:outline-none focus:ring-1 focus:ring-blue-500">
-              <option>20</option>
-              <option>50</option>
-              <option>100</option>
-            </select>
-            <span className="text-xs text-gray-500">건씩 보기</span>
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="이름 또는 휴대폰 번호 검색"
+              className="w-56 pl-8 pr-3 py-1.5 text-[13px] border border-gray-200 rounded-full bg-gray-50 focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none transition-all placeholder:text-gray-400"
+            />
+            <Search className="absolute left-2.5 top-2 text-gray-400" size={14} />
+          </div>
+        </div>
+
+        {/* Table */}
+        <div className="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[1200px]">
+              <thead className="bg-gray-50 border-b border-gray-200">
+                <tr>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider w-32">이름</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">휴대폰 번호</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">생년월일(나이)</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">관리질환</th>
+                  <th className="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">복약 순응도<br />(30일 이내)</th>
+                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">최근 복약 상담 일자</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200">
+                {MOCK_DATA.map((patient) => (
+                  <tr key={patient.id} className="hover:bg-blue-50/50 transition-colors">
+                    <td className="px-4 py-3">
+                      <button
+                        onClick={() => handlePatientClick(patient.id)}
+                        className="flex items-center space-x-2 text-left group"
+                      >
+                        <span className="font-medium text-gray-900 group-hover:text-blue-600 group-hover:underline">{patient.name}</span>
+                      </button>
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-600">{patient.phone}</td>
+                    <td className="px-4 py-3 text-sm text-gray-600">
+                      {patient.birthDate} <span className="text-gray-400">({patient.age})</span>
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-600">
+                      <span className={clsx(
+                        "px-2 py-0.5 rounded text-xs",
+                        patient.medicationStatus === '미실시' ? 'bg-gray-100 text-gray-500' :
+                          patient.medicationStatus.includes('당뇨') || patient.medicationStatus.includes('고혈압') ? 'bg-orange-50 text-orange-700 border border-orange-100' :
+                            'text-gray-600'
+                      )}>
+                        {patient.medicationStatus}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-center">
+                      <div className="flex flex-col items-center">
+                        <span className={clsx(
+                          "text-sm font-bold",
+                          patient.adherenceRate >= 80 ? "text-green-600" :
+                            patient.adherenceRate >= 50 ? "text-orange-500" : "text-gray-400"
+                        )}>
+                          {patient.adherenceRate}%
+                        </span>
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 text-sm text-gray-400">{patient.prescriptionNo}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Pagination */}
+          <div className="px-4 py-3 border-t border-gray-200 bg-white flex items-center relative">
+            {/* Center: page buttons */}
+            <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-1">
+              <button className="w-7 h-7 flex items-center justify-center rounded text-gray-400 hover:bg-gray-100 text-xs disabled:opacity-30" disabled>«</button>
+              <button className="w-7 h-7 flex items-center justify-center rounded text-gray-400 hover:bg-gray-100 text-xs disabled:opacity-30" disabled>‹</button>
+              {[1, 2, 3, 4, 5].map((p) => (
+                <button key={p} className={`w-7 h-7 flex items-center justify-center rounded text-xs font-medium ${p === 1 ? 'bg-blue-600 text-white' : 'text-gray-600 hover:bg-gray-100'}`}>{p}</button>
+              ))}
+              <button className="w-7 h-7 flex items-center justify-center rounded text-gray-400 hover:bg-gray-100 text-xs">›</button>
+              <button className="w-7 h-7 flex items-center justify-center rounded text-gray-400 hover:bg-gray-100 text-xs">»</button>
+            </div>
+            {/* Right: rows per page */}
+            <div className="ml-auto flex items-center gap-1.5">
+              <select className="border border-gray-300 rounded text-xs text-gray-600 px-2 py-1 bg-white focus:outline-none focus:ring-1 focus:ring-blue-500">
+                <option>20</option>
+                <option>50</option>
+                <option>100</option>
+              </select>
+              <span className="text-xs text-gray-500">건씩 보기</span>
+            </div>
           </div>
         </div>
       </div>

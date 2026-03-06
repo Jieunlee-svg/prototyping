@@ -206,17 +206,18 @@ export const ConsultationHistory = ({ onBack }: { onBack?: () => void }) => {
         </div>
       </header>
 
-      <div className="px-6 py-4 flex items-center justify-between gap-4">
-        <h3 className="font-bold text-gray-800">
-          총 상담 내역 <span className="text-blue-600">({MOCK_CONSULTATIONS.length}건)</span>
-        </h3>
-        <div className="relative w-64">
+      {/* Filter & Search Toolbar */}
+      <div className="px-6 py-2.5 bg-white border-b border-gray-100 flex items-center justify-between gap-3">
+        <div className="flex items-center gap-2 text-[13px] text-gray-400">
+          총 <span className="text-blue-600 font-semibold">{MOCK_CONSULTATIONS.length}</span>건
+        </div>
+        <div className="relative">
           <input
             type="text"
             placeholder="고객명 검색"
-            className="w-full pl-9 pr-3 py-2 bg-white border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-52 pl-8 pr-3 py-1.5 text-[13px] border border-gray-200 rounded-full bg-gray-50 focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none transition-all placeholder:text-gray-400"
           />
-          <Search className="absolute left-3 top-2.5 text-gray-400" size={16} />
+          <Search className="absolute left-2.5 top-2 text-gray-400" size={14} />
         </div>
       </div>
 

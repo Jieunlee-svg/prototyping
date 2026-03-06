@@ -84,17 +84,20 @@ export const NoticeList: React.FC = () => {
       {/* Search & Content */}
       <div className="flex-1 overflow-auto p-6">
         <div className="max-w-5xl mx-auto">
-          {/* Search Bar */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 mb-6 flex items-center justify-between">
-            <div className="relative w-full max-w-md">
+          {/* Filter & Search Toolbar */}
+          <div className="px-4 py-2.5 bg-white border-b border-gray-100 flex items-center justify-between gap-3 rounded-t-xl">
+            <span className="text-[13px] text-gray-400">
+              총 <span className="text-blue-600 font-semibold">{filteredNotices.length}</span>건
+            </span>
+            <div className="relative">
               <input
                 type="text"
-                placeholder="제목으로 검색하세요"
+                placeholder="제목으로 검색"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
+                className="w-52 pl-8 pr-3 py-1.5 text-[13px] border border-gray-200 rounded-full bg-gray-50 focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none transition-all placeholder:text-gray-400"
               />
-              <Search className="absolute left-3 top-2.5 text-gray-400" size={16} />
+              <Search className="absolute left-2.5 top-2 text-gray-400" size={14} />
             </div>
           </div>
 

@@ -85,6 +85,12 @@ export const SmsInviteHistory: React.FC = () => {
             {/* Header */}
             <header className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
                 <div>
+                    {/* Breadcrumb */}
+                    <div className="flex items-center gap-1.5 mb-2 text-[13px] text-gray-400">
+                        <span>앱 설치 문자 발송</span>
+                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
+                        <span className="text-gray-700 font-medium">앱 설치 문자 발송 내역</span>
+                    </div>
                     <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
                         <MessageSquare className="text-blue-600" />
                         앱 설치 문자 발송 내역
@@ -111,35 +117,32 @@ export const SmsInviteHistory: React.FC = () => {
                 </div>
             </header>
 
-            {/* Filters */}
-            <div className="px-6 pt-4 pb-2 flex items-center gap-2 flex-wrap">
-                {/* 가입 상태 필터 */}
-                <div className="bg-white rounded-lg border border-gray-200 p-1 flex">
+            {/* Filter & Search Toolbar */}
+            <div className="px-4 py-2.5 bg-white border-b border-gray-100 flex items-center justify-between gap-3">
+                {/* Left: filter chips */}
+                <div className="flex items-center gap-1.5 flex-wrap">
                     {([
-                        { value: 'all', label: '전체' },
+                        { value: 'all', label: '전체 가입상태' },
                         { value: 'joined', label: '가입 완료' },
-                        { value: 'pending', label: '미가입 (대기)' },
-                        { value: 'expired', label: '미가입 (만료)' },
+                        { value: 'pending', label: '대기중' },
+                        { value: 'expired', label: '만료' },
                     ] as const).map(({ value, label }) => (
                         <button
                             key={value}
                             onClick={() => setJoinedFilter(value)}
                             className={clsx(
-                                'px-3 py-1.5 text-sm font-medium rounded-md transition-colors',
-                                joinedFilter === value ? 'bg-blue-50 text-blue-600' : 'text-gray-600 hover:bg-gray-50'
+                                'px-3 py-1 rounded-full text-[13px] font-medium border transition-all',
+                                joinedFilter === value
+                                    ? 'border-blue-500 text-blue-600 bg-blue-50'
+                                    : 'border-gray-200 text-gray-500 bg-white hover:border-gray-400 hover:text-gray-700'
                             )}
                         >
                             {label}
                         </button>
                     ))}
-                </div>
-
-                <div className="h-6 w-px bg-gray-300 mx-1" />
-
-                {/* 발송 유형 필터 */}
-                <div className="bg-white rounded-lg border border-gray-200 p-1 flex">
+                    <div className="w-px h-4 bg-gray-200 mx-1" />
                     {([
-                        { value: 'all', label: '전체' },
+                        { value: 'all', label: '전체 유형' },
                         { value: 'individual', label: '개별 발송' },
                         { value: 'bulk', label: '일괄 발송' },
                     ] as const).map(({ value, label }) => (
@@ -147,30 +150,31 @@ export const SmsInviteHistory: React.FC = () => {
                             key={value}
                             onClick={() => setTypeFilter(value)}
                             className={clsx(
-                                'px-3 py-1.5 text-sm font-medium rounded-md transition-colors',
-                                typeFilter === value ? 'bg-blue-50 text-blue-600' : 'text-gray-600 hover:bg-gray-50'
+                                'px-3 py-1 rounded-full text-[13px] font-medium border transition-all',
+                                typeFilter === value
+                                    ? 'border-blue-500 text-blue-600 bg-blue-50'
+                                    : 'border-gray-200 text-gray-500 bg-white hover:border-gray-400 hover:text-gray-700'
                             )}
                         >
                             {label}
                         </button>
                     ))}
                 </div>
-            </div>
-
-            {/* Sub-header */}
-            <div className="px-6 pb-3 flex items-center justify-between gap-4">
-                <h3 className="font-bold text-gray-800 shrink-0">
-                    총 발송 내역 <span className="text-blue-600">({filtered.length}건)</span>
-                </h3>
-                <div className="relative w-64">
-                    <input
-                        type="text"
-                        placeholder="휴대전화 번호 검색"
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        className="w-full pl-9 pr-3 py-2 bg-white border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                    />
-                    <Search className="absolute left-3 top-2.5 text-gray-400" size={16} />
+                {/* Right: count + search */}
+                <div className="flex items-center gap-3 flex-shrink-0">
+                    <span className="text-[13px] text-gray-400">
+                        총 <span className="text-blue-600 font-semibold">{filtered.length}</span>건
+                    </span>
+                    <div className="relative">
+                        <input
+                            type="text"
+                            placeholder="휴대전화 번호 검색"
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            className="w-52 pl-8 pr-3 py-1.5 text-[13px] border border-gray-200 rounded-full bg-gray-50 focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none transition-all placeholder:text-gray-400"
+                        />
+                        <Search className="absolute left-2.5 top-2 text-gray-400" size={14} />
+                    </div>
                 </div>
             </div>
 
