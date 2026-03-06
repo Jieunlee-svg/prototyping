@@ -13,7 +13,8 @@ import {
   Download,
   Eye,
   Phone,
-  X
+  X,
+  Monitor
 } from 'lucide-react';
 import { clsx } from 'clsx';
 import { ImageWithFallback } from '../figma/ImageWithFallback';
@@ -22,7 +23,7 @@ const prescriptionImage = 'https://placehold.co/400x560/e2e8f0/64748b?text=처�
 
 interface Prescription {
   id: string;
-  source: 'app_camera' | 'fax_telemed';
+  source: 'app_camera' | 'fax_telemed' | 'kiosk';
   patientName: string;
   patientRrn: string;
   hospitalName: string;
@@ -94,10 +95,70 @@ const MOCK_PRESCRIPTIONS: Prescription[] = [
     receivedAt: '2024-02-05 10:10',
     imageUrl: prescriptionImage
   },
+  {
+    id: 'RX-20240205-06',
+    source: 'kiosk',
+    patientName: '한지수',
+    patientRrn: '010320-4******',
+    hospitalName: '연세세브란스병원',
+    diseaseCode: 'I10',
+    status: 'received',
+    paymentStatus: 'pending',
+    receivedAt: '2024-02-05 09:50',
+    imageUrl: prescriptionImage
+  },
+  {
+    id: 'RX-20240205-07',
+    source: 'kiosk',
+    patientName: '오민준',
+    patientRrn: '880922-1******',
+    hospitalName: '강남성심병원',
+    diseaseCode: 'M54.5',
+    status: 'dispensing',
+    paymentStatus: 'paid',
+    receivedAt: '2024-02-05 09:35',
+    imageUrl: prescriptionImage
+  },
+  {
+    id: 'RX-20240205-08',
+    source: 'kiosk',
+    patientName: '서예린',
+    patientRrn: '950614-2******',
+    hospitalName: '아산병원내과',
+    diseaseCode: 'K21.0',
+    status: 'done',
+    paymentStatus: 'paid',
+    receivedAt: '2024-02-05 09:10',
+    imageUrl: prescriptionImage
+  },
+  {
+    id: 'RX-20240205-09',
+    source: 'kiosk',
+    patientName: '임태양',
+    patientRrn: '730430-1******',
+    hospitalName: '고려대안암병원',
+    diseaseCode: 'J45.9',
+    status: 'received',
+    paymentStatus: 'pending',
+    receivedAt: '2024-02-05 08:55',
+    imageUrl: prescriptionImage
+  },
+  {
+    id: 'RX-20240205-10',
+    source: 'kiosk',
+    patientName: '문소희',
+    patientRrn: '040808-4******',
+    hospitalName: '이화여대목동병원',
+    diseaseCode: 'L20.9',
+    status: 'dispensing',
+    paymentStatus: 'paid',
+    receivedAt: '2024-02-05 08:40',
+    imageUrl: prescriptionImage
+  },
 ];
 
 export const PrescriptionList: React.FC = () => {
-  const [filter, setFilter] = useState<'all' | 'app_camera' | 'fax_telemed'>('all');
+  const [filter, setFilter] = useState<'all' | 'app_camera' | 'fax_telemed' | 'kiosk'>('all');
   const [statusFilter, setStatusFilter] = useState<'all' | 'received' | 'dispensing' | 'done'>('all');
   const [selectedPrescription, setSelectedPrescription] = useState<Prescription | null>(null);
 
@@ -105,11 +166,15 @@ export const PrescriptionList: React.FC = () => {
     if (source === 'app_camera') {
       return <Camera size={16} className="text-blue-500" />;
     }
+    if (source === 'kiosk') {
+      return <Monitor size={16} className="text-green-600" />;
+    }
     return <Printer size={16} className="text-purple-500" />;
   };
 
   const getSourceLabel = (source: string) => {
     if (source === 'app_camera') return '앱 촬영';
+    if (source === 'kiosk') return '키오스크';
     return '비대면/팩스';
   };
 
@@ -223,6 +288,16 @@ export const PrescriptionList: React.FC = () => {
               <Printer size={14} />
               비대면/팩스
             </button>
+            <button
+              onClick={() => setFilter('kiosk')}
+              className={clsx(
+                "px-3 py-1.5 text-sm font-medium rounded-md transition-colors flex items-center gap-1.5",
+                filter === 'kiosk' ? "bg-blue-50 text-blue-600" : "text-gray-600 hover:bg-gray-50"
+              )}
+            >
+              <Monitor size={14} />
+              키오스크
+            </button>
           </div>
           <div className="h-6 w-px bg-gray-300 mx-2"></div>
           <select 
@@ -289,7 +364,7 @@ export const PrescriptionList: React.FC = () => {
                     <div className="flex items-center">
                       <div className={clsx(
                         "flex-shrink-0 h-8 w-8 rounded-full flex items-center justify-center bg-opacity-10",
-                        prescription.source === 'app_camera' ? "bg-blue-100" : "bg-purple-100"
+                        prescription.source === 'app_camera' ? "bg-blue-100" : prescription.source === 'kiosk' ? "bg-green-100" : "bg-purple-100"
                       )}>
                         {getSourceIcon(prescription.source)}
                       </div>
