@@ -282,6 +282,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <HelpCircle size={16} className="mr-3" />
             1:1 채팅 문의
           </button>
+          <button
+            onClick={() => window.open('https://939.co.kr/01414/', '_blank')}
+            className="flex items-center w-full px-2 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded"
+          >
+            <MonitorSmartphone size={16} className="mr-3" />
+            원격지원 요청하기
+          </button>
         </div>
 
         <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
