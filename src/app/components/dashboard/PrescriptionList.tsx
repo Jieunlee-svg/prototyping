@@ -29,7 +29,7 @@ interface Prescription {
   hospitalName: string;
   diseaseCode: string;
   status: 'received' | 'dispensing' | 'done' | 'cancelled';
-  paymentStatus: 'paid' | 'pending' | 'refunded';
+  paymentStatus: 'paid' | 'pending' | 'refunded' | 'na';
   receivedAt: string;
   imageUrl?: string;
 }
@@ -40,10 +40,10 @@ const MOCK_PRESCRIPTIONS: Prescription[] = [
     source: 'app_camera',
     patientName: '김철수',
     patientRrn: '800101-1******',
-    hospitalName: '서울내과의원',
+    hospitalName: '확인 안됨',
     diseaseCode: 'J20.9',
     status: 'received',
-    paymentStatus: 'pending',
+    paymentStatus: 'na',
     receivedAt: '2024-02-05 14:30',
     imageUrl: prescriptionImage
   },
@@ -64,10 +64,10 @@ const MOCK_PRESCRIPTIONS: Prescription[] = [
     source: 'app_camera',
     patientName: '박지민',
     patientRrn: '150505-3******',
-    hospitalName: '튼튼소아과',
+    hospitalName: '확인 안됨',
     diseaseCode: 'J30.4',
     status: 'done',
-    paymentStatus: 'paid',
+    paymentStatus: 'na',
     receivedAt: '2024-02-05 13:45',
     imageUrl: prescriptionImage
   },
@@ -85,74 +85,74 @@ const MOCK_PRESCRIPTIONS: Prescription[] = [
   },
   {
     id: 'RX-20240205-05',
-    source: 'app_camera',
-    patientName: '정수정',
-    patientRrn: '980707-2******',
-    hospitalName: '마음편한정신건강의학과',
-    diseaseCode: 'F41.0',
+    source: 'fax_telemed',
+    patientName: '김하준',
+    patientRrn: '900214-1******',
+    hospitalName: '강북삼성병원',
+    diseaseCode: 'J06.9',
     status: 'received',
-    paymentStatus: 'paid',
-    receivedAt: '2024-02-05 10:10',
+    paymentStatus: 'pending',
+    receivedAt: '2024-02-05 10:50',
     imageUrl: prescriptionImage
   },
   {
     id: 'RX-20240205-06',
+    source: 'app_camera',
+    patientName: '정수정',
+    patientRrn: '980707-2******',
+    hospitalName: '확인 안됨',
+    diseaseCode: 'F41.0',
+    status: 'received',
+    paymentStatus: 'na',
+    receivedAt: '2024-02-05 10:10',
+    imageUrl: prescriptionImage
+  },
+  {
+    id: 'RX-20240205-07',
     source: 'kiosk',
     patientName: '한지수',
     patientRrn: '010320-4******',
     hospitalName: '연세세브란스병원',
     diseaseCode: 'I10',
     status: 'received',
-    paymentStatus: 'pending',
+    paymentStatus: 'na',
     receivedAt: '2024-02-05 09:50',
     imageUrl: prescriptionImage
   },
   {
-    id: 'RX-20240205-07',
+    id: 'RX-20240205-08',
     source: 'kiosk',
     patientName: '오민준',
     patientRrn: '880922-1******',
     hospitalName: '강남성심병원',
     diseaseCode: 'M54.5',
     status: 'dispensing',
-    paymentStatus: 'paid',
+    paymentStatus: 'na',
     receivedAt: '2024-02-05 09:35',
     imageUrl: prescriptionImage
   },
   {
-    id: 'RX-20240205-08',
+    id: 'RX-20240205-09',
     source: 'kiosk',
     patientName: '서예린',
     patientRrn: '950614-2******',
     hospitalName: '아산병원내과',
     diseaseCode: 'K21.0',
     status: 'done',
-    paymentStatus: 'paid',
+    paymentStatus: 'na',
     receivedAt: '2024-02-05 09:10',
     imageUrl: prescriptionImage
   },
   {
-    id: 'RX-20240205-09',
+    id: 'RX-20240205-10',
     source: 'kiosk',
     patientName: '임태양',
     patientRrn: '730430-1******',
     hospitalName: '고려대안암병원',
     diseaseCode: 'J45.9',
     status: 'received',
-    paymentStatus: 'pending',
+    paymentStatus: 'na',
     receivedAt: '2024-02-05 08:55',
-    imageUrl: prescriptionImage
-  },
-  {
-    id: 'RX-20240205-10',
-    source: 'kiosk',
-    patientName: '문소희',
-    patientRrn: '040808-4******',
-    hospitalName: '이화여대목동병원',
-    diseaseCode: 'L20.9',
-    status: 'dispensing',
-    paymentStatus: 'paid',
-    receivedAt: '2024-02-05 08:40',
     imageUrl: prescriptionImage
   },
 ];
@@ -173,9 +173,9 @@ export const PrescriptionList: React.FC = () => {
   };
 
   const getSourceLabel = (source: string) => {
-    if (source === 'app_camera') return '고객 앱';
-    if (source === 'kiosk') return '키오스크';
-    return '의사 웹';
+    if (source === 'app_camera') return '고객 앱 촬영';
+    if (source === 'kiosk') return '키오스크 스캔';
+    return '의사 웹 전송';
   };
 
   const getStatusBadge = (status: string) => {
@@ -219,14 +219,20 @@ export const PrescriptionList: React.FC = () => {
         );
       case 'pending':
         return (
-          <span className="flex items-center text-xs text-orange-500 font-medium">
-            <Clock size={12} className="mr-1" /> 결제대기
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-orange-50 text-orange-500 border border-orange-200">
+            <Clock size={11} /> 결제 대기
           </span>
         );
       case 'refunded':
         return (
           <span className="flex items-center text-xs text-gray-500 font-medium">
             <XCircle size={12} className="mr-1" /> 환불완료
+          </span>
+        );
+      case 'na':
+        return (
+          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-400 border border-gray-200">
+            해당없음
           </span>
         );
       default:
@@ -244,7 +250,7 @@ export const PrescriptionList: React.FC = () => {
             처방전 접수 현황
           </h1>
           <p className="text-sm text-gray-500 mt-1">
-            앱 카메라 촬영 및 비대면 진료 팩스 처방전을 관리합니다.
+            처방전을 관리합니다.
           </p>
         </div>
         <div className="flex gap-2">
@@ -258,9 +264,9 @@ export const PrescriptionList: React.FC = () => {
         <div className="flex items-center gap-1.5 flex-wrap">
           {([
             { value: 'all', label: '전체', icon: undefined as React.ReactNode },
-            { value: 'app_camera', label: '고객 앱', icon: <Camera size={13} /> as React.ReactNode },
-            { value: 'fax_telemed', label: '의사 웹', icon: <Printer size={13} /> as React.ReactNode },
-            { value: 'kiosk', label: '키오스크', icon: <Monitor size={13} /> as React.ReactNode },
+            { value: 'app_camera', label: '고객 앱 촬영', icon: <Camera size={13} /> as React.ReactNode },
+            { value: 'fax_telemed', label: '의사 웹 전송', icon: <Printer size={13} /> as React.ReactNode },
+            { value: 'kiosk', label: '키오스크 스캔', icon: <Monitor size={13} /> as React.ReactNode },
           ]).map(({ value, label, icon }) => (
             <button
               key={value}
@@ -372,7 +378,13 @@ export const PrescriptionList: React.FC = () => {
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                    {prescription.hospitalName}
+                    {prescription.source === 'app_camera' ? (
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-400 border border-gray-200">
+                        확인 안됨
+                      </span>
+                    ) : (
+                      prescription.hospitalName
+                    )}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     {getStatusBadge(prescription.status)}

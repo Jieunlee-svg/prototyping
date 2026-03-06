@@ -59,7 +59,7 @@ export const PatientList: React.FC<PatientListProps> = ({ onPatientClick }) => {
             단골 고객 현황
           </h1>
           <p className="text-sm text-gray-500 mt-1">
-            키오스크 또는 웰체크 앱에 등록된 단골 고객을 관리합니다.
+            웰체크 앱에 가입하고 우리 약국을 단골 약국으로 등록한 고객입니다.
           </p>
         </div>
       </header>
@@ -68,7 +68,7 @@ export const PatientList: React.FC<PatientListProps> = ({ onPatientClick }) => {
         {/* Filter & Search Toolbar */}
         <div className="px-4 py-2.5 bg-white border border-gray-100 rounded-t-xl flex items-center justify-between gap-3 mb-0">
           <div className="text-[13px] text-gray-400">
-            총 <span className="text-blue-600 font-semibold">560</span>건 · 키오스크 또는 웰체크 앱에 등록된 고객
+            총 <span className="text-blue-600 font-semibold">560</span>건
           </div>
           <div className="relative">
             <input
