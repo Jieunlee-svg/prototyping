@@ -125,11 +125,11 @@ function PillButton({
         'px-4 py-[7px] border transition-all text-[13px] font-medium rounded-md',
         disabled && 'opacity-40 cursor-not-allowed',
         selected && variant === 'primary' &&
-          'bg-[var(--primary)] text-[var(--primary-foreground)] border-[var(--primary)]',
+        'bg-[var(--primary)] text-[var(--primary-foreground)] border-[var(--primary)]',
         selected && variant === 'secondary' &&
-          'bg-[var(--secondary)] text-[var(--secondary-foreground)] border-[var(--secondary)]',
+        'bg-[var(--secondary)] text-[var(--secondary-foreground)] border-[var(--secondary)]',
         !selected &&
-          'bg-white text-[var(--foreground)] border-[var(--border)] hover:border-[var(--primary)] hover:text-[var(--primary)]'
+        'bg-white text-[var(--foreground)] border-[var(--border)] hover:border-[var(--primary)] hover:text-[var(--primary)]'
       )}
     >
       {label}
@@ -284,6 +284,14 @@ export const MedicationNotificationSettings = ({ onBack }: { onBack?: () => void
       <div className="flex-1 overflow-y-auto px-6 py-6">
         <div className="max-w-[1200px] mx-auto space-y-6">
 
+          {/* ── Info 메시지 ── */}
+          <div className="flex items-start gap-2 p-3 rounded-[var(--radius)] border border-[var(--border)] bg-[rgba(245,246,249,0.7)]">
+            <Info className="w-4 h-4 mt-0.5 shrink-0 text-[var(--muted-foreground)]" />
+            <p className="text-[var(--muted-foreground)] text-xs font-normal leading-relaxed">
+              고객의 웰체크 앱으로 알림 설정이 전송될 때 기본값으로 사용됩니다. 고객이 앱에서 변경 할 수 있습니다.
+            </p>
+          </div>
+
           {/* ── 복용 횟수별 기본 설정 (토글 포함) ── */}
           <SectionCard
             icon={<Bell className="w-[18px] h-[18px]" style={{ color: 'var(--primary)' }} />}
@@ -326,7 +334,7 @@ export const MedicationNotificationSettings = ({ onBack }: { onBack?: () => void
                   className={clsx(
                     'flex gap-4 py-4',
                     idx < displayedSettings.length - 1 &&
-                      'border-b border-dashed border-[var(--border)]'
+                    'border-b border-dashed border-[var(--border)]'
                   )}
                 >
                   <div className="w-14 shrink-0 flex flex-col items-center pt-1">
@@ -402,34 +410,6 @@ export const MedicationNotificationSettings = ({ onBack }: { onBack?: () => void
                   />
                 </div>
               ))}
-            </div>
-
-            <div className="mt-4 flex items-start gap-2 p-3 rounded-[var(--radius)] border border-[var(--border)] bg-[rgba(245,246,249,0.7)]">
-              <Info className="w-4 h-4 mt-0.5 shrink-0 text-[var(--muted-foreground)]" />
-              <p className="text-[var(--muted-foreground)] text-xs font-normal leading-relaxed">
-                고객의 웰체크 앱으로 알림 설정이 전송될 때 기본값으로 사용됩니다. 고객이 앱에서 변경 할 수 있습니다.
-              </p>
-            </div>
-          </SectionCard>
-
-          {/* ── 웰체크 앱 전송 설정 ── */}
-          <SectionCard
-            icon={<Smartphone className="w-[18px] h-[18px]" style={{ color: 'var(--primary)' }} />}
-            title="웰체크 앱 전송 설정"
-          >
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <p className="text-[var(--foreground)] text-[15px] font-medium">
-                  앱 전송 기본값
-                </p>
-                <p className="text-[var(--muted-foreground)] mt-0.5 text-xs font-normal leading-normal">
-                  상담 화면 진입 시 '앱으로 설정 전송' 토글 기본 상태
-                </p>
-              </div>
-              <Toggle
-                checked={defaultAppSend}
-                onChange={() => setDefaultAppSend(!defaultAppSend)}
-              />
             </div>
           </SectionCard>
 
