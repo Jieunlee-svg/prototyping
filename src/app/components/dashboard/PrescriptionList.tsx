@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { 
-  FileText, 
-  Camera, 
-  Printer, 
-  Search, 
+import {
+  FileText,
+  Camera,
+  Printer,
+  Search,
   Filter,
   MoreVertical,
   CheckCircle2,
@@ -173,9 +173,9 @@ export const PrescriptionList: React.FC = () => {
   };
 
   const getSourceLabel = (source: string) => {
-    if (source === 'app_camera') return '앱 촬영';
+    if (source === 'app_camera') return '고객 앱';
     if (source === 'kiosk') return '키오스크';
-    return '비대면/팩스';
+    return '의사 웹';
   };
 
   const getStatusBadge = (status: string) => {
@@ -248,59 +248,62 @@ export const PrescriptionList: React.FC = () => {
           </p>
         </div>
         <div className="flex gap-2">
-           
+
         </div>
       </header>
 
       {/* Filters & Actions */}
-      <div className="px-6 py-4 flex items-center justify-between gap-4">
+      <div className="px-6 pt-4 pb-2 flex items-center gap-2">
+        <div className="bg-white rounded-lg border border-gray-200 p-1 flex">
+          <button
+            onClick={() => setFilter('all')}
+            className={clsx(
+              "px-3 py-1.5 text-sm font-medium rounded-md transition-colors",
+              filter === 'all' ? "bg-blue-50 text-blue-600" : "text-gray-600 hover:bg-gray-50"
+            )}
+          >
+            전체
+          </button>
+          <button
+            onClick={() => setFilter('app_camera')}
+            className={clsx(
+              "px-3 py-1.5 text-sm font-medium rounded-md transition-colors flex items-center gap-1.5",
+              filter === 'app_camera' ? "bg-blue-50 text-blue-600" : "text-gray-600 hover:bg-gray-50"
+            )}
+          >
+            <Camera size={14} />
+            고객 앱
+          </button>
+          <button
+            onClick={() => setFilter('fax_telemed')}
+            className={clsx(
+              "px-3 py-1.5 text-sm font-medium rounded-md transition-colors flex items-center gap-1.5",
+              filter === 'fax_telemed' ? "bg-blue-50 text-blue-600" : "text-gray-600 hover:bg-gray-50"
+            )}
+          >
+            <Printer size={14} />
+            의사 웹
+          </button>
+          <button
+            onClick={() => setFilter('kiosk')}
+            className={clsx(
+              "px-3 py-1.5 text-sm font-medium rounded-md transition-colors flex items-center gap-1.5",
+              filter === 'kiosk' ? "bg-blue-50 text-blue-600" : "text-gray-600 hover:bg-gray-50"
+            )}
+          >
+            <Monitor size={14} />
+            키오스크
+          </button>
+        </div>
+      </div>
+
+      <div className="px-6 pb-4 flex items-center justify-between gap-4">
         <h3 className="font-bold text-gray-800 shrink-0">
           총 처방전 접수 <span className="text-blue-600">({MOCK_PRESCRIPTIONS.length}건)</span>
         </h3>
         <div className="flex items-center gap-2">
-          <div className="bg-white rounded-lg border border-gray-200 p-1 flex">
-            <button
-              onClick={() => setFilter('all')}
-              className={clsx(
-                "px-3 py-1.5 text-sm font-medium rounded-md transition-colors",
-                filter === 'all' ? "bg-blue-50 text-blue-600" : "text-gray-600 hover:bg-gray-50"
-              )}
-            >
-              전체
-            </button>
-            <button
-              onClick={() => setFilter('app_camera')}
-              className={clsx(
-                "px-3 py-1.5 text-sm font-medium rounded-md transition-colors flex items-center gap-1.5",
-                filter === 'app_camera' ? "bg-blue-50 text-blue-600" : "text-gray-600 hover:bg-gray-50"
-              )}
-            >
-              <Camera size={14} />
-              앱 촬영
-            </button>
-            <button
-              onClick={() => setFilter('fax_telemed')}
-              className={clsx(
-                "px-3 py-1.5 text-sm font-medium rounded-md transition-colors flex items-center gap-1.5",
-                filter === 'fax_telemed' ? "bg-blue-50 text-blue-600" : "text-gray-600 hover:bg-gray-50"
-              )}
-            >
-              <Printer size={14} />
-              비대면/팩스
-            </button>
-            <button
-              onClick={() => setFilter('kiosk')}
-              className={clsx(
-                "px-3 py-1.5 text-sm font-medium rounded-md transition-colors flex items-center gap-1.5",
-                filter === 'kiosk' ? "bg-blue-50 text-blue-600" : "text-gray-600 hover:bg-gray-50"
-              )}
-            >
-              <Monitor size={14} />
-              키오스크
-            </button>
-          </div>
           <div className="h-6 w-px bg-gray-300 mx-2"></div>
-          <select 
+          <select
             className="bg-white border border-gray-300 text-gray-700 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5"
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value as any)}
@@ -399,7 +402,7 @@ export const PrescriptionList: React.FC = () => {
                     {getPaymentStatusBadge(prescription.paymentStatus)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-center">
-                    <button 
+                    <button
                       onClick={() => setSelectedPrescription(prescription)}
                       className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                     >
@@ -411,7 +414,7 @@ export const PrescriptionList: React.FC = () => {
               ))}
             </tbody>
           </table>
-          
+
           {/* Empty State / Pagination (Placeholder) */}
           <div className="px-6 py-4 border-t border-gray-200 bg-gray-50 flex items-center justify-end">
             <div className="flex gap-1">
@@ -427,8 +430,8 @@ export const PrescriptionList: React.FC = () => {
         <div className="fixed inset-0 z-[100] overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
           <div className="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:p-0">
             {/* Background overlay */}
-            <div 
-              className="fixed inset-0 bg-gray-900 bg-opacity-75 transition-opacity" 
+            <div
+              className="fixed inset-0 bg-gray-900 bg-opacity-75 transition-opacity"
               aria-hidden="true"
               onClick={() => setSelectedPrescription(null)}
             ></div>
@@ -443,7 +446,7 @@ export const PrescriptionList: React.FC = () => {
                       <h3 className="text-lg leading-6 font-medium text-gray-900" id="modal-title">
                         처방전 이미지
                       </h3>
-                      <button 
+                      <button
                         onClick={() => setSelectedPrescription(null)}
                         className="bg-white rounded-md text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                       >
@@ -451,12 +454,12 @@ export const PrescriptionList: React.FC = () => {
                         <X size={24} />
                       </button>
                     </div>
-                    
+
                     <div className="bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center min-h-[400px]">
                       {selectedPrescription.imageUrl ? (
-                        <ImageWithFallback 
-                          src={selectedPrescription.imageUrl} 
-                          alt="처방전 이미지" 
+                        <ImageWithFallback
+                          src={selectedPrescription.imageUrl}
+                          alt="처방전 이미지"
                           className="max-w-full max-h-[600px] object-contain"
                         />
                       ) : (
@@ -489,15 +492,15 @@ export const PrescriptionList: React.FC = () => {
                 </div>
               </div>
               <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   onClick={() => setSelectedPrescription(null)}
                   className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm"
                 >
                   확인
                 </button>
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
                 >
                   <Printer size={16} className="mr-2" />
