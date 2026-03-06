@@ -285,10 +285,26 @@ export const ConsultationHistory = ({ onBack }: { onBack?: () => void }) => {
             </tbody>
           </table>
 
-          <div className="px-6 py-4 border-t border-gray-200 bg-gray-50 flex items-center justify-end">
-            <div className="flex gap-1">
-              <button className="px-3 py-1 text-xs border border-gray-300 rounded bg-white hover:bg-gray-50 disabled:opacity-50">이전</button>
-              <button className="px-3 py-1 text-xs border border-gray-300 rounded bg-white hover:bg-gray-50 disabled:opacity-50">다음</button>
+          {/* Pagination */}
+          <div className="px-4 py-3 border-t border-gray-200 bg-white flex items-center relative">
+            {/* Center: page buttons */}
+            <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-1">
+              <button className="w-7 h-7 flex items-center justify-center rounded text-gray-400 hover:bg-gray-100 text-xs disabled:opacity-30" disabled>«</button>
+              <button className="w-7 h-7 flex items-center justify-center rounded text-gray-400 hover:bg-gray-100 text-xs disabled:opacity-30" disabled>‹</button>
+              {[1, 2, 3, 4, 5].map((p) => (
+                <button key={p} className={`w-7 h-7 flex items-center justify-center rounded text-xs font-medium ${p === 1 ? 'bg-blue-600 text-white' : 'text-gray-600 hover:bg-gray-100'}`}>{p}</button>
+              ))}
+              <button className="w-7 h-7 flex items-center justify-center rounded text-gray-400 hover:bg-gray-100 text-xs">›</button>
+              <button className="w-7 h-7 flex items-center justify-center rounded text-gray-400 hover:bg-gray-100 text-xs">»</button>
+            </div>
+            {/* Right: rows per page */}
+            <div className="ml-auto flex items-center gap-1.5">
+              <select className="border border-gray-300 rounded text-xs text-gray-600 px-2 py-1 bg-white focus:outline-none focus:ring-1 focus:ring-blue-500">
+                <option>20</option>
+                <option>50</option>
+                <option>100</option>
+              </select>
+              <span className="text-xs text-gray-500">건씩 보기</span>
             </div>
           </div>
         </div>

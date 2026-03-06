@@ -1,6 +1,6 @@
 import React from 'react';
-import { 
-  Search, 
+import {
+  Search,
   ArrowRight,
   ExternalLink
 } from 'lucide-react';
@@ -83,7 +83,7 @@ export const PatientList: React.FC<PatientListProps> = ({ onPatientClick }) => {
                 <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">휴대폰 번호</th>
                 <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">생년월일(나이)</th>
                 <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">관리질환</th>
-                <th className="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">복약 순응도<br/>(30일 이내)</th>
+                <th className="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">복약 순응도<br />(30일 이내)</th>
                 <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">최근 복약 상담 일자</th>
               </tr>
             </thead>
@@ -91,7 +91,7 @@ export const PatientList: React.FC<PatientListProps> = ({ onPatientClick }) => {
               {MOCK_DATA.map((patient) => (
                 <tr key={patient.id} className="hover:bg-blue-50/50 transition-colors">
                   <td className="px-4 py-3">
-                    <button 
+                    <button
                       onClick={() => handlePatientClick(patient.id)}
                       className="flex items-center space-x-2 text-left group"
                     >
@@ -104,23 +104,23 @@ export const PatientList: React.FC<PatientListProps> = ({ onPatientClick }) => {
                   </td>
                   <td className="px-4 py-3 text-sm text-gray-600">
                     <span className={clsx(
-                        "px-2 py-0.5 rounded text-xs",
-                        patient.medicationStatus === '미실시' ? 'bg-gray-100 text-gray-500' :
-                        patient.medicationStatus.includes('당뇨') || patient.medicationStatus.includes('고혈압') ? 'bg-orange-50 text-orange-700 border border-orange-100' : 
-                        'text-gray-600'
+                      "px-2 py-0.5 rounded text-xs",
+                      patient.medicationStatus === '미실시' ? 'bg-gray-100 text-gray-500' :
+                        patient.medicationStatus.includes('당뇨') || patient.medicationStatus.includes('고혈압') ? 'bg-orange-50 text-orange-700 border border-orange-100' :
+                          'text-gray-600'
                     )}>
-                        {patient.medicationStatus}
+                      {patient.medicationStatus}
                     </span>
                   </td>
                   <td className="px-4 py-3 text-center">
                     <div className="flex flex-col items-center">
-                        <span className={clsx(
-                            "text-sm font-bold",
-                            patient.adherenceRate >= 80 ? "text-green-600" :
-                            patient.adherenceRate >= 50 ? "text-orange-500" : "text-gray-400"
-                        )}>
-                            {patient.adherenceRate}%
-                        </span>
+                      <span className={clsx(
+                        "text-sm font-bold",
+                        patient.adherenceRate >= 80 ? "text-green-600" :
+                          patient.adherenceRate >= 50 ? "text-orange-500" : "text-gray-400"
+                      )}>
+                        {patient.adherenceRate}%
+                      </span>
                     </div>
                   </td>
                   <td className="px-4 py-3 text-sm text-gray-400">{patient.prescriptionNo}</td>
@@ -129,19 +129,28 @@ export const PatientList: React.FC<PatientListProps> = ({ onPatientClick }) => {
             </tbody>
           </table>
         </div>
-        
+
         {/* Pagination */}
-        <div className="px-4 py-3 border-t border-gray-200 bg-gray-50 flex items-center justify-between">
-            <div className="text-sm text-gray-500">
-                1 - 10 / 560
-            </div>
-            <div className="flex space-x-1">
-                <button className="px-3 py-1 border border-gray-300 rounded bg-white text-sm text-gray-600 hover:bg-gray-50">이전</button>
-                <button className="px-3 py-1 border border-gray-300 rounded bg-blue-600 text-sm text-white">1</button>
-                <button className="px-3 py-1 border border-gray-300 rounded bg-white text-sm text-gray-600 hover:bg-gray-50">2</button>
-                <button className="px-3 py-1 border border-gray-300 rounded bg-white text-sm text-gray-600 hover:bg-gray-50">3</button>
-                <button className="px-3 py-1 border border-gray-300 rounded bg-white text-sm text-gray-600 hover:bg-gray-50">다음</button>
-            </div>
+        <div className="px-4 py-3 border-t border-gray-200 bg-white flex items-center relative">
+          {/* Center: page buttons */}
+          <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-1">
+            <button className="w-7 h-7 flex items-center justify-center rounded text-gray-400 hover:bg-gray-100 text-xs disabled:opacity-30" disabled>«</button>
+            <button className="w-7 h-7 flex items-center justify-center rounded text-gray-400 hover:bg-gray-100 text-xs disabled:opacity-30" disabled>‹</button>
+            {[1, 2, 3, 4, 5].map((p) => (
+              <button key={p} className={`w-7 h-7 flex items-center justify-center rounded text-xs font-medium ${p === 1 ? 'bg-blue-600 text-white' : 'text-gray-600 hover:bg-gray-100'}`}>{p}</button>
+            ))}
+            <button className="w-7 h-7 flex items-center justify-center rounded text-gray-400 hover:bg-gray-100 text-xs">›</button>
+            <button className="w-7 h-7 flex items-center justify-center rounded text-gray-400 hover:bg-gray-100 text-xs">»</button>
+          </div>
+          {/* Right: rows per page */}
+          <div className="ml-auto flex items-center gap-1.5">
+            <select className="border border-gray-300 rounded text-xs text-gray-600 px-2 py-1 bg-white focus:outline-none focus:ring-1 focus:ring-blue-500">
+              <option>20</option>
+              <option>50</option>
+              <option>100</option>
+            </select>
+            <span className="text-xs text-gray-500">건씩 보기</span>
+          </div>
         </div>
       </div>
     </div>
