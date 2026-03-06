@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { 
-  Smartphone, 
-  Send, 
-  Users, 
-  User, 
-  Copy, 
+import {
+  Smartphone,
+  Send,
+  Users,
+  User,
+  Copy,
   RefreshCw,
   MessageSquare,
   CheckCircle2
@@ -20,7 +20,7 @@ export const SmsInvite: React.FC<SmsInviteProps> = () => {
   const [patientPhone, setPatientPhone] = useState('010-1234-5678');
   const [hospitalPhone, setHospitalPhone] = useState('02-123-4567');
   const [messageText, setMessageText] = useState(
-    `[서울종로약국]\n김약사 약사님이 건강관리 앱 'Wellcheck' 설치를 요청했습니다.\n\n아래 링크를 눌러 설치 후, 내 건강 정보를 확인해보세요.\n\n👉 설치하기: https://wellcheck.app/link/invitation`
+    `<광고> [약국과 더 가꺝게 '웰체크'로 관리하세요!]\n\n안녕하세요.\n웰체크 앱을 설치하고 복약 상담 내역을 누적 관리하세요.\n\n👉 설치하기:\nhttps://api.well-check.co.kr/download\n\n복약 상담 문의: \n02-123-4567\n\n웰체크 고객센터:\n1551-3633\n\n무료수신거부:\n080-870-0486`
   );
 
   return (
@@ -29,7 +29,7 @@ export const SmsInvite: React.FC<SmsInviteProps> = () => {
       <header className="bg-white border-b border-gray-200 px-6 py-4 flex-none">
         <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
           <MessageSquare className="text-blue-600" />
-          앱 설치문자 발송
+          앱 설치 문자 발송
         </h1>
         <p className="text-sm text-gray-500 mt-1">
           고객에게 앱 설치 링크가 포함된 초대 문자를 발송합니다.
@@ -39,10 +39,10 @@ export const SmsInvite: React.FC<SmsInviteProps> = () => {
       {/* Main Content */}
       <div className="flex-1 overflow-hidden p-6">
         <div className="max-w-6xl mx-auto h-full grid grid-cols-1 lg:grid-cols-2 gap-8">
-          
+
           {/* Left Column: Settings */}
           <div className="flex flex-col gap-6 overflow-y-auto pr-2 custom-scrollbar">
-            
+
             {/* 1. Send Type Selection */}
             <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
               <h3 className="font-bold text-gray-800 mb-4">발송 대상 선택</h3>
@@ -51,8 +51,8 @@ export const SmsInvite: React.FC<SmsInviteProps> = () => {
                   onClick={() => setSendType('individual')}
                   className={clsx(
                     "flex-1 flex items-center justify-center gap-2 py-2.5 text-sm font-medium rounded-md transition-all",
-                    sendType === 'individual' 
-                      ? "bg-white text-blue-600 shadow-sm" 
+                    sendType === 'individual'
+                      ? "bg-white text-blue-600 shadow-sm"
                       : "text-gray-500 hover:text-gray-700"
                   )}
                 >
@@ -63,8 +63,8 @@ export const SmsInvite: React.FC<SmsInviteProps> = () => {
                   onClick={() => setSendType('bulk')}
                   className={clsx(
                     "flex-1 flex items-center justify-center gap-2 py-2.5 text-sm font-medium rounded-md transition-all",
-                    sendType === 'bulk' 
-                      ? "bg-white text-blue-600 shadow-sm" 
+                    sendType === 'bulk'
+                      ? "bg-white text-blue-600 shadow-sm"
                       : "text-gray-500 hover:text-gray-700"
                   )}
                 >
@@ -77,7 +77,7 @@ export const SmsInvite: React.FC<SmsInviteProps> = () => {
             {/* 2. Input Fields */}
             <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex-1">
               <h3 className="font-bold text-gray-800 mb-4">발송 정보 입력</h3>
-              
+
               <div className="space-y-4">
                 {sendType === 'individual' ? (
                   <>
@@ -106,7 +106,7 @@ export const SmsInvite: React.FC<SmsInviteProps> = () => {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    발신번호 (병원/약국)
+                    약국 번호
                   </label>
                   <input
                     type="text"
@@ -122,8 +122,8 @@ export const SmsInvite: React.FC<SmsInviteProps> = () => {
                     <label className="block text-sm font-medium text-gray-700">
                       문자 내용 (편집 가능)
                     </label>
-                    <button 
-                      onClick={() => setMessageText(`[서울종로약국]\n김약사 약사님이 건강관리 앱 'Wellcheck' 설치를 요청했습니다.\n\n아래 링크를 눌러 설치 후, 내 건강 정보를 확인해보세요.\n\n👉 설치하기: https://wellcheck.app/link/invitation`)}
+                    <button
+                      onClick={() => setMessageText(`<광고> [약국과 더 가꺝게 '웰체크'로 관리하세요!]\n\n안녕하세요.\n웰체크 앱을 설치하고 복약 상담 내역을 누적 관리하세요.\n\n👉 설치하기:\nhttps://api.well-check.co.kr/download\n\n복약 상담 문의: \n02-123-4567\n\n웰체크 고객센터:\n1551-3633\n\n무료수신거부:\n080-870-0486`)}
                       className="text-xs text-gray-500 flex items-center gap-1 hover:text-blue-600"
                     >
                       <RefreshCw size={12} />
@@ -147,7 +147,7 @@ export const SmsInvite: React.FC<SmsInviteProps> = () => {
                   초대장 발송하기
                 </button>
                 <p className="text-center text-xs text-gray-400 mt-3">
-                  * 발송 비용은 건당 30원이 부과됩니다.
+                  * 발송 비용은 웰체크에서 부담합니다.
                 </p>
               </div>
             </div>
@@ -164,57 +164,57 @@ export const SmsInvite: React.FC<SmsInviteProps> = () => {
             <div className="w-[320px] h-[640px] bg-black rounded-[3rem] p-3 shadow-2xl relative border-4 border-gray-800">
               {/* Phone Notch/Speaker */}
               <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-6 bg-black rounded-b-xl z-10"></div>
-              
+
               {/* Screen Area */}
               <div className="w-full h-full bg-white rounded-[2.2rem] overflow-hidden flex flex-col relative">
-                
+
                 {/* Fake Status Bar */}
                 <div className="h-12 bg-gray-100 flex items-end justify-between px-6 pb-2 border-b border-gray-200">
-                    <span className="text-xs font-semibold text-gray-900">09:41</span>
-                    <div className="flex gap-1">
-                        <div className="w-4 h-2.5 bg-gray-900 rounded-sm opacity-20"></div>
-                        <div className="w-4 h-2.5 bg-gray-900 rounded-sm opacity-40"></div>
-                        <div className="w-4 h-2.5 bg-gray-900 rounded-sm"></div>
-                    </div>
+                  <span className="text-xs font-semibold text-gray-900">09:41</span>
+                  <div className="flex gap-1">
+                    <div className="w-4 h-2.5 bg-gray-900 rounded-sm opacity-20"></div>
+                    <div className="w-4 h-2.5 bg-gray-900 rounded-sm opacity-40"></div>
+                    <div className="w-4 h-2.5 bg-gray-900 rounded-sm"></div>
+                  </div>
                 </div>
 
                 {/* Message Header */}
                 <div className="px-4 py-3 bg-white/90 backdrop-blur border-b border-gray-100 sticky top-0 z-10">
-                    <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
-                            <User size={16} className="text-gray-500" />
-                        </div>
-                        <div className="flex flex-col">
-                            <span className="text-xs font-bold text-gray-900">{hospitalPhone}</span>
-                            <span className="text-[10px] text-gray-500">MMS 문자 메시지</span>
-                        </div>
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center">
+                      <User size={16} className="text-gray-500" />
                     </div>
+                    <div className="flex flex-col">
+                      <span className="text-xs font-bold text-gray-900">{hospitalPhone}</span>
+                      <span className="text-[10px] text-gray-500">MMS 문자 메시지</span>
+                    </div>
+                  </div>
                 </div>
 
                 {/* Chat Area */}
                 <div className="flex-1 bg-slate-50 p-4 overflow-y-auto">
-                    <div className="flex flex-col items-start gap-1 max-w-[90%] animate-fade-in-up">
-                        <div className="bg-white p-4 rounded-2xl rounded-tl-none shadow-sm border border-gray-200 text-sm text-gray-800 leading-relaxed whitespace-pre-wrap">
-                            {messageText}
-                        </div>
-                        <span className="text-[10px] text-gray-400 ml-1">오전 09:41</span>
+                  <div className="flex flex-col items-start gap-1 max-w-[90%] animate-fade-in-up">
+                    <div className="bg-white p-4 rounded-2xl rounded-tl-none shadow-sm border border-gray-200 text-sm text-gray-800 leading-relaxed whitespace-pre-wrap">
+                      {messageText}
                     </div>
+                    <span className="text-[10px] text-gray-400 ml-1">오전 09:41</span>
+                  </div>
                 </div>
 
                 {/* Fake Keyboard/Input Area */}
                 <div className="h-16 bg-gray-100 border-t border-gray-200 flex items-center px-4 gap-3">
-                    <div className="w-6 h-6 rounded-full bg-gray-300"></div>
-                    <div className="flex-1 h-8 bg-white rounded-full border border-gray-300"></div>
-                    <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white">
-                        <Send size={14} />
-                    </div>
+                  <div className="w-6 h-6 rounded-full bg-gray-300"></div>
+                  <div className="flex-1 h-8 bg-white rounded-full border border-gray-300"></div>
+                  <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center text-white">
+                    <Send size={14} />
+                  </div>
                 </div>
 
               </div>
             </div>
-            
+
             <p className="mt-6 text-sm text-gray-500">
-                실제 발송되는 화면과 약간의 차이가 있을 수 있습니다.
+              실제 발송되는 화면과 약간의 차이가 있을 수 있습니다.
             </p>
           </div>
 

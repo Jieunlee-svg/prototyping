@@ -164,7 +164,29 @@ export const Sidebar: React.FC<SidebarProps> = ({
             )}
           </li>
 
-          {/* 앱 설치문자 발송 with sub-menu */}
+          {/* Other menu items: 단골 고객, 처방전 */}
+          {[
+            { icon: Users, label: '단골 고객', id: '단골 고객' },
+            { icon: Stethoscope, label: '처방전', id: '처방전' },
+          ].map((item, index) => (
+            <li key={index}>
+              <a
+                href="#"
+                onClick={(e) => handleMenuClick(e, item.id)}
+                className={clsx(
+                  "flex items-center px-5 py-3 text-sm font-medium transition-colors",
+                  isItemActive(item.id)
+                    ? "text-white bg-blue-600"
+                    : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                )}
+              >
+                <item.icon size={18} className="mr-3" />
+                {item.label}
+              </a>
+            </li>
+          ))}
+
+          {/* 앱 설치 문자 발송 with sub-menu */}
           <li>
             <a
               href="#"
@@ -184,7 +206,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               )}
             >
               <MessageSquare size={18} className="mr-3" />
-              앱 설치문자 발송
+              앱 설치 문자 발송
               <span className="ml-auto">
                 {smsOpen ? <ChevronDown size={14} /> : <ChevronRightIcon size={14} />}
               </span>
@@ -218,10 +240,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
             )}
           </li>
 
-          {/* Other menu items */}
+          {/* 공지사항 */}
           {[
-            { icon: Users, label: '단골 고객', id: '단골 고객' },
-            { icon: Stethoscope, label: '처방전', id: '처방전' },
             { icon: Bell, label: '공지사항', id: '공지사항' },
           ].map((item, index) => (
             <li key={index}>

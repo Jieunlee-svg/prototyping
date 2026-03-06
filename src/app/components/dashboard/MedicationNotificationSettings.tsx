@@ -284,13 +284,6 @@ export const MedicationNotificationSettings = ({ onBack }: { onBack?: () => void
       <div className="flex-1 overflow-y-auto px-6 py-6">
         <div className="max-w-[1200px] mx-auto space-y-6">
 
-          {/* ── Info 메시지 ── */}
-          <div className="flex items-start gap-2 p-3 rounded-[var(--radius)] border border-[var(--border)] bg-[rgba(245,246,249,0.7)]">
-            <Info className="w-4 h-4 mt-0.5 shrink-0 text-[var(--muted-foreground)]" />
-            <p className="text-[var(--muted-foreground)] text-xs font-normal leading-relaxed">
-              고객의 웰체크 앱으로 알림 설정이 전송될 때 기본값으로 사용됩니다. 고객이 앱에서 변경 할 수 있습니다.
-            </p>
-          </div>
 
           {/* ── 복용 횟수별 기본 설정 (토글 포함) ── */}
           <SectionCard
@@ -393,6 +386,12 @@ export const MedicationNotificationSettings = ({ onBack }: { onBack?: () => void
             icon={<Clock className="w-[18px] h-[18px]" style={{ color: 'var(--primary)' }} />}
             title="웰체크 앱 전송 시간 설정"
           >
+            <div className="flex items-start gap-2 p-3 mb-4 rounded-[var(--radius)] border border-[var(--border)] bg-[rgba(245,246,249,0.7)]">
+              <Info className="w-4 h-4 mt-0.5 shrink-0 text-[var(--muted-foreground)]" />
+              <p className="text-[var(--muted-foreground)] text-xs font-normal leading-relaxed">
+                고객의 웰체크 앱으로 알림 설정이 전송될 때 기본값으로 사용됩니다. 고객이 앱에서 변경 할 수 있습니다.
+              </p>
+            </div>
             <div className="grid grid-cols-2 gap-3">
               {timeMappings.map((mapping) => (
                 <div
