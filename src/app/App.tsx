@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Sidebar } from './components/layout/Sidebar';
 import { TopBar } from './components/layout/TopBar';
+import { AppFooter } from './components/layout/AppFooter';
 import { PatientList } from './components/dashboard/PatientList';
 import { PatientDetail } from './components/dashboard/PatientDetail';
 import { SmsInvite } from './components/dashboard/SmsInvite';
@@ -102,6 +103,7 @@ function App() {
             </div>
           )}
         </main>
+        <AppFooter />
       </div>
     </div>
   );
