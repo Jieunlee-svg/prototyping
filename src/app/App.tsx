@@ -4,6 +4,7 @@ import { TopBar } from './components/layout/TopBar';
 import { PatientList } from './components/dashboard/PatientList';
 import { PatientDetail } from './components/dashboard/PatientDetail';
 import { SmsInvite } from './components/dashboard/SmsInvite';
+import { SmsInviteHistory } from './components/dashboard/SmsInviteHistory';
 import { PrescriptionList } from './components/dashboard/PrescriptionList';
 import { PharmacySettings } from './components/dashboard/PharmacySettings';
 import { NoticeList } from './components/dashboard/NoticeList';
@@ -16,7 +17,7 @@ import { MyInfo } from './components/dashboard/MyInfo';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [view, setView] = useState<'list' | 'detail' | 'sms' | 'prescription' | 'settings' | 'notice' | 'consultation-c' | 'consultation-history' | 'consultation-reminder' | 'my-info'>('consultation-c');
+  const [view, setView] = useState<'list' | 'detail' | 'sms' | 'sms-history' | 'prescription' | 'settings' | 'notice' | 'consultation-c' | 'consultation-history' | 'consultation-reminder' | 'my-info'>('consultation-c');
   const [selectedPatientId, setSelectedPatientId] = useState<string | null>(null);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
@@ -41,6 +42,7 @@ function App() {
         onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
         activeView={view}
         onSmsClick={() => setView('sms')}
+        onSmsHistoryClick={() => setView('sms-history')}
         onDashboardClick={() => setView('list')}
         onPrescriptionClick={() => setView('prescription')}
         onConsultationCClick={() => setView('consultation-c')}
@@ -61,6 +63,10 @@ function App() {
           ) : view === 'sms' ? (
             <div className="absolute inset-0 overflow-hidden">
               <SmsInvite />
+            </div>
+          ) : view === 'sms-history' ? (
+            <div className="absolute inset-0 overflow-hidden">
+              <SmsInviteHistory />
             </div>
           ) : view === 'prescription' ? (
             <div className="absolute inset-0 overflow-hidden">

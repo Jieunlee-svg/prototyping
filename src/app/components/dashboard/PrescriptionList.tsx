@@ -295,25 +295,23 @@ export const PrescriptionList: React.FC = () => {
             키오스크
           </button>
         </div>
+        <div className="h-6 w-px bg-gray-300 mx-1"></div>
+        <select
+          className="bg-white border border-gray-300 text-gray-700 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block px-2.5 py-1.5"
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value as any)}
+        >
+          <option value="all">모든 상태</option>
+          <option value="received">접수</option>
+          <option value="dispensing">조제중</option>
+          <option value="done">조제완료</option>
+        </select>
       </div>
 
       <div className="px-6 pb-4 flex items-center justify-between gap-4">
         <h3 className="font-bold text-gray-800 shrink-0">
           총 처방전 접수 <span className="text-blue-600">({MOCK_PRESCRIPTIONS.length}건)</span>
         </h3>
-        <div className="flex items-center gap-2">
-          <div className="h-6 w-px bg-gray-300 mx-2"></div>
-          <select
-            className="bg-white border border-gray-300 text-gray-700 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5"
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value as any)}
-          >
-            <option value="all">모든 상태</option>
-            <option value="received">접수</option>
-            <option value="dispensing">조제중</option>
-            <option value="done">조제완료</option>
-          </select>
-        </div>
 
         <div className="relative w-64">
           <input

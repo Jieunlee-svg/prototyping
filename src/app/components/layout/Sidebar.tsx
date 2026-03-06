@@ -25,6 +25,7 @@ interface SidebarProps {
   collapsed?: boolean;
   onToggleCollapse?: () => void;
   onSmsClick?: () => void;
+  onSmsHistoryClick?: () => void;
   onDashboardClick?: () => void;
   onPrescriptionClick?: () => void;
   onConsultationCClick?: () => void;
@@ -34,7 +35,7 @@ interface SidebarProps {
   onNoticeClick?: () => void;
   onMyInfoClick?: () => void;
   onLogout?: () => void;
-  activeView?: 'list' | 'detail' | 'sms' | 'prescription' | 'settings' | 'notice' | 'consultation-c' | 'consultation-history' | 'consultation-reminder' | 'my-info';
+  activeView?: 'list' | 'detail' | 'sms' | 'sms-history' | 'prescription' | 'settings' | 'notice' | 'consultation-c' | 'consultation-history' | 'consultation-reminder' | 'my-info';
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -42,6 +43,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   collapsed = false,
   onToggleCollapse,
   onSmsClick,
+  onSmsHistoryClick,
   onDashboardClick,
   onPrescriptionClick,
   onConsultationCClick,
@@ -55,12 +57,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   const isConsultationActive = activeView === 'consultation-c' || activeView === 'consultation-history' || activeView === 'consultation-reminder';
   const [consultationOpen, setConsultationOpen] = useState(isConsultationActive);
+  const isSmsActive = activeView === 'sms' || activeView === 'sms-history';
+  const [smsOpen, setSmsOpen] = useState(isSmsActive);
 
   const handleMenuClick = (e: React.MouseEvent, label: string) => {
     e.preventDefault();
-    if (label === '앱 설치문자 발송' && onSmsClick) {
-      onSmsClick();
-    } else if (label === '단골 고객' && onDashboardClick) {
+    if (label === '단골 고객' && onDashboardClick) {
       onDashboardClick();
     } else if (label === '처방전' && onPrescriptionClick) {
       onPrescriptionClick();
@@ -70,7 +72,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
   };
 
   const isItemActive = (label: string) => {
-    if (label === '앱 설치문자 발송' && activeView === 'sms') return true;
     if (label === '처방전' && activeView === 'prescription') return true;
     if (label === '단골 고객' && (activeView === 'list' || activeView === 'detail')) return true;
     if (label === '공지사항' && activeView === 'notice') return true;
@@ -163,11 +164,64 @@ export const Sidebar: React.FC<SidebarProps> = ({
             )}
           </li>
 
+          {/* 앱 설치문자 발송 with sub-menu */}
+          <li>
+            <a
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                const willOpen = !smsOpen;
+                setSmsOpen(willOpen);
+                if (willOpen && onSmsClick) {
+                  onSmsClick();
+                }
+              }}
+              className={clsx(
+                "flex items-center px-5 py-3 text-sm font-medium transition-colors",
+                isSmsActive
+                  ? "text-blue-600 bg-blue-50"
+                  : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+              )}
+            >
+              <MessageSquare size={18} className="mr-3" />
+              앱 설치문자 발송
+              <span className="ml-auto">
+                {smsOpen ? <ChevronDown size={14} /> : <ChevronRightIcon size={14} />}
+              </span>
+            </a>
+            {smsOpen && (
+              <ul className="mt-1 space-y-0.5">
+                {[
+                  { icon: MessageSquare, label: '앱 설치 문자 발송', view: 'sms' as const, onClick: onSmsClick },
+                  { icon: ClipboardList, label: '앱 설치 문자 발송 내역', view: 'sms-history' as const, onClick: onSmsHistoryClick },
+                ].map((sub) => (
+                  <li key={sub.view}>
+                    <a
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        sub.onClick?.();
+                      }}
+                      className={clsx(
+                        "flex items-center pl-11 pr-5 py-2.5 text-sm transition-colors",
+                        activeView === sub.view
+                          ? "text-white bg-blue-600 font-medium"
+                          : "text-gray-500 hover:bg-gray-50 hover:text-gray-900"
+                      )}
+                    >
+                      <sub.icon size={15} className="mr-2.5" />
+                      {sub.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </li>
+
           {/* Other menu items */}
           {[
             { icon: Users, label: '단골 고객', id: '단골 고객' },
             { icon: Stethoscope, label: '처방전', id: '처방전' },
-            { icon: MessageSquare, label: '앱 설치문자 발송', id: '앱 설치문자 발송' },
             { icon: Bell, label: '공지사항', id: '공지사항' },
           ].map((item, index) => (
             <li key={index}>
