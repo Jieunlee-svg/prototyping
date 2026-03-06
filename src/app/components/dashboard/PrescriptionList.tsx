@@ -4,17 +4,15 @@ import {
   Camera,
   Printer,
   Search,
-  Filter,
-  MoreVertical,
   CheckCircle2,
   Clock,
-  AlertCircle,
   XCircle,
-  Download,
   Eye,
-  Phone,
   X,
-  Monitor
+  Monitor,
+  Star,
+  Package,
+  CreditCard
 } from 'lucide-react';
 import { clsx } from 'clsx';
 import { ImageWithFallback } from '../figma/ImageWithFallback';
@@ -25,11 +23,15 @@ interface Prescription {
   id: string;
   source: 'app_camera' | 'fax_telemed' | 'kiosk';
   patientName: string;
-  patientRrn: string;
+  birthDate: string;
+  phone: string;
   hospitalName: string;
   diseaseCode: string;
   status: 'received' | 'dispensing' | 'done' | 'cancelled';
   paymentStatus: 'paid' | 'pending' | 'refunded' | 'na';
+  paymentAmount?: string;
+  deliveryMethod?: '방문 수령' | '배송';
+  isMember?: boolean;
   receivedAt: string;
   imageUrl?: string;
 }
@@ -39,11 +41,13 @@ const MOCK_PRESCRIPTIONS: Prescription[] = [
     id: 'RX-20240205-01',
     source: 'app_camera',
     patientName: '김철수',
-    patientRrn: '800101-1******',
+    birthDate: '1980-01-01',
+    phone: '010-1234-5678',
     hospitalName: '확인 안됨',
     diseaseCode: 'J20.9',
     status: 'received',
     paymentStatus: 'na',
+    isMember: true,
     receivedAt: '2024-02-05 14:30',
     imageUrl: prescriptionImage
   },
@@ -51,11 +55,15 @@ const MOCK_PRESCRIPTIONS: Prescription[] = [
     id: 'RX-20240205-02',
     source: 'fax_telemed',
     patientName: '이영희',
-    patientRrn: '920315-2******',
+    birthDate: '1992-03-15',
+    phone: '010-9876-5432',
     hospitalName: '굿닥터이비인후과',
     diseaseCode: 'J00',
     status: 'dispensing',
     paymentStatus: 'paid',
+    paymentAmount: '12,500원',
+    deliveryMethod: '방문 수령',
+    isMember: true,
     receivedAt: '2024-02-05 14:15',
     imageUrl: prescriptionImage
   },
@@ -63,11 +71,13 @@ const MOCK_PRESCRIPTIONS: Prescription[] = [
     id: 'RX-20240205-03',
     source: 'app_camera',
     patientName: '박지민',
-    patientRrn: '150505-3******',
+    birthDate: '2015-05-05',
+    phone: '010-3333-7777',
     hospitalName: '확인 안됨',
     diseaseCode: 'J30.4',
     status: 'done',
     paymentStatus: 'na',
+    isMember: false,
     receivedAt: '2024-02-05 13:45',
     imageUrl: prescriptionImage
   },
@@ -75,11 +85,15 @@ const MOCK_PRESCRIPTIONS: Prescription[] = [
     id: 'RX-20240205-04',
     source: 'fax_telemed',
     patientName: '최민수',
-    patientRrn: '751212-1******',
+    birthDate: '1975-12-12',
+    phone: '010-5555-1111',
     hospitalName: '서울대병원',
     diseaseCode: 'E11.9',
     status: 'cancelled',
     paymentStatus: 'refunded',
+    paymentAmount: '28,000원',
+    deliveryMethod: '배송',
+    isMember: false,
     receivedAt: '2024-02-05 11:20',
     imageUrl: prescriptionImage
   },
@@ -87,11 +101,15 @@ const MOCK_PRESCRIPTIONS: Prescription[] = [
     id: 'RX-20240205-05',
     source: 'fax_telemed',
     patientName: '김하준',
-    patientRrn: '900214-1******',
+    birthDate: '1990-02-14',
+    phone: '010-2222-8888',
     hospitalName: '강북삼성병원',
     diseaseCode: 'J06.9',
     status: 'received',
     paymentStatus: 'pending',
+    paymentAmount: '8,400원',
+    deliveryMethod: '방문 수령',
+    isMember: true,
     receivedAt: '2024-02-05 10:50',
     imageUrl: prescriptionImage
   },
@@ -99,11 +117,13 @@ const MOCK_PRESCRIPTIONS: Prescription[] = [
     id: 'RX-20240205-06',
     source: 'app_camera',
     patientName: '정수정',
-    patientRrn: '980707-2******',
+    birthDate: '1998-07-07',
+    phone: '010-6666-2222',
     hospitalName: '확인 안됨',
     diseaseCode: 'F41.0',
     status: 'received',
     paymentStatus: 'na',
+    isMember: true,
     receivedAt: '2024-02-05 10:10',
     imageUrl: prescriptionImage
   },
@@ -111,11 +131,13 @@ const MOCK_PRESCRIPTIONS: Prescription[] = [
     id: 'RX-20240205-07',
     source: 'kiosk',
     patientName: '한지수',
-    patientRrn: '010320-4******',
+    birthDate: '2001-03-20',
+    phone: '010-4444-9999',
     hospitalName: '연세세브란스병원',
     diseaseCode: 'I10',
     status: 'received',
     paymentStatus: 'na',
+    paymentAmount: '15,200원',
     receivedAt: '2024-02-05 09:50',
     imageUrl: prescriptionImage
   },
@@ -123,11 +145,13 @@ const MOCK_PRESCRIPTIONS: Prescription[] = [
     id: 'RX-20240205-08',
     source: 'kiosk',
     patientName: '오민준',
-    patientRrn: '880922-1******',
+    birthDate: '1988-09-22',
+    phone: '010-7777-3333',
     hospitalName: '강남성심병원',
     diseaseCode: 'M54.5',
     status: 'dispensing',
     paymentStatus: 'na',
+    paymentAmount: '9,800원',
     receivedAt: '2024-02-05 09:35',
     imageUrl: prescriptionImage
   },
@@ -135,11 +159,13 @@ const MOCK_PRESCRIPTIONS: Prescription[] = [
     id: 'RX-20240205-09',
     source: 'kiosk',
     patientName: '서예린',
-    patientRrn: '950614-2******',
+    birthDate: '1995-06-14',
+    phone: '010-8888-4444',
     hospitalName: '아산병원내과',
     diseaseCode: 'K21.0',
     status: 'done',
     paymentStatus: 'na',
+    paymentAmount: '22,600원',
     receivedAt: '2024-02-05 09:10',
     imageUrl: prescriptionImage
   },
@@ -147,11 +173,13 @@ const MOCK_PRESCRIPTIONS: Prescription[] = [
     id: 'RX-20240205-10',
     source: 'kiosk',
     patientName: '임태양',
-    patientRrn: '730430-1******',
+    birthDate: '1973-04-30',
+    phone: '010-1111-6666',
     hospitalName: '고려대안암병원',
     diseaseCode: 'J45.9',
     status: 'received',
     paymentStatus: 'na',
+    paymentAmount: '11,400원',
     receivedAt: '2024-02-05 08:55',
     imageUrl: prescriptionImage
   },
@@ -240,6 +268,218 @@ export const PrescriptionList: React.FC = () => {
     }
   };
 
+  const filteredPrescriptions = MOCK_PRESCRIPTIONS.filter((p) => {
+    const matchesSource = filter === 'all' || p.source === filter;
+    const matchesStatus = statusFilter === 'all' || p.status === statusFilter;
+    return matchesSource && matchesStatus;
+  });
+
+  // --- Dynamic table header based on filter ---
+  const renderTableHeader = () => {
+    const thClass = 'px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider';
+    const thCenterClass = 'px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider';
+
+    if (filter === 'app_camera') {
+      return (
+        <tr>
+          <th scope="col" className={thClass}>접수일시</th>
+          <th scope="col" className={thClass}>고객명</th>
+          <th scope="col" className={thClass}>생년월일</th>
+          <th scope="col" className={thClass}>휴대폰 번호</th>
+          <th scope="col" className={thClass}>발행 병원</th>
+          <th scope="col" className={thClass}>접수 경로</th>
+          <th scope="col" className={thClass}>단골 여부</th>
+          <th scope="col" className={thCenterClass}>처방전</th>
+        </tr>
+      );
+    }
+
+    if (filter === 'fax_telemed') {
+      return (
+        <tr>
+          <th scope="col" className={thClass}>접수일시</th>
+          <th scope="col" className={thClass}>고객명</th>
+          <th scope="col" className={thClass}>생년월일</th>
+          <th scope="col" className={thClass}>휴대폰 번호</th>
+          <th scope="col" className={thClass}>발행 병원</th>
+          <th scope="col" className={thClass}>접수 경로</th>
+          <th scope="col" className={thClass}>단골 여부</th>
+          <th scope="col" className={thClass}>수령 방법</th>
+          <th scope="col" className={thClass}>결제 액</th>
+          <th scope="col" className={thClass}>결제 상태</th>
+          <th scope="col" className={thCenterClass}>처방전</th>
+        </tr>
+      );
+    }
+
+    if (filter === 'kiosk') {
+      return (
+        <tr>
+          <th scope="col" className={thClass}>접수일시</th>
+          <th scope="col" className={thClass}>고객명</th>
+          <th scope="col" className={thClass}>생년월일</th>
+          <th scope="col" className={thClass}>휴대폰 번호</th>
+          <th scope="col" className={thClass}>발행 병원</th>
+          <th scope="col" className={thClass}>접수 경로</th>
+          <th scope="col" className={thClass}>결제 액</th>
+          <th scope="col" className={thCenterClass}>처방전</th>
+        </tr>
+      );
+    }
+
+    // Default: 'all'
+    return (
+      <tr>
+        <th scope="col" className={thClass}>접수일시</th>
+        <th scope="col" className={thClass}>고객명</th>
+        <th scope="col" className={thClass}>생년월일</th>
+        <th scope="col" className={thClass}>휴대폰 번호</th>
+        <th scope="col" className={thClass}>발행 병원</th>
+        <th scope="col" className={thClass}>접수 경로</th>
+        <th scope="col" className={thCenterClass}>처방전</th>
+      </tr>
+    );
+  };
+
+  // --- Dynamic table row based on filter ---
+  const renderTableRow = (prescription: Prescription) => {
+    const tdClass = 'px-4 py-3.5 whitespace-nowrap text-sm text-gray-600';
+    const tdBold = 'px-4 py-3.5 whitespace-nowrap text-sm font-medium text-gray-900';
+    const tdCenter = 'px-4 py-3.5 whitespace-nowrap text-center';
+
+    const sourceCell = (
+      <td className={tdClass}>
+        <div className="flex items-center gap-2">
+          <div className={clsx(
+            'flex-shrink-0 h-7 w-7 rounded-full flex items-center justify-center',
+            prescription.source === 'app_camera' ? 'bg-blue-100' : prescription.source === 'kiosk' ? 'bg-green-100' : 'bg-purple-100'
+          )}>
+            {getSourceIcon(prescription.source)}
+          </div>
+          <span className="text-xs font-medium text-gray-700">{getSourceLabel(prescription.source)}</span>
+        </div>
+      </td>
+    );
+
+    const memberCell = (
+      <td className={tdClass}>
+        {prescription.isMember ? (
+          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-amber-50 text-amber-700 border border-amber-200">
+            <Star size={10} fill="currentColor" /> 단골
+          </span>
+        ) : (
+          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-400">
+            일반
+          </span>
+        )}
+      </td>
+    );
+
+    const deliveryCell = (
+      <td className={tdClass}>
+        {prescription.deliveryMethod ? (
+          <span className="inline-flex items-center gap-1 text-xs font-medium text-gray-700">
+            <Package size={12} className="text-gray-400" />
+            {prescription.deliveryMethod}
+          </span>
+        ) : (
+          <span className="text-gray-300">—</span>
+        )}
+      </td>
+    );
+
+    const paymentAmountCell = (
+      <td className={tdClass}>
+        {prescription.paymentAmount ? (
+          <span className="inline-flex items-center gap-1 text-sm font-semibold text-gray-800">
+            <CreditCard size={12} className="text-gray-400" />
+            {prescription.paymentAmount}
+          </span>
+        ) : (
+          <span className="text-gray-300">—</span>
+        )}
+      </td>
+    );
+
+    const paymentStatusCell = (
+      <td className="px-4 py-3.5 whitespace-nowrap">
+        {getPaymentStatusBadge(prescription.paymentStatus)}
+      </td>
+    );
+
+    const prescriptionBtn = (
+      <td className={tdCenter}>
+        <button
+          onClick={() => setSelectedPrescription(prescription)}
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+        >
+          <Eye size={14} />
+          보기
+        </button>
+      </td>
+    );
+
+    const commonCells = (
+      <>
+        <td className={tdClass}>{prescription.receivedAt}</td>
+        <td className={tdBold}>{prescription.patientName}</td>
+        <td className={tdClass}>{prescription.birthDate}</td>
+        <td className={tdClass}>{prescription.phone}</td>
+        <td className={tdClass}>
+          {prescription.source === 'app_camera' ? (
+            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-400 border border-gray-200">
+              확인 안됨
+            </span>
+          ) : (
+            prescription.hospitalName
+          )}
+        </td>
+        {sourceCell}
+      </>
+    );
+
+    if (filter === 'app_camera') {
+      return (
+        <tr key={prescription.id} className="hover:bg-gray-50 transition-colors">
+          {commonCells}
+          {memberCell}
+          {prescriptionBtn}
+        </tr>
+      );
+    }
+
+    if (filter === 'fax_telemed') {
+      return (
+        <tr key={prescription.id} className="hover:bg-gray-50 transition-colors">
+          {commonCells}
+          {memberCell}
+          {deliveryCell}
+          {paymentAmountCell}
+          {paymentStatusCell}
+          {prescriptionBtn}
+        </tr>
+      );
+    }
+
+    if (filter === 'kiosk') {
+      return (
+        <tr key={prescription.id} className="hover:bg-gray-50 transition-colors">
+          {commonCells}
+          {paymentAmountCell}
+          {prescriptionBtn}
+        </tr>
+      );
+    }
+
+    // Default: 'all'
+    return (
+      <tr key={prescription.id} className="hover:bg-gray-50 transition-colors">
+        {commonCells}
+        {prescriptionBtn}
+      </tr>
+    );
+  };
+
   return (
     <div className="flex flex-col h-full bg-gray-50 relative">
       {/* Header */}
@@ -247,14 +487,13 @@ export const PrescriptionList: React.FC = () => {
         <div>
           <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
             <FileText className="text-blue-600" />
-            처방전 접수 현황
+            처방전 접수 목록
           </h1>
           <p className="text-sm text-gray-500 mt-1">
             처방전을 관리합니다.
           </p>
         </div>
         <div className="flex gap-2">
-
         </div>
       </header>
 
@@ -297,7 +536,7 @@ export const PrescriptionList: React.FC = () => {
         {/* Right: count + search */}
         <div className="flex items-center gap-3 flex-shrink-0">
           <span className="text-[13px] text-gray-400">
-            총 <span className="text-blue-600 font-semibold">{MOCK_PRESCRIPTIONS.length}</span>건
+            총 <span className="text-blue-600 font-semibold">{filteredPrescriptions.length}</span>건
           </span>
           <div className="relative">
             <input
@@ -315,94 +554,10 @@ export const PrescriptionList: React.FC = () => {
         <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
-              <tr>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  접수 경로
-                </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  접수 시간
-                </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  고객명
-                </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  주민등록번호
-                </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  질병분류기호
-                </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  발행 병원
-                </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  진행 상태
-                </th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  결제 상태
-                </th>
-                <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  처방전
-                </th>
-              </tr>
+              {renderTableHeader()}
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {MOCK_PRESCRIPTIONS.map((prescription) => (
-                <tr key={prescription.id} className="hover:bg-gray-50 transition-colors">
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      <div className={clsx(
-                        "flex-shrink-0 h-8 w-8 rounded-full flex items-center justify-center bg-opacity-10",
-                        prescription.source === 'app_camera' ? "bg-blue-100" : prescription.source === 'kiosk' ? "bg-green-100" : "bg-purple-100"
-                      )}>
-                        {getSourceIcon(prescription.source)}
-                      </div>
-                      <div className="ml-3">
-                        <p className="text-sm font-medium text-gray-900">
-                          {getSourceLabel(prescription.source)}
-                        </p>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {prescription.receivedAt}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    {prescription.patientName}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {prescription.patientRrn}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                    <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-gray-100 text-gray-800">
-                      {prescription.diseaseCode}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700">
-                    {prescription.source === 'app_camera' ? (
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-400 border border-gray-200">
-                        확인 안됨
-                      </span>
-                    ) : (
-                      prescription.hospitalName
-                    )}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    {getStatusBadge(prescription.status)}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    {getPaymentStatusBadge(prescription.paymentStatus)}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-center">
-                    <button
-                      onClick={() => setSelectedPrescription(prescription)}
-                      className="inline-flex items-center gap-1.5 px-3 py-1.5 border border-gray-300 shadow-sm text-xs font-medium rounded text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                    >
-                      <Eye size={14} />
-                      보기
-                    </button>
-                  </td>
-                </tr>
-              ))}
+              {filteredPrescriptions.map((prescription) => renderTableRow(prescription))}
             </tbody>
           </table>
 
