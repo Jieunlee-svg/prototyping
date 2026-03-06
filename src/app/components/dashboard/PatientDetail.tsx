@@ -167,9 +167,19 @@ const glucoseData = [
 
 const INITIAL_MESSAGES = [
   { id: 1, type: 'system', text: '상담이 시작되었습니다.', time: '09:00 AM' },
-  { id: 2, type: 'patient', text: '약사님, 요즘 아침마다 약간 어지러운데 혈압약 때문일까요?', time: '09:05 AM' },
-  { id: 3, type: 'pharmacist', text: '안녕하세요, 이채림님. 복약 중이신 혈압약이 아침에 혈압을 너무 낮출 수도 있습니다. 최근 혈압 수치를 보니 안정적인데, 기립성 저혈압일 수도 있어요.', time: '09:07 AM' },
-  { id: 4, type: 'pharmacist', text: '일어나실 때 천천히 일어나보시고, 수분을 충분히 섭취해주세요. 증상이 지속되면 내원 권유드립니다.', time: '09:08 AM' },
+  {
+    id: 2,
+    type: 'pharmacist',
+    text: `안녕하세요, 이채림님 😊\n\n웰체크와 함께해 주셔서 감사합니다.\n\n건강한 삶은 작은 습관에서 시작됩니다. 웰체크는 이채림님의 복약 관리부터 건강 지표 모니터링까지 꾸준히 함께하겠습니다.\n\n오늘도 활기차고 건강한 하루 보내세요! 💪\n\n서울종로약국 드림`,
+    time: '09:02 AM'
+  },
+  {
+    id: 3,
+    type: 'pharmacist',
+    text: `[복약 상담 안내]\n안녕하세요, 서울종로약국입니다.\n처방받으신 약품 안내드립니다.\n\n[처방 약품]\n1. 노바스크정 5mg (한국화이자제약)\n2. 타이레놀정 500mg (한국얀센)\n\n[복약 방법]\n· 노바스크정: 1일 1회, 아침 식후 복용\n· 타이레놀정: 1일 3회, 식후 30분 복용\n\n[주의사항]\n· 노바스크정: 임부 또는 임신 가능성 있는 경우 반드시 의사와 상담하세요.\n· 타이레놀정: 매일 3잔 이상 음주 시 의사와 상의하세요.\n\n복용 중 이상 증상이 있으시면 언제든지 문의해 주세요.`,
+    time: '09:04 AM'
+  },
+  { id: 4, type: 'patient', text: '감사합니다.', time: '09:06 AM' },
 ];
 
 interface Resource {
@@ -895,7 +905,7 @@ export const PatientDetail: React.FC<PatientDetailProps> = ({ onBack, patientId 
                 ) : (
                   <>
                     <div className={clsx(
-                      "px-4 py-2.5 rounded-2xl text-sm leading-relaxed shadow-sm",
+                      "px-4 py-2.5 rounded-2xl text-sm leading-relaxed shadow-sm whitespace-pre-wrap",
                       msg.type === 'pharmacist'
                         ? "bg-blue-600 text-white rounded-tr-none"
                         : "bg-gray-100 text-gray-800 rounded-tl-none border border-gray-200"
