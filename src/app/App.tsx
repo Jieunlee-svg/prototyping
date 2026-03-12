@@ -13,7 +13,7 @@ import { MedicationConsultationC } from './components/dashboard/MedicationConsul
 import { ReminderSettingsPage } from './components/dashboard/ReminderSettingsPage';
 import { MedicationNotificationSettings } from './components/dashboard/MedicationNotificationSettings';
 import { ConsultationHistory } from './components/dashboard/ConsultationHistory';
-import { LoginScreen } from './components/auth/LoginScreen';
+import { WellcheckLanding } from './components/auth/WellcheckLanding';
 import { MyInfo } from './components/dashboard/MyInfo';
 
 function App() {
@@ -33,7 +33,7 @@ function App() {
   };
 
   if (!isLoggedIn) {
-    return <LoginScreen onLogin={() => setIsLoggedIn(true)} />;
+    return <WellcheckLanding onLogin={() => setIsLoggedIn(true)} />;
   }
 
   return (
