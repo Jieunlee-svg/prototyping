@@ -1,8 +1,7 @@
 import React from 'react';
 import {
   Search,
-  ArrowRight,
-  ExternalLink
+  Info
 } from 'lucide-react';
 import { clsx } from 'clsx';
 
@@ -41,6 +40,19 @@ const MOCK_DATA: Patient[] = [
 interface PatientListProps {
   onPatientClick?: (id: string) => void;
 }
+
+// 복약 순응도 계산식 안내 툴팁
+const AdherenceTooltip: React.FC = () => (
+  <span className="relative group inline-flex">
+    <Info size={12} className="text-gray-400 cursor-help" />
+    <span className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-56 rounded-lg bg-gray-900 px-3 py-2 text-xs text-white shadow-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-50 normal-case font-normal text-left leading-relaxed">
+      <strong className="block mb-1 text-white">복약 순응도 계산식</strong>
+      (복용 횟수 ÷ 먹어야 할 약 횟수) × 100<br />
+      <span className="text-gray-400 mt-1 block">기간 내 총 복용 실적 기준으로 산출됩니다.</span>
+    </span>
+  </span>
+);
+
 
 export const PatientList: React.FC<PatientListProps> = ({ onPatientClick }) => {
   const handlePatientClick = (patientId: string) => {
@@ -85,13 +97,17 @@ export const PatientList: React.FC<PatientListProps> = ({ onPatientClick }) => {
           <div className="overflow-x-auto">
             <table className="w-full min-w-[1200px]">
               <thead className="bg-gray-50 border-b border-gray-200">
-                <tr>
+              <tr>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider w-32">이름</th>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">휴대폰 번호</th>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">생년월일(나이)</th>
                   <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">관리질환</th>
-                  <th className="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">복약 순응도<br />(30일 이내)</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">최근 복약 상담 일자</th>
+                  <th className="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                    <span className="flex items-center justify-center gap-1">
+                      복약 순응도<br />(30일 이내)
+                      <AdherenceTooltip />
+                    </span>
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
@@ -130,7 +146,6 @@ export const PatientList: React.FC<PatientListProps> = ({ onPatientClick }) => {
                         </span>
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-sm text-gray-400">{patient.prescriptionNo}</td>
                   </tr>
                 ))}
               </tbody>

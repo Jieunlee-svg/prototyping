@@ -9,7 +9,9 @@ import {
   Check,
   Copy,
   Sparkles,
-  Smartphone
+  Smartphone,
+  Info,
+  EyeOff
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -28,11 +30,13 @@ export const PharmacySettings: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [showTemplates, setShowTemplates] = useState(false);
   const [allowAppPrescription, setAllowAppPrescription] = useState(true);
+  const [hidePhone, setHidePhone] = useState(false);
+  const [notifyPhone, setNotifyPhone] = useState('');
   const [formData, setFormData] = useState({
-    name: '서울종로약국',
+    name: '약국',
     phone: '02-1234-5678',
     address: '서울특별시 종로구 종로 123 (종로3가)',
-    intro: '안녕하세요. 서울종로약국입니다. 정성을 다해 상담해드립니다.',
+    intro: '안녕하세요. 약국입니다. 정성을 다해 상담해드립니다.',
     hours: {
       monday: { start: '09:00', end: '19:00', active: true, hasLunch: true, lunchStart: '13:00', lunchEnd: '14:00' },
       tuesday: { start: '09:00', end: '19:00', active: true, hasLunch: true, lunchStart: '13:00', lunchEnd: '14:00' },
@@ -44,6 +48,12 @@ export const PharmacySettings: React.FC = () => {
       holiday: { start: '10:00', end: '18:00', active: false, hasLunch: false, lunchStart: '12:00', lunchEnd: '13:00' },
     } as Record<DayKey, DaySchedule>
   });
+
+  // "설정 저장" 활성 조건: 약국명, 주소, 번호 중 하나라도 비어있으면 비활성
+  const isFormValid =
+    formData.name.trim() !== '' &&
+    formData.address.trim() !== '' &&
+    (hidePhone || formData.phone.trim() !== '');
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -86,8 +96,8 @@ export const PharmacySettings: React.FC = () => {
   };
 
   const handleSave = () => {
+    if (!isFormValid) return;
     setLoading(true);
-    // Simulate API call
     setTimeout(() => {
       setLoading(false);
       toast.success('약국 설정이 저장되었습니다.');
@@ -123,8 +133,13 @@ export const PharmacySettings: React.FC = () => {
         
         <button
           onClick={handleSave}
-          disabled={loading}
-          className="flex items-center gap-2 px-5 py-2.5 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors shadow-sm disabled:opacity-70 disabled:cursor-not-allowed"
+          disabled={loading || !isFormValid}
+          title={!isFormValid ? '필수 항목(약국명, 주소, 약국 번호)을 모두 입력해주세요.' : ''}
+          className={`flex items-center gap-2 px-5 py-2.5 font-semibold rounded-lg transition-colors shadow-sm
+            ${isFormValid && !loading
+              ? 'bg-blue-600 text-white hover:bg-blue-700 cursor-pointer'
+              : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+            }`}
         >
           {loading ? (
             <>
@@ -152,9 +167,11 @@ export const PharmacySettings: React.FC = () => {
               </h2>
             </div>
             <div className="p-6 space-y-6">
+
+              {/* 약국명 */}
               <div>
                 <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-                  약국명
+                  약국명 <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -167,24 +184,10 @@ export const PharmacySettings: React.FC = () => {
                 />
               </div>
 
-              <div>
-                <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
-                  약국 번호
-                </label>
-                <input
-                  type="text"
-                  id="phone"
-                  name="phone"
-                  value={formData.phone}
-                  onChange={handleChange}
-                  className="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                  placeholder="약국 전화번호를 입력하세요"
-                />
-              </div>
-
+              {/* 약국 주소 */}
               <div>
                 <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-1">
-                  약국 위치 (주소)
+                  약국 주소 <span className="text-red-500">*</span>
                 </label>
                 <div className="flex gap-2">
                   <div className="relative flex-1">
@@ -209,10 +212,54 @@ export const PharmacySettings: React.FC = () => {
                 </div>
               </div>
 
+              {/* 약국 번호 */}
+              <div>
+                <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
+                  약국 번호 {!hidePhone && <span className="text-red-500">*</span>}
+                </label>
+                <div className="space-y-2">
+                  <input
+                    type="text"
+                    id="phone"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    disabled={hidePhone}
+                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all
+                      ${hidePhone ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed' : 'bg-white border-gray-300'}`}
+                    placeholder="약국 전화번호를 입력하세요 (예: 02-1234-5678)"
+                  />
+                  {/* 번호 없을 때 안내 */}
+                  {!formData.phone.trim() && !hidePhone && (
+                    <div className="flex items-start gap-2 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                      <Info size={14} className="text-amber-600 mt-0.5 flex-shrink-0" />
+                      <p className="text-xs text-amber-700 leading-relaxed">
+                        약국 번호를 입력하지 않으면 고객이 앱에서 전화 문의를 할 수 없습니다.<br />
+                        번호를 노출하고 싶지 않으시면 아래 <strong>'번호 노출 안 함'</strong> 버튼을 클릭해주세요.
+                      </p>
+                    </div>
+                  )}
+                  {/* 노출 안 함 토글 */}
+                  <label className="inline-flex items-center gap-2 cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      checked={hidePhone}
+                      onChange={(e) => setHidePhone(e.target.checked)}
+                      className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    />
+                    <span className="text-sm text-gray-600 flex items-center gap-1">
+                      <EyeOff size={14} className="text-gray-400" />
+                      번호 노출 안 함
+                    </span>
+                  </label>
+                </div>
+              </div>
+
+              {/* 인사말 */}
               <div>
                 <div className="flex justify-between items-center mb-2">
                   <label htmlFor="intro" className="block text-sm font-medium text-gray-700">
-                    약국 소개
+                    인사말
                   </label>
                   <button 
                     type="button"
@@ -220,16 +267,17 @@ export const PharmacySettings: React.FC = () => {
                     className="text-xs flex items-center gap-1 text-purple-600 bg-purple-50 hover:bg-purple-100 border border-purple-100 px-2 py-1 rounded transition-colors"
                   >
                     <Sparkles size={12} />
-                    {showTemplates ? '소개 메시지 닫기' : '소개 메시지 추천'}
+                    {showTemplates ? '인사말 추천 닫기' : '인사말 추천'}
                   </button>
                 </div>
 
+                {/* 인사말 추천 */}
                 {showTemplates && (
                   <div className="mb-3 grid gap-2 animate-in slide-in-from-top-2 fade-in duration-200">
                     {[
-                      { label: '😊 친절/미소', text: '안녕하세요! 언제나 밝은 미소로 맞이하고, 정확한 복약 지도를 위해 최선을 다하는 서울종로약국입니다. 궁금한 점은 언제든 물어봐주세요.' },
+                      { label: '😊 친절/미소', text: '안녕하세요! 언제나 밝은 미소로 맞이하고, 정확한 복약 지도를 위해 최선을 다하는 약국입니다. 궁금한 점은 언제든 물어봐주세요.' },
                       { label: '🏥 전문성/신뢰', text: '환자분들의 건강을 최우선으로 생각합니다. 전문적인 지식을 바탕으로 꼼꼼하게 상담해 드리며, 믿을 수 있는 약국이 되겠습니다.' },
-                      { label: '🏡 이웃/지역', text: '우리 동네 건강 지킴이, 서울종로약국입니다. 가족처럼 따뜻하게 상담해 드리며, 365일 여러분의 건강을 책임지겠습니다.' }
+                      { label: '🏡 이웃/지역', text: '우리 동네 건강 지킴이, 약국입니다. 가족처럼 따뜻하게 상담해 드리며, 365일 여러분의 건강을 책임지겠습니다.' }
                     ].map((template, idx) => (
                       <button
                         key={idx}
@@ -251,9 +299,9 @@ export const PharmacySettings: React.FC = () => {
                   onChange={handleChange}
                   rows={4}
                   className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
-                  placeholder="고객들에게 보여질 약국 소개글을 작성해주세요."
+                  placeholder="고객들에게 보여질 약국 인사말을 작성해주세요."
                 />
-                <p className="text-xs text-gray-500 mt-1 text-right">0 / 200자</p>
+                <p className="text-xs text-gray-500 mt-1 text-right">{formData.intro.length} / 200자</p>
               </div>
             </div>
           </section>
@@ -275,12 +323,6 @@ export const PharmacySettings: React.FC = () => {
               </button>
             </div>
             <div className="p-6">
-              <div className="bg-blue-50 p-4 rounded-lg mb-6 flex items-start gap-3">
-                <Check className="text-blue-600 mt-0.5 flex-shrink-0" size={16} />
-                <p className="text-sm text-blue-800">
-                  이 설정은 [웰체크 앱] &gt; [약국 찾기]에 반영됩니다.
-                </p>
-              </div>
               <div className="space-y-1">
                 {dayKeys.map((day) => (
                   <div key={day} className="flex items-center justify-between py-3 px-2 rounded-lg hover:bg-gray-50 transition-colors">
@@ -358,8 +400,6 @@ export const PharmacySettings: React.FC = () => {
                   </div>
                 ))}
               </div>
-
-
             </div>
           </section>
 
@@ -399,29 +439,25 @@ export const PharmacySettings: React.FC = () => {
                 </button>
               </div>
 
+              {/* 알림 수신 휴대폰 번호 — 앱 처방전 접수 ON일 때만 표시 */}
               {allowAppPrescription && (
-                <div className="mt-4 bg-blue-50 p-4 rounded-lg flex items-start gap-3 animate-in fade-in slide-in-from-top-1 duration-200">
-                  <Check className="text-blue-600 mt-0.5 flex-shrink-0" size={16} />
-                  <p className="text-sm text-blue-800">
-                    현재 웰체크 앱에서 처방전 접수가 <strong>허용</strong>된 상태입니다.
+                <div className="mt-6 pt-6 border-t border-gray-200 animate-in fade-in slide-in-from-top-1 duration-200">
+                  <label htmlFor="notifyPhone" className="block text-sm font-medium text-gray-900 mb-1">
+                    알림 수신 휴대폰 번호
+                  </label>
+                  <input
+                    type="tel"
+                    id="notifyPhone"
+                    value={notifyPhone}
+                    onChange={(e) => setNotifyPhone(e.target.value)}
+                    placeholder="알림톡을 받을 휴대폰 번호를 입력하세요"
+                    className="w-full max-w-xs px-4 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm"
+                  />
+                  <p className="text-xs text-gray-500 mt-2 leading-relaxed">
+                    고객이 앱에서 처방전을 전송했을 때 알림톡을 받을 수 있습니다.
                   </p>
                 </div>
               )}
-
-              <div className="mt-6 pt-6 border-t border-gray-200">
-                <label htmlFor="notifyPhone" className="block text-sm font-medium text-gray-900 mb-1">
-                  알림 수신 휴대폰 번호
-                </label>
-                <input
-                  type="tel"
-                  id="notifyPhone"
-                  placeholder="010-0000-0000"
-                  className="w-full max-w-xs px-4 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm"
-                />
-                <p className="text-xs text-gray-500 mt-2 leading-relaxed">
-                  휴대폰 번호를 입력하면 고객이 앱에서 처방전을 전송 했을 때 알림톡을 받을 수 있습니다.
-                </p>
-              </div>
             </div>
           </section>
         </div>

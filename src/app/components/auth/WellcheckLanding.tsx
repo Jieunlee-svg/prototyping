@@ -86,8 +86,8 @@ export const WellcheckLanding: React.FC<WellcheckLandingProps> = ({ onLogin }) =
               well<span className="text-[#4ECDC4]">check</span>
             </span>
             <div className="flex gap-4 text-sm text-white/70">
-              <a href="#" className="hover:text-white transition-colors">개인정보처리방침</a>
-              <a href="#" className="hover:text-white transition-colors">이용약관</a>
+              <a href="https://rocky-weight-b00.notion.site/293373c3aa4480058e88c53b9b4485ef" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">개인정보처리방침</a>
+              <a href="https://rocky-weight-b00.notion.site/2b0373c3aa4480259390f60c5d13f1fd" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">이용약관</a>
             </div>
             <p className="text-xs text-white/50">
               (주)엠서클 | 서울 강남구 봉은사로 114길 12 (삼성동) | 대표자 : 정윤미, 이찬란 | 사업자번호 : 120-86-10499
