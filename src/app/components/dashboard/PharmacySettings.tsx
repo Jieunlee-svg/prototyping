@@ -6,11 +6,12 @@ import {
   Store, 
   Save, 
   Search,
+  Check,
   Copy,
   Sparkles,
   Smartphone,
   Info,
-  Lock
+  EyeOff
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -29,24 +30,12 @@ export const PharmacySettings: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [showTemplates, setShowTemplates] = useState(false);
   const [allowAppPrescription, setAllowAppPrescription] = useState(true);
-
-  // 회원가입 시 입력받은 정보 (읽기 전용 또는 기본값으로 사용)
-  const registeredInfo = {
-    name: '웰체크약국',           // 수정 불가
-    postcode: '03155',            // 우편번호 (수정 가능, 기본값)
-    roadAddress: '서울특별시 종로구 종로 123',  // 도로명 주소 (수정 가능, 기본값)
-    phone: '010-1234-5678',       // 알림 수신 번호 (수정 가능, 기본값)
-  };
-
-  const [address, setAddress] = useState({
-    postcode: registeredInfo.postcode,
-    road: registeredInfo.roadAddress,
-    detail: '',  // 상세주소는 비어있을 수 있음
-  });
-
-  const [notifyPhone, setNotifyPhone] = useState(registeredInfo.phone);
-
+  const [hidePhone, setHidePhone] = useState(false);
+  const [notifyPhone, setNotifyPhone] = useState('');
   const [formData, setFormData] = useState({
+    name: '약국',
+    phone: '02-1234-5678',
+    address: '서울특별시 종로구 종로 123 (종로3가)',
     intro: '안녕하세요. 약국입니다. 정성을 다해 상담해드립니다.',
     hours: {
       monday: { start: '09:00', end: '19:00', active: true, hasLunch: true, lunchStart: '13:00', lunchEnd: '14:00' },
@@ -60,10 +49,16 @@ export const PharmacySettings: React.FC = () => {
     } as Record<DayKey, DaySchedule>
   });
 
+  // "설정 저장" 활성 조건: 약국명, 주소, 번호 중 하나라도 비어있으면 비활성
   const isFormValid =
-    address.road.trim() !== '' &&
-    address.postcode.trim() !== '' &&
-    notifyPhone.trim() !== '';
+    formData.name.trim() !== '' &&
+    formData.address.trim() !== '' &&
+    (hidePhone || formData.phone.trim() !== '');
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
 
   const handleTimeChange = (day: DayKey, field: keyof DaySchedule, value: string | boolean) => {
     setFormData(prev => ({
@@ -139,7 +134,7 @@ export const PharmacySettings: React.FC = () => {
         <button
           onClick={handleSave}
           disabled={loading || !isFormValid}
-          title={!isFormValid ? '필수 항목(주소, 알림 수신 번호)을 모두 입력해주세요.' : ''}
+          title={!isFormValid ? '필수 항목(약국명, 주소, 약국 번호)을 모두 입력해주세요.' : ''}
           className={`flex items-center gap-2 px-5 py-2.5 font-semibold rounded-lg transition-colors shadow-sm
             ${isFormValid && !loading
               ? 'bg-blue-600 text-white hover:bg-blue-700 cursor-pointer'
@@ -173,76 +168,91 @@ export const PharmacySettings: React.FC = () => {
             </div>
             <div className="p-6 space-y-6">
 
-              {/* 약국명 — 읽기 전용 */}
+              {/* 약국명 */}
               <div>
                 <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-                  약국명
+                  약국명 <span className="text-red-500">*</span>
                 </label>
-                <div className="relative">
-                  <input
-                    type="text"
-                    id="name"
-                    value={registeredInfo.name}
-                    readOnly
-                    className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-gray-700 cursor-not-allowed pr-10"
-                  />
-                  <Lock size={14} className="absolute right-3 top-3.5 text-gray-400" />
-                </div>
-                <p className="text-xs text-gray-400 mt-1 flex items-center gap-1">
-                  <Info size={11} className="flex-shrink-0" />
-                  약국명은 회원가입 시 등록된 정보로, 변경이 불가합니다.
-                </p>
+                <input
+                  type="text"
+                  id="name"
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                  placeholder="약국 이름을 입력하세요"
+                />
               </div>
 
               {/* 약국 주소 */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-1">
                   약국 주소 <span className="text-red-500">*</span>
                 </label>
+                <div className="flex gap-2">
+                  <div className="relative flex-1">
+                    <MapPin className="absolute left-3 top-2.5 text-gray-400" size={18} />
+                    <input
+                      type="text"
+                      id="address"
+                      name="address"
+                      value={formData.address}
+                      onChange={handleChange}
+                      className="w-full pl-10 pr-4 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                      placeholder="주소를 검색해주세요"
+                    />
+                  </div>
+                  <button 
+                    type="button"
+                    className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition-colors flex items-center gap-2 border border-gray-200"
+                  >
+                    <Search size={16} />
+                    주소 검색
+                  </button>
+                </div>
+              </div>
+
+              {/* 약국 번호 */}
+              <div>
+                <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1">
+                  약국 번호 {!hidePhone && <span className="text-red-500">*</span>}
+                </label>
                 <div className="space-y-2">
-                  {/* 우편번호 + 검색 버튼 */}
-                  <div className="flex gap-2">
-                    <input
-                      type="text"
-                      value={address.postcode}
-                      onChange={(e) => setAddress(prev => ({ ...prev, postcode: e.target.value }))}
-                      placeholder="우편번호"
-                      className="w-36 px-4 py-2.5 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm"
-                    />
-                    <button
-                      type="button"
-                      className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition-colors flex items-center gap-2 border border-gray-200 text-sm"
-                    >
-                      <Search size={15} />
-                      주소 검색
-                    </button>
-                  </div>
-
-                  {/* 도로명 주소 */}
-                  <div className="relative">
-                    <MapPin className="absolute left-3 top-3 text-gray-400" size={16} />
-                    <input
-                      type="text"
-                      value={address.road}
-                      onChange={(e) => setAddress(prev => ({ ...prev, road: e.target.value }))}
-                      placeholder="도로명 주소"
-                      className="w-full pl-9 pr-4 py-2.5 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm"
-                    />
-                  </div>
-
-                  {/* 상세주소 */}
                   <input
                     type="text"
-                    value={address.detail}
-                    onChange={(e) => setAddress(prev => ({ ...prev, detail: e.target.value }))}
-                    placeholder="상세주소 입력 (예: 2층 201호) — 선택사항"
-                    className="w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm placeholder-gray-400"
+                    id="phone"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    disabled={hidePhone}
+                    className={`w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all
+                      ${hidePhone ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed' : 'bg-white border-gray-300'}`}
+                    placeholder="약국 전화번호를 입력하세요 (예: 02-1234-5678)"
                   />
+                  {/* 번호 없을 때 안내 */}
+                  {!formData.phone.trim() && !hidePhone && (
+                    <div className="flex items-start gap-2 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                      <Info size={14} className="text-amber-600 mt-0.5 flex-shrink-0" />
+                      <p className="text-xs text-amber-700 leading-relaxed">
+                        약국 번호를 입력하지 않으면 고객이 앱에서 전화 문의를 할 수 없습니다.<br />
+                        번호를 노출하고 싶지 않으시면 아래 <strong>'번호 노출 안 함'</strong> 버튼을 클릭해주세요.
+                      </p>
+                    </div>
+                  )}
+                  {/* 노출 안 함 토글 */}
+                  <label className="inline-flex items-center gap-2 cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      checked={hidePhone}
+                      onChange={(e) => setHidePhone(e.target.checked)}
+                      className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                    />
+                    <span className="text-sm text-gray-600 flex items-center gap-1">
+                      <EyeOff size={14} className="text-gray-400" />
+                      번호 노출 안 함
+                    </span>
+                  </label>
                 </div>
-                <p className="text-xs text-gray-400 mt-1.5 flex items-center gap-1">
-                  <Info size={11} className="flex-shrink-0" />
-                  우편번호와 도로명 주소는 회원가입 시 등록된 정보가 기본으로 입력되어 있습니다.
-                </p>
               </div>
 
               {/* 인사말 */}
@@ -261,6 +271,7 @@ export const PharmacySettings: React.FC = () => {
                   </button>
                 </div>
 
+                {/* 인사말 추천 */}
                 {showTemplates && (
                   <div className="mb-3 grid gap-2 animate-in slide-in-from-top-2 fade-in duration-200">
                     {[
@@ -285,7 +296,7 @@ export const PharmacySettings: React.FC = () => {
                   id="intro"
                   name="intro"
                   value={formData.intro}
-                  onChange={(e) => setFormData(prev => ({ ...prev, intro: e.target.value }))}
+                  onChange={handleChange}
                   rows={4}
                   className="w-full px-4 py-3 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none"
                   placeholder="고객들에게 보여질 약국 인사말을 작성해주세요."
@@ -428,11 +439,11 @@ export const PharmacySettings: React.FC = () => {
                 </button>
               </div>
 
-              {/* 알림 수신 휴대폰 번호 */}
+              {/* 알림 수신 휴대폰 번호 — 앱 처방전 접수 ON일 때만 표시 */}
               {allowAppPrescription && (
                 <div className="mt-6 pt-6 border-t border-gray-200 animate-in fade-in slide-in-from-top-1 duration-200">
                   <label htmlFor="notifyPhone" className="block text-sm font-medium text-gray-900 mb-1">
-                    알림 수신 휴대폰 번호 <span className="text-red-500">*</span>
+                    알림 수신 휴대폰 번호
                   </label>
                   <input
                     type="tel"
@@ -440,22 +451,11 @@ export const PharmacySettings: React.FC = () => {
                     value={notifyPhone}
                     onChange={(e) => setNotifyPhone(e.target.value)}
                     placeholder="알림톡을 받을 휴대폰 번호를 입력하세요"
-                    className={`w-full max-w-xs px-4 py-2.5 bg-white border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm ${
-                      notifyPhone.trim() === '' ? 'border-red-300' : 'border-gray-300'
-                    }`}
+                    className="w-full max-w-xs px-4 py-2 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm"
                   />
                   <p className="text-xs text-gray-500 mt-2 leading-relaxed">
-                    고객이 앱에서 처방전을 전송했을 때 알림톡을 받을 수 있습니다.<br />
-                    <span className="text-gray-400">회원가입 시 등록한 번호가 기본으로 입력되어 있습니다.</span>
+                    고객이 앱에서 처방전을 전송했을 때 알림톡을 받을 수 있습니다.
                   </p>
-                  {notifyPhone.trim() === '' && (
-                    <div className="flex items-start gap-2 p-3 mt-2 bg-amber-50 border border-amber-200 rounded-lg">
-                      <Info size={14} className="text-amber-600 mt-0.5 flex-shrink-0" />
-                      <p className="text-xs text-amber-700 leading-relaxed">
-                        알림 수신 번호를 입력해야 앱 처방전 접수 알림을 받을 수 있습니다.
-                      </p>
-                    </div>
-                  )}
                 </div>
               )}
             </div>

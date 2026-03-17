@@ -25,8 +25,8 @@ interface Patient {
 }
 
 const MOCK_DATA: Patient[] = [
-  { id: '1', name: '스프린트십칠', status: 'normal', medicationStatus: '고혈압', birthDate: '1987-08-03', gender: '여성', age: 40, prescriptionNo: '2305-1201', comorbidities: '-', adherenceRate: 85, phone: '010-3423-7918', pharmacist: '김약사', lastVisit: '2026-02-05', membership: true, managementStatus: '정기 상담 예정' },
-  { id: '2', name: '나중에', status: 'new', medicationStatus: '당뇨', birthDate: '2001-04-18', gender: '여성', age: 26, prescriptionNo: '2305-1202', comorbidities: '-', adherenceRate: 40, phone: '010-2488-3976', pharmacist: '김약사', lastVisit: '2026-02-05', membership: true, managementStatus: '상담 필요' },
+  { id: '1', name: '이채림', status: 'normal', medicationStatus: '고혈압', birthDate: '1987-08-03', gender: '여성', age: 40, prescriptionNo: '2305-1201', comorbidities: '-', adherenceRate: 85, phone: '010-3423-7918', pharmacist: '김약사', lastVisit: '2026-02-05', membership: true, managementStatus: '정기 상담 예정' },
+  { id: '2', name: '황소영', status: 'new', medicationStatus: '당뇨', birthDate: '2001-04-18', gender: '여성', age: 26, prescriptionNo: '2305-1202', comorbidities: '-', adherenceRate: 40, phone: '010-2488-3976', pharmacist: '김약사', lastVisit: '2026-02-05', membership: true, managementStatus: '상담 필요' },
   { id: '3', name: '최수리', status: 'risk', medicationStatus: '고혈압', birthDate: '1998-03-04', gender: '여성', age: 29, prescriptionNo: '-', comorbidities: '비만', adherenceRate: 20, phone: '010-7793-6958', pharmacist: '이약사', lastVisit: '2026-02-05', membership: true, managementStatus: '집중 관리' },
   { id: '4', name: '박민지', status: 'risk', medicationStatus: '당뇨(전) • 고혈압', birthDate: '1996-05-08', gender: '여성', age: 31, prescriptionNo: '2305-1150', comorbidities: '수면장애', adherenceRate: 95, phone: '010-6485-1585', pharmacist: '박약사', lastVisit: '2026-02-04', membership: false, managementStatus: '가입 권유' },
   { id: '5', name: '김미래', status: 'normal', medicationStatus: '미실시', birthDate: '1987-03-17', gender: '여성', age: 40, prescriptionNo: '-', comorbidities: '-', adherenceRate: 0, phone: '010-6371-5228', pharmacist: '김약사', lastVisit: '2026-02-04', membership: true, managementStatus: '정기 상담' },
@@ -55,9 +55,9 @@ const AdherenceTooltip: React.FC = () => (
 
 
 export const PatientList: React.FC<PatientListProps> = ({ onPatientClick }) => {
-  const handlePatientClick = (patient: Patient) => {
-    if (onPatientClick && (patient.name === '스프린트십칠' || patient.name === '나중에')) {
-      onPatientClick(patient.id);
+  const handlePatientClick = (patientId: string) => {
+    if (onPatientClick) {
+      onPatientClick(patientId);
     }
   };
 
@@ -115,19 +115,10 @@ export const PatientList: React.FC<PatientListProps> = ({ onPatientClick }) => {
                   <tr key={patient.id} className="hover:bg-blue-50/50 transition-colors">
                     <td className="px-4 py-3">
                       <button
-                        onClick={() => handlePatientClick(patient)}
-                        disabled={patient.name !== '스프린트십칠' && patient.name !== '나중에'}
-                        className={clsx(
-                          "flex items-center space-x-2 text-left group",
-                          (patient.name === '스프린트십칠' || patient.name === '나중에') ? "cursor-pointer" : "cursor-default"
-                        )}
+                        onClick={() => handlePatientClick(patient.id)}
+                        className="flex items-center space-x-2 text-left group"
                       >
-                        <span className={clsx(
-                          "font-medium text-gray-900",
-                          (patient.name === '스프린트십칠' || patient.name === '나중에') && "group-hover:text-blue-600 group-hover:underline"
-                        )}>
-                          {patient.name}
-                        </span>
+                        <span className="font-medium text-gray-900 group-hover:text-blue-600 group-hover:underline">{patient.name}</span>
                       </button>
                     </td>
                     <td className="px-4 py-3 text-sm text-gray-600">{patient.phone}</td>
