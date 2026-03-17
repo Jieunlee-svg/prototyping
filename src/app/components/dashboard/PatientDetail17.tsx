@@ -6,7 +6,7 @@ import {
   Clock,
   CheckCircle2,
   ChevronRight,
-  Eye,
+  ExternalLink,
   Camera,
   Printer,
   Monitor
@@ -138,7 +138,7 @@ export const PatientDetail17: React.FC<PatientDetailProps> = ({ onBack, patientI
                     const statusStyle = STATUS_STYLE[rx.status];
                     return (
                       <tr key={rx.id} className="hover:bg-blue-50/30 transition-colors">
-                        <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-600 font-medium">
+                        <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
                           {rx.receivedAt}
                         </td>
                         <td className="px-4 py-4 whitespace-nowrap">
@@ -149,12 +149,12 @@ export const PatientDetail17: React.FC<PatientDetailProps> = ({ onBack, patientI
                             )}>
                               {getSourceIcon(rx.source)}
                             </span>
-                            <span className="text-xs font-semibold text-gray-700">{getSourceLabel(rx.source)}</span>
+                            <span className="text-xs font-medium text-gray-600">{getSourceLabel(rx.source)}</span>
                           </div>
                         </td>
                         <td className="px-4 py-4 whitespace-nowrap">
                           <span className={clsx(
-                            "px-2.5 py-1 rounded-full text-xs font-bold",
+                            "px-2.5 py-1 rounded-full text-xs font-medium",
                             statusStyle.bgColor,
                             statusStyle.color
                           )}>
@@ -162,8 +162,8 @@ export const PatientDetail17: React.FC<PatientDetailProps> = ({ onBack, patientI
                           </span>
                         </td>
                         <td className="px-4 py-4 whitespace-nowrap text-center">
-                          <button className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold border border-gray-300 rounded-md bg-white hover:bg-blue-50 hover:border-blue-400 hover:text-blue-600 transition-colors">
-                            <Eye size={13} />
+                          <button className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium border border-gray-300 rounded-md bg-white hover:bg-blue-50 hover:border-blue-400 hover:text-blue-600 transition-colors shadow-sm">
+                            <ExternalLink size={13} />
                             보기
                           </button>
                         </td>
