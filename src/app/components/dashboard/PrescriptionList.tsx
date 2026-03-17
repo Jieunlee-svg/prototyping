@@ -43,8 +43,8 @@ const BASE_PRESCRIPTIONS: Prescription[] = [
   { id: 'RX-004', source: 'fax_telemed', patientName: '이영희', birthDate: '1992-03-15', phone: '010-9876-5432', gender: '여성', hospitalName: '굿닥터이비인후과', diseaseCode: 'J00', status: 'dispensing', paymentStatus: 'paid', paymentAmount: '12,500원', deliveryMethod: '방문 수령', isConsentSubstitute: true, isMember: true, receivedAt: '2026-03-12 14:15', imageUrl: prescriptionImage },
   { id: 'RX-005', source: 'fax_telemed', patientName: '최민수', birthDate: '1975-12-12', phone: '010-5555-1111', gender: '남성', hospitalName: '서울대병원', diseaseCode: 'E11.9', status: 'rejected', paymentStatus: 'refunded', paymentAmount: '28,000원', deliveryMethod: '배송', isConsentSubstitute: true, isMember: false, receivedAt: '2026-03-12 11:20', imageUrl: prescriptionImage },
   { id: 'RX-006', source: 'fax_telemed', patientName: '김하준', birthDate: '1990-02-14', phone: '010-2222-8888', gender: '남성', hospitalName: '강북삼성병원', diseaseCode: 'J06.9', status: 'received', paymentStatus: 'pending', paymentAmount: '8,400원', deliveryMethod: '방문 수령', isConsentSubstitute: true, isMember: true, receivedAt: '2026-03-12 10:50', imageUrl: prescriptionImage },
-  { id: 'RX-007', source: 'kiosk', patientName: '한지수', birthDate: '2001-03-20', phone: '010-4444-9999', gender: '여성', hospitalName: '연세세브란스병원', diseaseCode: 'I10', status: 'ready_pickup', paymentStatus: 'paid', paymentAmount: '15,200원', isConsentSubstitute: true, receivedAt: '2026-03-12 09:50', imageUrl: prescriptionImage },
-  { id: 'RX-008', source: 'kiosk', patientName: '오민준', birthDate: '1988-09-22', phone: '010-7777-3333', gender: '남성', hospitalName: '강남성심병원', diseaseCode: 'M54.5', status: 'dispensing', paymentStatus: 'na', paymentAmount: '9,800원', isConsentSubstitute: true, receivedAt: '2026-03-12 09:35', imageUrl: prescriptionImage },
+  { id: 'RX-007', source: 'kiosk', patientName: '한지수', birthDate: '2001-03-20', phone: '010-4444-9999', gender: '여성', hospitalName: '연세세브란스병원', diseaseCode: 'I10', status: 'completed', paymentStatus: 'paid', paymentAmount: '15,200원', isConsentSubstitute: true, receivedAt: '2026-03-12 09:50', imageUrl: prescriptionImage },
+  { id: 'RX-008', source: 'kiosk', patientName: '오민준', birthDate: '1988-09-22', phone: '010-7777-3333', gender: '남성', hospitalName: '강남성심병원', diseaseCode: 'M54.5', status: 'dispensing_done', paymentStatus: 'na', paymentAmount: '9,800원', isConsentSubstitute: true, receivedAt: '2026-03-12 09:35', imageUrl: prescriptionImage },
   { id: 'RX-009', source: 'kiosk', patientName: '임태양', birthDate: '1973-04-30', phone: '010-1111-6666', gender: '남성', hospitalName: '고려대안암병원', diseaseCode: 'J45.9', status: 'received', paymentStatus: 'na', paymentAmount: '11,400원', isConsentSubstitute: true, receivedAt: '2026-03-12 08:55', imageUrl: prescriptionImage },
 ];
 
@@ -305,9 +305,10 @@ export const PrescriptionList: React.FC = () => {
             <option value="all">모든 상태</option>
             <option value="received">신규 접수</option>
             <option value="dispensing">조제 중</option>
+            <option value="dispensing_done">조제 완료</option>
             <option value="payment_done">결제 완료</option>
-            <option value="ready_pickup">수령 대기</option>
-            <option value="rejected">거절/반려</option>
+            <option value="completed">수령 완료</option>
+            <option value="rejected">취소 / 반려</option>
           </select>
         </div>
         <div className="flex items-center gap-3 flex-shrink-0">

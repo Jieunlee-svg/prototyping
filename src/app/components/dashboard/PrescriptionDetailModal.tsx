@@ -11,7 +11,7 @@ import { clsx } from 'clsx';
 import { ImageWithFallback } from '../figma/ImageWithFallback';
 
 // ── Types ──────────────────────────────────────────────────────────────
-export type PrescriptionStatus = 'received' | 'dispensing' | 'payment_done' | 'ready_pickup' | 'rejected';
+export type PrescriptionStatus = 'received' | 'dispensing' | 'dispensing_done' | 'payment_done' | 'completed' | 'rejected';
 export type PrescriptionSource = 'app_camera' | 'fax_telemed' | 'kiosk';
 
 export interface Prescription {
@@ -48,18 +48,23 @@ export const getSourceLabel = (source: PrescriptionSource) => {
 };
 
 export const STATUS_LABEL: Record<PrescriptionStatus, { label: string; color: string; bgColor: string }> = {
-  received:     { label: '신규 접수', color: 'text-blue-600',   bgColor: 'bg-blue-50' },
-  dispensing:   { label: '조제 중',   color: 'text-yellow-600', bgColor: 'bg-yellow-50' },
-  payment_done: { label: '결제 완료', color: 'text-indigo-600', bgColor: 'bg-indigo-50' },
-  ready_pickup: { label: '수령 대기', color: 'text-green-600',  bgColor: 'bg-green-50' },
-  rejected:     { label: '거절/반려', color: 'text-red-600',    bgColor: 'bg-red-50' },
+  received:        { label: '신규 접수', color: 'text-red-500',    bgColor: 'bg-red-50' },
+  dispensing:      { label: '조제 중',   color: 'text-blue-500',   bgColor: 'bg-blue-50' },
+  dispensing_done: { label: '조제 완료', color: 'text-blue-500',   bgColor: 'bg-blue-50' },
+  payment_done:    { label: '결제 완료', color: 'text-emerald-500', bgColor: 'bg-emerald-50' },
+  completed:       { label: '수령 완료', color: 'text-emerald-500', bgColor: 'bg-emerald-50' },
+  rejected:        { label: '취소 / 반려', color: 'text-orange-500', bgColor: 'bg-orange-50' },
 };
 
 export const StatusText: React.FC<{ status: PrescriptionStatus }> = ({ status }) => {
-  const { label, color, bgColor } = STATUS_LABEL[status];
+  // Safety check: provide a default if status is not found in STATUS_LABEL
+  const { label, color, bgColor } = STATUS_LABEL[status] || { label: '알 수 없음', color: 'text-gray-500', bgColor: 'bg-gray-50' };
   return (
     <span className={clsx(
-      'inline-flex px-2.5 py-1 rounded-full text-xs font-medium whitespace-nowrap',
+      'inline-flex px-2 py-0.5 rounded text-[11px] font-bold whitespace-nowrap border',
+      status === 'received' ? 'border-red-100' : 
+      status === 'dispensing' ? 'border-blue-100' : 
+      status === 'rejected' ? 'border-orange-100' : 'border-emerald-100',
       color,
       bgColor
     )}>
@@ -82,15 +87,18 @@ export const PrescriptionDetailModal: React.FC<PrescriptionDetailModalProps> = (
   const [zoom, setZoom] = useState(1);
   const [rejectOpen, setRejectOpen] = useState(false);
   const [rejectReason, setRejectReason] = useState('');
-  const [rejectNote, setRejectNote] = useState('');
+  const [paymentAmount, setPaymentAmount] = useState(prescription.paymentAmount ? prescription.paymentAmount.replace(/[^0-9]/g, '') : '');
+  const [isNoPayment, setIsNoPayment] = useState(false);
+  const [isChangingStatus, setIsChangingStatus] = useState(false);
+  const [tempStatus, setTempStatus] = useState<PrescriptionStatus>(prescription.status);
 
-  const dispenseLabel = prescription.status === 'dispensing' ? '조제 완료 및 결제 요청' : '조제 시작';
-  const dispenseNext: PrescriptionStatus = prescription.status === 'dispensing' ? 'payment_done' : 'dispensing';
-  const showDispenseBtn = !['payment_done', 'ready_pickup', 'rejected'].includes(prescription.status);
-  const showRejectBtn = !['rejected'].includes(prescription.status);
+  const handleUpdateStatus = (newStatus: PrescriptionStatus) => {
+    onUpdateStatus?.(newStatus);
+    setIsChangingStatus(false);
+  };
 
   const confirmReject = () => {
-    onUpdateStatus?.('rejected');
+    handleUpdateStatus('rejected');
     setRejectOpen(false);
   };
 
@@ -127,13 +135,27 @@ export const PrescriptionDetailModal: React.FC<PrescriptionDetailModalProps> = (
               <div className="w-7 h-7 bg-blue-50 rounded-lg flex items-center justify-center">
                 <FileText size={15} className="text-blue-600" />
               </div>
-              <span className="text-[15px] font-bold text-gray-900">처방전 검토</span>
+              <span className="text-[15px] font-bold text-gray-900">
+                {prescription.status === 'rejected' ? '취소 / 반려 상세' : '처방전 검토'}
+              </span>
             </div>
             <button onClick={onClose} className="text-gray-400 hover:text-gray-700 p-1.5 rounded-lg hover:bg-gray-100 transition-colors"><X size={18} /></button>
           </div>
 
           {/* Scrollable info */}
           <div className="flex-1 overflow-y-auto px-5 py-6 space-y-8">
+            {/* 결제 금액 안내 (결제 완료 상태일 때만) */}
+            {prescription.status === 'payment_done' && (
+              <div className="bg-blue-50 border border-blue-100 rounded-lg px-4 py-3 flex items-center gap-2">
+                <div className="w-5 h-5 rounded-full bg-blue-500 flex items-center justify-center">
+                  <span className="text-white text-[10px] font-bold">₩</span>
+                </div>
+                <p className="text-sm font-bold text-blue-600">
+                  결제 금액: <span className="text-blue-700">{paymentAmount ? `${Number(paymentAmount).toLocaleString()}원` : '미입력'}</span>
+                </p>
+              </div>
+            )}
+
             {/* 조제 상태 */}
             <div className="flex items-center justify-between">
               <span className="text-sm text-gray-400">조제 상태</span>
@@ -193,57 +215,119 @@ export const PrescriptionDetailModal: React.FC<PrescriptionDetailModalProps> = (
 
           {/* Action buttons at bottom */}
           <div className="px-5 pb-6 pt-4 border-t border-gray-100 space-y-3 bg-white">
-            {!rejectOpen ? (
-              <>
-                {showDispenseBtn && (
-                  <button
-                    onClick={() => onUpdateStatus?.(dispenseNext)}
-                    className="w-full py-3.5 bg-blue-600 hover:bg-blue-700 text-white text-[15px] font-bold rounded-lg transition-all active:scale-[0.98]"
-                  >
-                    {dispenseLabel}
-                  </button>
-                )}
-                {showRejectBtn && (
-                  <button
-                    onClick={() => setRejectOpen(true)}
-                    className="w-full py-3 border border-gray-200 text-gray-700 text-[15px] font-medium rounded-lg hover:border-red-200 hover:bg-red-50 hover:text-red-600 transition-all"
-                  >
-                    거절 / 반려
-                  </button>
-                )}
-              </>
-            ) : (
+            {/* Rejection selection UI */}
+            {rejectOpen ? (
               <div className="space-y-3 animate-in fade-in slide-in-from-bottom-2 duration-300">
                 <div className="p-4 bg-gray-50 rounded-xl space-y-2.5 border border-red-100">
-                  <div className="flex items-center justify-between mb-1">
-                    <p className="text-xs font-bold text-red-600">반려 사유 선택</p>
-                    <button onClick={() => setRejectOpen(false)} className="text-gray-400 hover:text-gray-600"><X size={14}/></button>
-                  </div>
-                  {REJECT_REASONS.map(r => (
-                    <label key={r.id} className={clsx('flex items-start gap-2.5 p-2.5 rounded-lg border cursor-pointer transition-all text-sm',
-                      rejectReason === r.id ? 'border-red-300 bg-red-50' : 'border-gray-200 bg-white hover:border-gray-300'
-                    )}>
-                      <input type="radio" name="reject" value={r.id} checked={rejectReason === r.id}
-                        onChange={() => setRejectReason(r.id)} className="mt-0.5 accent-red-500 flex-shrink-0" />
-                      <div className="flex-1">
-                        <p className="font-semibold text-gray-800 text-xs">{r.label}</p>
-                      </div>
-                    </label>
-                  ))}
+                  <p className="text-xs font-bold text-gray-900 mb-1">반려 사유</p>
+                  <select 
+                    value={rejectReason} 
+                    onChange={e => setRejectReason(e.target.value)}
+                    className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg outline-none focus:border-red-300"
+                  >
+                    <option value="">사유를 선택하세요</option>
+                    {REJECT_REASONS.map(r => <option key={r.id} value={r.id}>{r.label}</option>)}
+                  </select>
                 </div>
-                <button
-                  onClick={confirmReject}
-                  disabled={!rejectReason}
-                  className="w-full py-3.5 bg-red-500 hover:bg-red-600 disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-bold rounded-lg transition-colors shadow-lg shadow-red-100"
-                >
-                  반려 확정
-                </button>
+                <div className="flex gap-2">
+                  <button onClick={() => setRejectOpen(false)} className="flex-1 py-3 text-sm font-bold text-gray-500 bg-gray-100 rounded-lg">취소</button>
+                  <button onClick={confirmReject} disabled={!rejectReason} className="flex-1 py-3 text-sm font-bold text-white bg-red-500 hover:bg-red-600 rounded-lg disabled:opacity-50">확정</button>
+                </div>
               </div>
-            )}
+            ) : (
+              <div className="space-y-3">
+                {isChangingStatus ? (
+                  <div className="space-y-4">
+                    <div>
+                      <p className="text-xs font-bold text-gray-900 mb-2">상태 선택</p>
+                      <select 
+                        value={tempStatus}
+                        onChange={e => setTempStatus(e.target.value as PrescriptionStatus)}
+                        className="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg text-[15px] font-medium text-gray-900 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all cursor-pointer"
+                      >
+                        <option value="received">신규 접수</option>
+                        <option value="dispensing">조제 중</option>
+                        <option value="dispensing_done">조제 완료</option>
+                        <option value="payment_done">결제 완료</option>
+                        <option value="rejected">취소 / 반려</option>
+                      </select>
+                    </div>
+                    <div className="flex gap-2">
+                      <button onClick={() => setIsChangingStatus(false)} className="flex-1 py-3.5 border border-gray-200 text-gray-700 text-[15px] font-bold rounded-lg hover:bg-gray-50">취소</button>
+                      <button onClick={() => handleUpdateStatus(tempStatus)} className="flex-1 py-3.5 bg-blue-600 hover:bg-blue-700 text-white text-[15px] font-bold rounded-lg shadow-lg active:scale-[0.98]">확인</button>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    {prescription.status === 'received' && (
+                      <>
+                        <button onClick={() => handleUpdateStatus('dispensing')} className="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white text-[15px] font-bold rounded-lg transition-all shadow-lg active:scale-[0.98]">조제 시작</button>
+                        <button onClick={() => setRejectOpen(true)} className="w-full py-3 border border-gray-200 text-gray-700 text-[15px] font-medium rounded-lg hover:bg-gray-50">취소 / 반려</button>
+                      </>
+                    )}
 
-            {prescription.status === 'rejected' && (
-              <div className="w-full py-3.5 rounded-lg bg-gray-100 border border-gray-200 text-gray-500 text-sm font-medium text-center">
-                거절/반려 처리된 처방전입니다.
+                    {prescription.status === 'dispensing' && (
+                      <>
+                        <button onClick={() => handleUpdateStatus('dispensing_done')} className="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white text-[15px] font-bold rounded-lg shadow-lg active:scale-[0.98]">조제 완료</button>
+                        <button onClick={() => handleUpdateStatus('received')} className="w-full py-3 border border-gray-200 text-gray-700 text-[15px] font-medium rounded-lg hover:bg-gray-50">조제 중단</button>
+                      </>
+                    )}
+
+                    {prescription.status === 'dispensing_done' && (
+                      <div className="space-y-4">
+                        <div>
+                          <div className="flex items-center gap-2 mb-2">
+                            <div className="w-5 h-5 rounded-full bg-blue-100 flex items-center justify-center">
+                              <span className="text-blue-600 text-[10px] font-bold">₩</span>
+                            </div>
+                            <span className="text-xs font-bold text-gray-900">결제 금액 입력</span>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <div className="flex-1 px-4 py-3 bg-white border border-gray-200 rounded-lg flex items-center justify-between gap-2 focus-within:border-blue-400 focus-within:ring-2 focus-within:ring-blue-100 transition-all">
+                              <input 
+                                type="text" 
+                                value={isNoPayment ? '' : paymentAmount} 
+                                disabled={isNoPayment}
+                                onChange={e => setPaymentAmount(e.target.value.replace(/[^0-9]/g, ''))}
+                                className="bg-transparent text-[15px] w-full outline-none font-bold text-gray-900 disabled:text-gray-300" 
+                                placeholder="0"
+                              />
+                              <span className={clsx("text-sm font-bold", isNoPayment ? "text-gray-300" : "text-gray-900")}>원</span>
+                            </div>
+                            <label className="flex items-center gap-1.5 cursor-pointer">
+                              <input 
+                                type="checkbox" 
+                                checked={isNoPayment}
+                                onChange={e => setIsNoPayment(e.target.checked)}
+                                className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                              />
+                              <span className="text-xs font-medium text-gray-500">미입력</span>
+                            </label>
+                          </div>
+                        </div>
+                        <button onClick={() => handleUpdateStatus('payment_done')} className="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white text-[15px] font-bold rounded-lg shadow-lg active:scale-[0.98]">결제 완료</button>
+                      </div>
+                    )}
+
+                    {prescription.status === 'payment_done' && (
+                      <div className="space-y-3">
+                        <button disabled className="w-full py-4 bg-gray-50 border border-gray-200 text-gray-400 text-[15px] font-bold rounded-lg cursor-not-allowed">결제 완료된 처방전입니다.</button>
+                        <button onClick={() => { setTempStatus('payment_done'); setIsChangingStatus(true); }} className="w-full py-3 border border-gray-200 text-gray-700 text-[15px] font-medium rounded-lg hover:bg-gray-50">상태 변경</button>
+                      </div>
+                    )}
+
+                    {prescription.status === 'completed' && (
+                      <button onClick={onClose} className="w-full py-3.5 bg-white border border-gray-200 text-gray-700 text-[15px] font-bold rounded-lg shadow-sm">닫기</button>
+                    )}
+
+                    {prescription.status === 'rejected' && (
+                      <div className="space-y-3">
+                        <button disabled className="w-full py-4 bg-gray-50 border border-gray-200 text-gray-400 text-[15px] font-bold rounded-lg cursor-not-allowed">취소 / 반려된 처방전입니다.</button>
+                        <button onClick={() => { setTempStatus('rejected'); setIsChangingStatus(true); }} className="w-full py-3 border border-gray-200 text-gray-700 text-[15px] font-medium rounded-lg hover:bg-gray-50">상태 변경</button>
+                      </div>
+                    )}
+                  </>
+                )}
               </div>
             )}
           </div>
