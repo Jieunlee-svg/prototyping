@@ -18,7 +18,7 @@ interface PatientEditModalProps {
 export const PatientEditModal: React.FC<PatientEditModalProps> = ({ patient, onClose, onSave }) => {
   const [formData, setFormData] = useState({ ...patient });
 
-  const diseases = ['고혈압', '당뇨', '고지혈증', '비만', '천식', '만성 신장병'];
+  const diseases = ['고혈압', '당뇨', '고혈압 당뇨 복합'];
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
