@@ -19,6 +19,7 @@ import {
   ZoomOut,
   ChevronDown,
   ChevronUp,
+  ExternalLink,
 } from 'lucide-react';
 import { clsx } from 'clsx';
 import { ImageWithFallback } from '../figma/ImageWithFallback';
@@ -82,11 +83,11 @@ const getSourceLabel = (source: PrescriptionSource) => {
 
 // Status labels only (no icons in badge — icons removed per request)
 const STATUS_LABEL: Record<PrescriptionStatus, { label: string; color: string }> = {
-  received:     { label: '신규 접수', color: 'text-blue-600 font-semibold' },
-  dispensing:   { label: '조제 중',   color: 'text-yellow-600 font-semibold' },
-  payment_done: { label: '결제 완료', color: 'text-indigo-600 font-semibold' },
-  ready_pickup: { label: '수령 대기', color: 'text-green-600 font-semibold' },
-  rejected:     { label: '거절/반려', color: 'text-red-600 font-semibold' },
+  received:     { label: '신규 접수', color: 'text-blue-600 font-medium' },
+  dispensing:   { label: '조제 중',   color: 'text-yellow-600 font-medium' },
+  payment_done: { label: '결제 완료', color: 'text-indigo-600 font-medium' },
+  ready_pickup: { label: '수령 대기', color: 'text-green-600 font-medium' },
+  rejected:     { label: '거절/반려', color: 'text-red-600 font-medium' },
 };
 
 const StatusText: React.FC<{ status: PrescriptionStatus }> = ({ status }) => {
@@ -170,7 +171,7 @@ export const PrescriptionList: React.FC = () => {
   const th = 'px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider';
   const thC = 'px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider';
   const td = 'px-4 py-3 whitespace-nowrap text-sm text-gray-600';
-  const tdB = 'px-4 py-3 whitespace-nowrap text-sm font-semibold text-gray-900';
+  const tdB = 'px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-800';
 
   // ── Header
   const renderHeader = () => {
@@ -267,9 +268,9 @@ export const PrescriptionList: React.FC = () => {
       <td className={thC}>
         <button
           onClick={() => { setSelectedPrescription(p); setRejectOpen(false); setRejectReason(''); setRejectNote(''); setZoom(1); }}
-          className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium border border-gray-300 rounded-md bg-white hover:bg-blue-50 hover:border-blue-400 hover:text-blue-600 transition-colors"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium border border-gray-300 rounded-md bg-white hover:bg-blue-50 hover:border-blue-400 hover:text-blue-600 transition-colors shadow-sm"
         >
-          <Eye size={13} />보기
+          <ExternalLink size={13} />보기
         </button>
       </td>
     );
