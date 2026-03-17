@@ -65,10 +65,24 @@ export const PatientDetail17: React.FC<PatientDetailProps> = ({ onBack, patientI
             </button>
 
             <div>
-              <div className="flex items-center gap-3 mb-1">
-                <h1 className="text-2xl font-bold text-gray-900">십칠스프린트</h1>
-                <span className="text-sm text-gray-500 bg-gray-100 px-2 py-0.5 rounded">여성 / 40세</span>
-                <span className="text-xs font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-100">고혈압</span>
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center gap-3">
+                  <h1 className="text-2xl font-bold text-gray-900">십칠스프린트</h1>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-100">고혈압</span>
+                  </div>
+                </div>
+                <div className="flex items-center gap-4 text-sm">
+                  <div className="flex items-center gap-2">
+                    <span className="text-gray-400 text-xs font-bold uppercase tracking-tight">휴대폰 번호</span>
+                    <span className="text-blue-600 font-medium">010-1234-5678</span>
+                  </div>
+                  <div className="w-px h-3 bg-gray-200" />
+                  <div className="flex items-center gap-2">
+                    <span className="text-gray-400 text-xs font-bold uppercase tracking-tight">생년월일</span>
+                    <span className="text-gray-700 font-medium">1987-03-12 (만 40세)</span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
