@@ -135,14 +135,27 @@ export const PatientList: React.FC<PatientListProps> = ({ onPatientClick }) => {
                       {patient.birthDate} <span className="text-gray-400">({patient.age})</span>
                     </td>
                     <td className="px-4 py-3 text-sm text-gray-600">
-                      <span className={clsx(
-                        "px-2 py-0.5 rounded text-xs",
-                        patient.medicationStatus === '미실시' ? 'bg-gray-100 text-gray-500' :
-                          patient.medicationStatus.includes('당뇨') || patient.medicationStatus.includes('고혈압') ? 'bg-orange-50 text-orange-700 border border-orange-100' :
-                            'text-gray-600'
-                      )}>
-                        {patient.medicationStatus}
-                      </span>
+                      <div className="flex flex-wrap gap-1">
+                        {patient.medicationStatus === '미실시' ? (
+                          <span className="px-2 py-0.5 rounded text-xs bg-gray-100 text-gray-500">
+                            미실시
+                          </span>
+                        ) : (
+                          patient.medicationStatus.split(' • ').map((disease, idx) => (
+                            <span 
+                              key={idx}
+                              className={clsx(
+                                "px-2 py-0.5 rounded text-xs border whitespace-nowrap",
+                                (disease.includes('당뇨') || disease.includes('고혈압')) 
+                                  ? 'bg-orange-50 text-orange-700 border-orange-100' 
+                                  : 'bg-gray-50 text-gray-600 border-gray-200'
+                              )}
+                            >
+                              {disease}
+                            </span>
+                          ))
+                        )}
+                      </div>
                     </td>
                     <td className="px-4 py-3 text-center">
                       <div className="flex flex-col items-center">
