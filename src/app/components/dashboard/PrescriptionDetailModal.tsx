@@ -183,6 +183,23 @@ export const PrescriptionDetailModal: React.FC<PrescriptionDetailModalProps> = (
                 </div>
               </div>
             </div>
+
+            {/* Developer Note (Prototype Instruction) */}
+            <div className="p-4 bg-blue-50/50 border border-blue-100 rounded-xl">
+              <p className="text-xs text-gray-700 leading-relaxed font-medium">
+                이 팝업은 자체 개발 하지 않습니다.<br />
+                <a 
+                  href="https://mims-account.mcircle.co.kr/login" 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="text-blue-600 hover:underline break-all block my-1"
+                >
+                  https://mims-account.mcircle.co.kr/login
+                </a>
+                링크를 엽니다.<br />
+                로그인 버튼을 누르고 탐색을 계속 하세요.
+              </p>
+            </div>
           </div>
 
           {/* Action buttons at bottom */}
