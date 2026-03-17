@@ -18,6 +18,7 @@ import {
   StatusText, 
   PrescriptionStatus 
 } from './PrescriptionDetailModal';
+import { PatientEditModal } from './PatientEditModal';
 
 const MOCK_PRESCRIPTIONS: Prescription[] = [
   { id: 'RX-17-005', receivedAt: '2026-03-17 10:30', source: 'app_camera', status: 'received', hospitalName: '성모병원', patientName: '십칠스프린트', birthDate: '1987-03-12', phone: '010-1234-5678', diseaseCode: 'I10', paymentStatus: 'na' },
@@ -43,6 +44,15 @@ export const PatientDetail17: React.FC<PatientDetailProps> = ({ onBack, patientI
   const [memo, setMemo] = useState("고객 특이사항:\n- 알약 삼키는 것을 힘들어함\n- 저녁 식후 복약 선호\n\n다음 상담 시 확인:\n- 어지럼증 호전 여부");
   const [prescriptions, setPrescriptions] = useState<Prescription[]>(MOCK_PRESCRIPTIONS);
   const [selectedPrescription, setSelectedPrescription] = useState<Prescription | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [patientInfo, setPatientInfo] = useState({
+    name: '십칠스프린트',
+    birthDate: '1987-03-12',
+    gender: '여성' as '여성' | '남성',
+    disease: '고혈압',
+    isRegular: true,
+    regularDate: '2026-03-01'
+  });
 
   const updateStatus = (newStatus: PrescriptionStatus) => {
     if (!selectedPrescription) return;
@@ -67,9 +77,9 @@ export const PatientDetail17: React.FC<PatientDetailProps> = ({ onBack, patientI
             <div>
               <div className="flex flex-col gap-2">
                 <div className="flex items-center gap-3">
-                  <h1 className="text-2xl font-bold text-gray-900">십칠스프린트</h1>
+                  <h1 className="text-2xl font-bold text-gray-900">{patientInfo.name}</h1>
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-100">고혈압</span>
+                    <span className="text-xs font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-100">{patientInfo.disease}</span>
                   </div>
                 </div>
                 <div className="flex items-center gap-4 text-sm">
@@ -80,7 +90,7 @@ export const PatientDetail17: React.FC<PatientDetailProps> = ({ onBack, patientI
                   <div className="w-px h-3 bg-gray-200" />
                   <div className="flex items-center gap-2">
                     <span className="text-gray-400 text-xs font-bold uppercase tracking-tight">생년월일</span>
-                    <span className="text-gray-700 font-medium">1987-03-12 (만 40세)</span>
+                    <span className="text-gray-700 font-medium">{patientInfo.birthDate} (만 40세)</span>
                   </div>
                 </div>
               </div>
@@ -88,7 +98,10 @@ export const PatientDetail17: React.FC<PatientDetailProps> = ({ onBack, patientI
           </div>
 
           <div className="flex items-start gap-3">
-            <button className="p-2 text-gray-400 hover:text-gray-600">
+            <button 
+              onClick={() => setIsEditModalOpen(true)}
+              className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+            >
               <MoreHorizontal size={20} />
             </button>
           </div>
@@ -199,6 +212,18 @@ export const PatientDetail17: React.FC<PatientDetailProps> = ({ onBack, patientI
           prescription={selectedPrescription}
           onClose={() => setSelectedPrescription(null)}
           onUpdateStatus={updateStatus}
+        />
+      )}
+
+      {/* ── 고객 정보 수정 팝업 모달 ── */}
+      {isEditModalOpen && (
+        <PatientEditModal
+          patient={patientInfo}
+          onClose={() => setIsEditModalOpen(false)}
+          onSave={(updated) => {
+            setPatientInfo(updated);
+            setIsEditModalOpen(false);
+          }}
         />
       )}
     </div>
