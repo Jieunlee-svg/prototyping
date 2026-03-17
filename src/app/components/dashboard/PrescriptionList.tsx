@@ -82,17 +82,25 @@ const getSourceLabel = (source: PrescriptionSource) => {
 };
 
 // Status labels only (no icons in badge — icons removed per request)
-const STATUS_LABEL: Record<PrescriptionStatus, { label: string; color: string }> = {
-  received:     { label: '신규 접수', color: 'text-blue-600 font-medium' },
-  dispensing:   { label: '조제 중',   color: 'text-yellow-600 font-medium' },
-  payment_done: { label: '결제 완료', color: 'text-indigo-600 font-medium' },
-  ready_pickup: { label: '수령 대기', color: 'text-green-600 font-medium' },
-  rejected:     { label: '거절/반려', color: 'text-red-600 font-medium' },
+const STATUS_LABEL: Record<PrescriptionStatus, { label: string; color: string; bgColor: string }> = {
+  received:     { label: '신규 접수', color: 'text-blue-600',   bgColor: 'bg-blue-50' },
+  dispensing:   { label: '조제 중',   color: 'text-yellow-600', bgColor: 'bg-yellow-50' },
+  payment_done: { label: '결제 완료', color: 'text-indigo-600', bgColor: 'bg-indigo-50' },
+  ready_pickup: { label: '수령 대기', color: 'text-green-600',  bgColor: 'bg-green-50' },
+  rejected:     { label: '거절/반려', color: 'text-red-600',    bgColor: 'bg-red-50' },
 };
 
 const StatusText: React.FC<{ status: PrescriptionStatus }> = ({ status }) => {
-  const { label, color } = STATUS_LABEL[status];
-  return <span className={clsx('text-sm', color)}>{label}</span>;
+  const { label, color, bgColor } = STATUS_LABEL[status];
+  return (
+    <span className={clsx(
+      'inline-flex px-2.5 py-1 rounded-full text-xs font-medium whitespace-nowrap',
+      color,
+      bgColor
+    )}>
+      {label}
+    </span>
+  );
 };
 
 // ── Toast ──────────────────────────────────────────────────────────────
