@@ -2,13 +2,45 @@ import React, { useState } from 'react';
 import {
   ArrowLeft,
   FileText,
-  MoreHorizontal
+  MoreHorizontal,
+  Clock,
+  CheckCircle2,
+  ChevronRight,
+  ExternalLink
 } from 'lucide-react';
+import { clsx } from 'clsx';
 
 interface PatientDetailProps {
   onBack: () => void;
   patientId: string | null;
 }
+
+interface MockPrescription {
+  id: string;
+  receivedAt: string;
+  source: 'app_camera' | 'fax_telemed' | 'kiosk';
+  status: 'received' | 'dispensing' | 'payment_done' | 'ready_pickup' | 'rejected';
+  hospital: string;
+}
+
+const MOCK_PRESCRIPTIONS: MockPrescription[] = [
+  { id: 'RX-17-002', receivedAt: '2026-03-12 14:30', source: 'app_camera', status: 'dispensing', hospital: '김민수이비인후과' },
+  { id: 'RX-17-001', receivedAt: '2026-03-05 10:15', source: 'fax_telemed', status: 'ready_pickup', hospital: '서울내과' },
+];
+
+const getSourceLabel = (source: string) => {
+  if (source === 'app_camera') return '고객 앱 촬영';
+  if (source === 'kiosk') return '키오스크 스캔';
+  return '의사 웹 전송';
+};
+
+const STATUS_STYLE: Record<string, { label: string; color: string; bgColor: string }> = {
+  received: { label: '신규 접수', color: 'text-blue-600', bgColor: 'bg-blue-50' },
+  dispensing: { label: '조제 중', color: 'text-yellow-600', bgColor: 'bg-yellow-50' },
+  payment_done: { label: '결제 완료', color: 'text-indigo-600', bgColor: 'bg-indigo-50' },
+  ready_pickup: { label: '수령 대기', color: 'text-green-600', bgColor: 'bg-green-50' },
+  rejected: { label: '거절/반려', color: 'text-red-600', bgColor: 'bg-red-50' },
+};
 
 export const PatientDetail17: React.FC<PatientDetailProps> = ({ onBack, patientId }) => {
   const [memo, setMemo] = useState("고객 특이사항:\n- 알약 삼키는 것을 힘들어함\n- 저녁 식후 복약 선호\n\n다음 상담 시 확인:\n- 어지럼증 호전 여부");
@@ -43,24 +75,100 @@ export const PatientDetail17: React.FC<PatientDetailProps> = ({ onBack, patientI
         </div>
       </header>
 
-      {/* Main Content - Only Architect Memo */}
-      <div className="flex-1 overflow-hidden p-6 max-w-2xl mx-auto w-full">
-        <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-6 shadow-sm flex flex-col h-64">
-          <div className="flex justify-between items-center mb-4">
-            <span className="text-sm font-bold text-yellow-800 flex items-center gap-2">
-              <FileText size={18} />
-              약사 메모 (Private)
-            </span>
-            <span className="text-xs text-yellow-600">저장됨</span>
-          </div>
-          <textarea
-            className="flex-1 bg-transparent resize-none text-base text-gray-800 placeholder-yellow-800/50 outline-none leading-relaxed custom-scrollbar"
-            value={memo}
-            onChange={(e) => setMemo(e.target.value)}
-          />
+      {/* Main Content */}
+      <div className="flex-1 overflow-y-auto p-6 max-w-6xl mx-auto w-full">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          {/* Left Column: Pharmacist Memo (4 cols) */}
+          <section className="lg:col-span-4 space-y-4">
+            <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+              <FileText size={20} className="text-yellow-600" />
+              약사 메모
+            </h3>
+            <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-6 shadow-sm flex flex-col h-[450px]">
+              <div className="flex justify-between items-center mb-4">
+                <span className="text-sm font-bold text-yellow-800 flex items-center gap-2">
+                  <FileText size={18} />
+                  Private Note
+                </span>
+                <span className="text-xs text-yellow-600">자동 저장됨</span>
+              </div>
+              <textarea
+                className="flex-1 bg-transparent resize-none text-base text-gray-800 placeholder-yellow-800/50 outline-none leading-relaxed custom-scrollbar"
+                value={memo}
+                onChange={(e) => setMemo(e.target.value)}
+                placeholder="환자에 대한 특이사항을 입력하세요..."
+              />
+            </div>
+          </section>
+
+          {/* Right Column: Prescription List Section (8 cols) */}
+          <section className="lg:col-span-8 space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                <FileText size={20} className="text-blue-600" />
+                보낸 처방전 목록
+              </h3>
+              <span className="text-sm text-gray-500">총 {MOCK_PRESCRIPTIONS.length}건</span>
+            </div>
+
+            <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">접수 일시</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">접수 경로</th>
+                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">조제 상태</th>
+                    <th className="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">처방전 보기</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-100">
+                  {MOCK_PRESCRIPTIONS.map((rx) => {
+                    const statusStyle = STATUS_STYLE[rx.status];
+                    return (
+                      <tr key={rx.id} className="hover:bg-gray-50 transition-colors">
+                        <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-600 font-medium">
+                          {rx.receivedAt}
+                        </td>
+                        <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-600">
+                          {getSourceLabel(rx.source)}
+                        </td>
+                        <td className="px-4 py-4 whitespace-nowrap">
+                          <span className={clsx(
+                            "px-2.5 py-1 rounded-full text-xs font-bold",
+                            statusStyle.bgColor,
+                            statusStyle.color
+                          )}>
+                            {statusStyle.label}
+                          </span>
+                        </td>
+                        <td className="px-4 py-4 whitespace-nowrap text-center">
+                          <button className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-bold border border-gray-300 rounded-lg bg-white hover:bg-blue-50 hover:border-blue-400 hover:text-blue-600 transition-colors">
+                            <ExternalLink size={13} />
+                            보기
+                          </button>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+              {MOCK_PRESCRIPTIONS.length === 0 && (
+                <div className="py-20 text-center text-gray-400 text-sm">
+                  접수된 처방전이 없습니다.
+                </div>
+              )}
+            </div>
+            <div className="p-4 bg-blue-50 border border-blue-100 rounded-xl">
+              <p className="text-xs text-blue-600 flex items-center gap-1.5 leading-relaxed">
+                <CheckCircle2 size={14} />
+                최근 접수된 처방전부터 상단에 표시됩니다. "보기" 버튼을 클릭하여 상세 내용을 확인하고 조제를 시작할 수 있습니다.
+              </p>
+            </div>
+          </section>
         </div>
-        <p className="mt-4 text-center text-sm text-gray-400">
-          이 화면은 십칠스프린트 고객 전용 약사 메모 관리 화면입니다.
+
+        <p className="mt-12 pb-8 text-center text-sm text-gray-400">
+          이 화면은 십칠스프린트 고객 전용 관리 화면입니다.
         </p>
       </div>
     </div>
