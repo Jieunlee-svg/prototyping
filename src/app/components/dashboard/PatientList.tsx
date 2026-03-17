@@ -45,10 +45,16 @@ interface PatientListProps {
 const AdherenceTooltip: React.FC = () => (
   <span className="relative group inline-flex">
     <Info size={12} className="text-gray-400 cursor-help" />
-    <span className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-56 rounded-lg bg-gray-900 px-3 py-2 text-xs text-white shadow-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-50 normal-case font-normal text-left leading-relaxed">
-      <strong className="block mb-1 text-white">복약 순응도 계산식</strong>
-      (복용 횟수 ÷ 먹어야 할 약 횟수) × 100<br />
-      <span className="text-gray-400 mt-1 block">기간 내 총 복용 실적 기준으로 산출됩니다.</span>
+    <span className="absolute top-full right-0 mt-2 w-64 rounded-xl bg-gray-900 px-4 py-3 text-[13px] text-white shadow-2xl opacity-0 group-hover:opacity-100 transition-all duration-200 z-[100] normal-case font-normal text-left leading-relaxed invisible group-hover:visible border border-gray-700">
+      <div className="absolute -top-1.5 right-1.5 w-3 h-3 bg-gray-900 transform rotate-45 border-t border-l border-gray-700" />
+      <strong className="block mb-2 text-blue-400 font-bold text-sm">복약 순응도 계산식</strong>
+      <div className="bg-white/10 rounded-lg p-2.5 mb-3 font-mono text-center text-blue-200">
+        (복용 횟수 ÷ 복용해야 할 횟수) × 100
+      </div>
+      <p className="text-gray-300 text-xs leading-relaxed">
+        • 기간 내 총 복용 실적 기준으로 산출됩니다.<br />
+        • 실제 복용 정보와 오차가 있을 수 있습니다.
+      </p>
     </span>
   </span>
 );
