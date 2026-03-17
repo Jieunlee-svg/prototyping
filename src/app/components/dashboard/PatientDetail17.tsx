@@ -27,8 +27,11 @@ interface MockPrescription {
 }
 
 const MOCK_PRESCRIPTIONS: MockPrescription[] = [
-  { id: 'RX-17-002', receivedAt: '2026-03-12 14:30', source: 'app_camera', status: 'dispensing', hospital: '김민수이비인후과' },
-  { id: 'RX-17-001', receivedAt: '2026-03-05 10:15', source: 'fax_telemed', status: 'ready_pickup', hospital: '서울내과' },
+  { id: 'RX-17-005', receivedAt: '2026-03-17 10:30', source: 'app_camera', status: 'received', hospital: '성모병원' },
+  { id: 'RX-17-004', receivedAt: '2026-03-17 09:15', source: 'fax_telemed', status: 'dispensing', hospital: '서울내과' },
+  { id: 'RX-17-003', receivedAt: '2026-03-16 16:45', source: 'kiosk', status: 'payment_done', hospital: '연세세브란스' },
+  { id: 'RX-17-002', receivedAt: '2026-03-15 14:30', source: 'app_camera', status: 'rejected', hospital: '김민수이비인후과' },
+  { id: 'RX-17-001', receivedAt: '2026-03-14 11:20', source: 'app_camera', status: 'ready_pickup', hospital: '우리들병원' },
 ];
 
 const getSourceIcon = (source: string) => {
