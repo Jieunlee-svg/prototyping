@@ -81,14 +81,69 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
   if (collapsed) {
     return (
-      <div className={clsx("w-16 bg-white border-r border-gray-200 flex flex-col h-screen items-center py-4 shrink-0", className)}>
+      <div className={clsx("w-20 bg-white border-r border-gray-200 flex flex-col h-screen items-center py-6 shrink-0 z-50", className)}>
+        {/* Toggle Button */}
         <button
           onClick={onToggleCollapse}
-          className="p-2 rounded-lg hover:bg-gray-100 text-gray-500 hover:text-blue-600 transition-colors mb-4"
+          className="p-2 mb-8 rounded-xl bg-gray-50 text-gray-400 hover:bg-blue-50 hover:text-blue-600 transition-all border border-gray-100"
         >
           <Menu size={20} />
         </button>
-        <span className="text-xs font-bold text-blue-600 writing-mode-vertical select-none tracking-widest">W</span>
+
+        {/* Mini Navigation */}
+        <div className="flex-1 w-full space-y-4 px-2 overflow-y-auto">
+          {[
+            { icon: HeartPulse, label: '복약 상담', active: isConsultationActive, onClick: onConsultationCClick },
+            { icon: Users, label: '단골 고객', active: isItemActive('단골 고객'), onClick: onDashboardClick },
+            { icon: Stethoscope, label: '처방전', active: isItemActive('처방전'), onClick: onPrescriptionClick },
+            { icon: MessageSquare, label: '문자 발송', active: isSmsActive, onClick: onSmsClick },
+            { icon: Bell, label: '공지사항', active: isItemActive('공지사항'), onClick: onNoticeClick },
+          ].map((item, idx) => (
+            <div key={idx} className="relative group flex justify-center">
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  item.onClick?.();
+                }}
+                className={clsx(
+                  "p-3 rounded-xl transition-all relative",
+                  item.active 
+                    ? "bg-blue-600 text-white shadow-lg shadow-blue-100" 
+                    : "text-gray-400 hover:bg-gray-100 hover:text-gray-900"
+                )}
+              >
+                <item.icon size={22} />
+                {item.active && (
+                  <div className="absolute -right-1 top-1/2 -translate-y-1/2 w-1 h-4 bg-blue-600 rounded-full" />
+                )}
+              </button>
+              
+              {/* Tooltip */}
+              <div className="absolute left-full ml-3 px-2 py-1 bg-gray-900 text-white text-[11px] rounded whitespace-nowrap opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity z-[60] font-medium">
+                {item.label}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Bottom Actions Mini */}
+        <div className="pt-4 border-t border-gray-100 w-full flex flex-col items-center gap-4 mb-4">
+          <button 
+            onClick={onSettingsClick}
+            className={clsx(
+              "p-2 rounded-lg transition-colors",
+              activeView === 'settings' ? "text-blue-600 bg-blue-50" : "text-gray-400 hover:bg-gray-100"
+            )}
+          >
+            <Settings size={20} />
+          </button>
+          <button 
+            onClick={onLogout}
+            className="p-2 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"
+          >
+            <LogOut size={20} />
+          </button>
+        </div>
       </div>
     );
   }

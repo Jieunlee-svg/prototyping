@@ -59,6 +59,19 @@ const AdherenceTooltip: React.FC = () => (
   </span>
 );
 
+// 관리 질환 안내 툴팁
+const DiseaseTooltip: React.FC = () => (
+  <span className="relative group inline-flex">
+    <Info size={12} className="text-gray-400 cursor-help" />
+    <span className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-72 rounded-xl bg-gray-900 px-4 py-3 text-[13px] text-white shadow-2xl opacity-0 group-hover:opacity-100 transition-all duration-200 z-[100] normal-case font-normal text-left leading-relaxed invisible group-hover:visible border border-gray-700">
+      <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-gray-900 transform rotate-45 border-t border-l border-gray-700" />
+      <p className="text-gray-200 leading-snug">
+        웰체크 앱에서 고객이 응답한 기초 건강 문진 내용을 기반으로 설정 합니다.
+      </p>
+    </span>
+  </span>
+);
+
 
 export const PatientList: React.FC<PatientListProps> = ({ onPatientClick }) => {
   const handlePatientClick = (patient: Patient) => {
@@ -101,16 +114,23 @@ export const PatientList: React.FC<PatientListProps> = ({ onPatientClick }) => {
         {/* Table */}
         <div className="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[1200px]">
+            <table className="w-full min-w-[1200px] table-fixed">
               <thead className="bg-gray-50 border-b border-gray-200">
               <tr>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider w-32">이름</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">휴대폰 번호</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">생년월일(나이)</th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider">관리질환</th>
-                  <th className="px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                  <th className="px-4 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider w-[14.28%]">이름</th>
+                  <th className="px-4 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider w-[14.28%]">휴대폰 번호</th>
+                  <th className="px-4 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider w-[14.28%]">성별</th>
+                  <th className="px-4 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider w-[14.28%]">생년월일</th>
+                  <th className="px-4 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider w-[14.28%]">나이</th>
+                  <th className="px-4 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider w-[14.28%]">
+                    <span className="flex items-center gap-1">
+                      관리 질환
+                      <DiseaseTooltip />
+                    </span>
+                  </th>
+                  <th className="px-4 py-4 text-center text-xs font-bold text-gray-500 uppercase tracking-wider w-[14.28%]">
                     <span className="flex items-center justify-center gap-1">
-                      복약 순응도<br />(30일 이내)
+                      복약 순응도 (30일)
                       <AdherenceTooltip />
                     </span>
                   </th>
@@ -119,7 +139,7 @@ export const PatientList: React.FC<PatientListProps> = ({ onPatientClick }) => {
               <tbody className="divide-y divide-gray-200">
                 {MOCK_DATA.map((patient) => (
                   <tr key={patient.id} className="hover:bg-blue-50/50 transition-colors">
-                    <td className="px-4 py-3">
+                    <td className="px-4 py-4">
                       <button
                         onClick={() => handlePatientClick(patient)}
                         disabled={patient.name !== '십칠스프린트' && patient.name !== '미정스프린트'}
@@ -129,21 +149,21 @@ export const PatientList: React.FC<PatientListProps> = ({ onPatientClick }) => {
                         )}
                       >
                         <span className={clsx(
-                          "font-medium text-gray-900",
-                          (patient.name === '십칠스프린트' || patient.name === '미정스프린트') && "group-hover:text-blue-600 group-hover:underline"
+                          "font-bold text-gray-900 text-sm",
+                          (patient.name === '십칠스프린트' || patient.name === '미정스프린트') && "group-hover:text-blue-600"
                         )}>
                           {patient.name}
                         </span>
                       </button>
                     </td>
-                    <td className="px-4 py-3 text-sm text-gray-600">{patient.phone}</td>
-                    <td className="px-4 py-3 text-sm text-gray-600">
-                      {patient.birthDate} <span className="text-gray-400">({patient.age})</span>
-                    </td>
-                    <td className="px-4 py-3 text-sm text-gray-600">
+                    <td className="px-4 py-4 text-sm text-gray-600 font-medium">{patient.phone}</td>
+                    <td className="px-4 py-4 text-sm text-gray-600">{patient.gender}</td>
+                    <td className="px-4 py-4 text-sm text-gray-600 tabular-nums">{patient.birthDate}</td>
+                    <td className="px-4 py-4 text-sm text-gray-600">{patient.age}세</td>
+                    <td className="px-4 py-4 text-sm text-gray-600">
                       <div className="flex flex-wrap gap-1">
                         {patient.medicationStatus === '미실시' ? (
-                          <span className="px-2 py-0.5 rounded text-xs bg-gray-100 text-gray-500">
+                          <span className="px-2 py-0.5 rounded-lg text-xs bg-gray-100 text-gray-500 font-medium">
                             미실시
                           </span>
                         ) : (
@@ -151,10 +171,10 @@ export const PatientList: React.FC<PatientListProps> = ({ onPatientClick }) => {
                             <span 
                               key={idx}
                               className={clsx(
-                                "px-2 py-0.5 rounded text-xs border whitespace-nowrap",
+                                "px-2.5 py-1 rounded-lg text-[11px] border whitespace-nowrap font-bold",
                                 (disease.includes('당뇨') || disease.includes('고혈압')) 
-                                  ? 'bg-orange-50 text-orange-700 border-orange-100' 
-                                  : 'bg-gray-50 text-gray-600 border-gray-200'
+                                  ? 'bg-orange-50 text-orange-600 border-orange-100' 
+                                  : 'bg-blue-50 text-blue-600 border-blue-100'
                               )}
                             >
                               {disease}
@@ -163,10 +183,10 @@ export const PatientList: React.FC<PatientListProps> = ({ onPatientClick }) => {
                         )}
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-center">
+                    <td className="px-4 py-4 text-center">
                       <div className="flex flex-col items-center">
                         <span className={clsx(
-                          "text-sm font-bold",
+                          "text-sm font-black",
                           patient.adherenceRate >= 80 ? "text-green-600" :
                             patient.adherenceRate >= 50 ? "text-orange-500" : "text-gray-400"
                         )}>
