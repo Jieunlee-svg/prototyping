@@ -12,26 +12,19 @@ import {
   Monitor
 } from 'lucide-react';
 import { clsx } from 'clsx';
+import { 
+  Prescription, 
+  PrescriptionDetailModal, 
+  StatusText, 
+  PrescriptionStatus 
+} from './PrescriptionDetailModal';
 
-interface PatientDetailProps {
-  onBack: () => void;
-  patientId: string | null;
-}
-
-interface MockPrescription {
-  id: string;
-  receivedAt: string;
-  source: 'app_camera' | 'fax_telemed' | 'kiosk';
-  status: 'received' | 'dispensing' | 'payment_done' | 'ready_pickup' | 'rejected';
-  hospital: string;
-}
-
-const MOCK_PRESCRIPTIONS: MockPrescription[] = [
-  { id: 'RX-17-005', receivedAt: '2026-03-17 10:30', source: 'app_camera', status: 'received', hospital: '성모병원' },
-  { id: 'RX-17-004', receivedAt: '2026-03-17 09:15', source: 'fax_telemed', status: 'dispensing', hospital: '서울내과' },
-  { id: 'RX-17-003', receivedAt: '2026-03-16 16:45', source: 'kiosk', status: 'payment_done', hospital: '연세세브란스' },
-  { id: 'RX-17-002', receivedAt: '2026-03-15 14:30', source: 'app_camera', status: 'rejected', hospital: '김민수이비인후과' },
-  { id: 'RX-17-001', receivedAt: '2026-03-14 11:20', source: 'app_camera', status: 'ready_pickup', hospital: '우리들병원' },
+const MOCK_PRESCRIPTIONS: Prescription[] = [
+  { id: 'RX-17-005', receivedAt: '2026-03-17 10:30', source: 'app_camera', status: 'received', hospitalName: '성모병원', patientName: '십칠스프린트', birthDate: '1987-03-12', phone: '010-1234-5678', diseaseCode: 'I10', paymentStatus: 'na' },
+  { id: 'RX-17-004', receivedAt: '2026-03-17 09:15', source: 'fax_telemed', status: 'dispensing', hospitalName: '서울내과', patientName: '십칠스프린트', birthDate: '1987-03-12', phone: '010-1234-5678', diseaseCode: 'I10', paymentStatus: 'paid', paymentAmount: '12,500원' },
+  { id: 'RX-17-003', receivedAt: '2026-03-16 16:45', source: 'kiosk', status: 'payment_done', hospitalName: '연세세브란스', patientName: '십칠스프린트', birthDate: '1987-03-12', phone: '010-1234-5678', diseaseCode: 'I10', paymentStatus: 'paid', paymentAmount: '15,200원' },
+  { id: 'RX-17-002', receivedAt: '2026-03-15 14:30', source: 'app_camera', status: 'rejected', hospitalName: '김민수이비인후과', patientName: '십칠스프린트', birthDate: '1987-03-12', phone: '010-1234-5678', diseaseCode: 'I10', paymentStatus: 'na' },
+  { id: 'RX-17-001', receivedAt: '2026-03-14 11:20', source: 'app_camera', status: 'ready_pickup', hospitalName: '우리들병원', patientName: '십칠스프린트', birthDate: '1987-03-12', phone: '010-1234-5678', diseaseCode: 'I10', paymentStatus: 'na' },
 ];
 
 const getSourceIcon = (source: string) => {
@@ -46,16 +39,17 @@ const getSourceLabel = (source: string) => {
   return '의사 웹 전송';
 };
 
-const STATUS_STYLE: Record<string, { label: string; color: string; bgColor: string }> = {
-  received: { label: '신규 접수', color: 'text-blue-600', bgColor: 'bg-blue-50' },
-  dispensing: { label: '조제 중', color: 'text-yellow-600', bgColor: 'bg-yellow-50' },
-  payment_done: { label: '결제 완료', color: 'text-indigo-600', bgColor: 'bg-indigo-50' },
-  ready_pickup: { label: '수령 대기', color: 'text-green-600', bgColor: 'bg-green-50' },
-  rejected: { label: '거절/반려', color: 'text-red-600', bgColor: 'bg-red-50' },
-};
-
 export const PatientDetail17: React.FC<PatientDetailProps> = ({ onBack, patientId }) => {
   const [memo, setMemo] = useState("고객 특이사항:\n- 알약 삼키는 것을 힘들어함\n- 저녁 식후 복약 선호\n\n다음 상담 시 확인:\n- 어지럼증 호전 여부");
+  const [prescriptions, setPrescriptions] = useState<Prescription[]>(MOCK_PRESCRIPTIONS);
+  const [selectedPrescription, setSelectedPrescription] = useState<Prescription | null>(null);
+
+  const updateStatus = (newStatus: PrescriptionStatus) => {
+    if (!selectedPrescription) return;
+    const updated = { ...selectedPrescription, status: newStatus };
+    setPrescriptions(prev => prev.map(p => p.id === selectedPrescription.id ? updated : p));
+    setSelectedPrescription(updated);
+  };
 
   return (
     <div className="flex flex-col h-full bg-gray-50 overflow-hidden">
@@ -120,7 +114,14 @@ export const PatientDetail17: React.FC<PatientDetailProps> = ({ onBack, patientI
                 <FileText size={20} className="text-blue-600" />
                 보낸 처방전 목록
               </h3>
-              <span className="text-sm text-gray-500">총 {MOCK_PRESCRIPTIONS.length}건</span>
+              <span className="text-sm text-gray-500">총 {prescriptions.length}건</span>
+            </div>
+
+            <div className="p-4 bg-blue-50 border border-blue-100 rounded-xl">
+              <p className="text-xs text-blue-600 flex items-center gap-1.5 leading-relaxed">
+                <CheckCircle2 size={14} />
+                최근 접수된 처방전부터 상단에 표시됩니다. "보기" 버튼을 클릭하여 상세 내용을 확인하고 조제를 시작할 수 있습니다.
+              </p>
             </div>
 
             <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
@@ -134,8 +135,7 @@ export const PatientDetail17: React.FC<PatientDetailProps> = ({ onBack, patientI
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-100">
-                  {MOCK_PRESCRIPTIONS.map((rx) => {
-                    const statusStyle = STATUS_STYLE[rx.status];
+                  {prescriptions.map((rx) => {
                     return (
                       <tr key={rx.id} className="hover:bg-blue-50/30 transition-colors">
                         <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -153,16 +153,13 @@ export const PatientDetail17: React.FC<PatientDetailProps> = ({ onBack, patientI
                           </div>
                         </td>
                         <td className="px-4 py-4 whitespace-nowrap">
-                          <span className={clsx(
-                            "px-2.5 py-1 rounded-full text-xs font-medium",
-                            statusStyle.bgColor,
-                            statusStyle.color
-                          )}>
-                            {statusStyle.label}
-                          </span>
+                          <StatusText status={rx.status} />
                         </td>
                         <td className="px-4 py-4 whitespace-nowrap text-center">
-                          <button className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium border border-gray-300 rounded-md bg-white hover:bg-blue-50 hover:border-blue-400 hover:text-blue-600 transition-colors shadow-sm">
+                          <button 
+                            onClick={() => setSelectedPrescription(rx)}
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium border border-gray-300 rounded-md bg-white hover:bg-blue-50 hover:border-blue-400 hover:text-blue-600 transition-colors shadow-sm"
+                          >
                             <ExternalLink size={13} />
                             보기
                           </button>
@@ -172,25 +169,29 @@ export const PatientDetail17: React.FC<PatientDetailProps> = ({ onBack, patientI
                   })}
                 </tbody>
               </table>
-              {MOCK_PRESCRIPTIONS.length === 0 && (
+              {prescriptions.length === 0 && (
                 <div className="py-20 text-center text-gray-400 text-sm">
                   접수된 처방전이 없습니다.
                 </div>
               )}
             </div>
-            <div className="p-4 bg-blue-50 border border-blue-100 rounded-xl">
-              <p className="text-xs text-blue-600 flex items-center gap-1.5 leading-relaxed">
-                <CheckCircle2 size={14} />
-                최근 접수된 처방전부터 상단에 표시됩니다. "보기" 버튼을 클릭하여 상세 내용을 확인하고 조제를 시작할 수 있습니다.
-              </p>
-            </div>
           </section>
         </div>
-
-        <p className="mt-12 pb-8 text-center text-sm text-gray-400">
-          이 화면은 십칠스프린트 고객 전용 관리 화면입니다.
-        </p>
       </div>
+
+      {/* ── 처방전 검토 팝업 모달 ── */}
+      {selectedPrescription && (
+        <PrescriptionDetailModal
+          prescription={selectedPrescription}
+          onClose={() => setSelectedPrescription(null)}
+          onUpdateStatus={updateStatus}
+        />
+      )}
     </div>
   );
 };
+
+interface PatientDetailProps {
+  onBack: () => void;
+  patientId: string | null;
+}
