@@ -185,11 +185,7 @@ export const PatientList: React.FC<PatientListProps> = ({ onPatientClick }) => {
                     </td>
                     <td className="px-4 py-4 text-center">
                       <div className="flex flex-col items-center">
-                        <span className={clsx(
-                          "text-sm font-black",
-                          patient.adherenceRate >= 80 ? "text-green-600" :
-                            patient.adherenceRate >= 50 ? "text-orange-500" : "text-gray-400"
-                        )}>
+                        <span className="text-sm text-gray-600">
                           {patient.adherenceRate}%
                         </span>
                       </div>

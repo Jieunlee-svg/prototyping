@@ -17,12 +17,36 @@ interface PatientEditModalProps {
 
 export const PatientEditModal: React.FC<PatientEditModalProps> = ({ patient, onClose, onSave }) => {
   const [formData, setFormData] = useState({ ...patient });
+  const [nameError, setNameError] = useState('');
+  const [showDatePicker, setShowDatePicker] = useState(false);
 
   const diseases = ['고혈압', '당뇨', '고혈압 당뇨 복합', '고혈압(전)', '당뇨(전)'];
 
+  const validateName = (name: string) => {
+    const specialChars = /[0-9!@#$%^&*(),.?":{}|<>]/;
+    if (specialChars.test(name)) {
+      setNameError('이름에는 숫자나 특수문자를 포함할 수 없습니다.');
+    } else {
+      setNameError('');
+    }
+  };
+
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setFormData({ ...formData, name: value });
+    validateName(value);
+  };
+
+  const isFormValid = formData.name.trim() !== '' && 
+                      formData.birthDate.trim() !== '' && 
+                      formData.gender !== undefined && 
+                      !nameError;
+
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
-    onSave(formData);
+    if (isFormValid) {
+      onSave(formData);
+    }
   };
 
   return (
@@ -52,9 +76,18 @@ export const PatientEditModal: React.FC<PatientEditModalProps> = ({ patient, onC
               type="text"
               required
               value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-              className="w-full px-4 py-2.5 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all text-sm font-medium shadow-sm"
+              placeholder="이름을 입력하세요"
+              onChange={handleNameChange}
+              className={clsx(
+                "w-full px-4 py-2.5 bg-white border rounded-xl focus:ring-2 outline-none transition-all text-sm font-medium shadow-sm",
+                nameError 
+                  ? "border-red-500 focus:ring-red-100" 
+                  : "border-gray-300 focus:ring-blue-100 focus:border-blue-500"
+              )}
             />
+            {nameError && (
+              <p className="text-[11px] text-red-500 mt-1 font-medium">{nameError}</p>
+            )}
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -73,7 +106,49 @@ export const PatientEditModal: React.FC<PatientEditModalProps> = ({ patient, onC
                   placeholder="YYYY-MM-DD"
                   className="w-full pl-4 pr-10 py-2.5 bg-white border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition-all text-sm font-medium shadow-sm"
                 />
-                <Calendar size={16} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                <button 
+                  type="button"
+                  onClick={() => setShowDatePicker(!showDatePicker)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-blue-500 transition-colors"
+                >
+                  <Calendar size={16} />
+                </button>
+
+                {/* Simulated Date Picker */}
+                {showDatePicker && (
+                  <div className="absolute top-full mt-2 left-0 right-0 p-3 bg-white border border-gray-200 rounded-xl shadow-xl z-20 animate-in fade-in slide-in-from-top-2 duration-200">
+                    <div className="flex items-center justify-between mb-3 px-1">
+                      <span className="text-xs font-bold text-gray-900">2026년 3월</span>
+                      <div className="flex gap-1">
+                        <button type="button" className="p-1 hover:bg-gray-100 rounded">‹</button>
+                        <button type="button" className="p-1 hover:bg-gray-100 rounded">›</button>
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-7 gap-1 text-center mb-1">
+                      {['일', '월', '화', '수', '목', '금', '토'].map(d => (
+                        <span key={d} className="text-[10px] text-gray-400 font-medium">{d}</span>
+                      ))}
+                    </div>
+                    <div className="grid grid-cols-7 gap-1">
+                      {Array.from({ length: 31 }, (_, i) => i + 1).map(d => (
+                        <button
+                          key={d}
+                          type="button"
+                          onClick={() => {
+                            setFormData({ ...formData, birthDate: `2026-03-${d.toString().padStart(2, '0')}` });
+                            setShowDatePicker(false);
+                          }}
+                          className={clsx(
+                            "py-1.5 text-[11px] rounded-lg transition-colors",
+                            d === 17 ? "bg-blue-600 text-white font-bold" : "text-gray-600 hover:bg-blue-50"
+                          )}
+                        >
+                          {d}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -164,7 +239,13 @@ export const PatientEditModal: React.FC<PatientEditModalProps> = ({ patient, onC
           </button>
           <button
             onClick={handleSave}
-            className="flex-1 py-3 text-sm font-bold text-white bg-blue-600 rounded-xl hover:bg-blue-700 shadow-lg shadow-blue-200 transition-all border border-blue-600"
+            disabled={!isFormValid}
+            className={clsx(
+              "flex-1 py-3 text-sm font-bold rounded-xl transition-all border",
+              isFormValid
+                ? "text-white bg-blue-600 border-blue-600 hover:bg-blue-700 shadow-lg shadow-blue-200"
+                : "text-gray-400 bg-gray-100 border-gray-100 cursor-not-allowed"
+            )}
           >
             저장
           </button>
