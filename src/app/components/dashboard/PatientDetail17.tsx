@@ -6,7 +6,10 @@ import {
   Clock,
   CheckCircle2,
   ChevronRight,
-  ExternalLink
+  Eye,
+  Camera,
+  Printer,
+  Monitor
 } from 'lucide-react';
 import { clsx } from 'clsx';
 
@@ -27,6 +30,12 @@ const MOCK_PRESCRIPTIONS: MockPrescription[] = [
   { id: 'RX-17-002', receivedAt: '2026-03-12 14:30', source: 'app_camera', status: 'dispensing', hospital: '김민수이비인후과' },
   { id: 'RX-17-001', receivedAt: '2026-03-05 10:15', source: 'fax_telemed', status: 'ready_pickup', hospital: '서울내과' },
 ];
+
+const getSourceIcon = (source: string) => {
+  if (source === 'app_camera') return <Camera size={14} className="text-blue-500" />;
+  if (source === 'kiosk') return <Monitor size={14} className="text-green-600" />;
+  return <Printer size={14} className="text-purple-500" />;
+};
 
 const getSourceLabel = (source: string) => {
   if (source === 'app_camera') return '고객 앱 촬영';
@@ -125,12 +134,20 @@ export const PatientDetail17: React.FC<PatientDetailProps> = ({ onBack, patientI
                   {MOCK_PRESCRIPTIONS.map((rx) => {
                     const statusStyle = STATUS_STYLE[rx.status];
                     return (
-                      <tr key={rx.id} className="hover:bg-gray-50 transition-colors">
+                      <tr key={rx.id} className="hover:bg-blue-50/30 transition-colors">
                         <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-600 font-medium">
                           {rx.receivedAt}
                         </td>
-                        <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-600">
-                          {getSourceLabel(rx.source)}
+                        <td className="px-4 py-4 whitespace-nowrap">
+                          <div className="flex items-center gap-2">
+                            <span className={clsx(
+                              "h-7 w-7 rounded-full flex items-center justify-center flex-shrink-0",
+                              rx.source === 'app_camera' ? 'bg-blue-100' : rx.source === 'kiosk' ? 'bg-green-100' : 'bg-purple-100'
+                            )}>
+                              {getSourceIcon(rx.source)}
+                            </span>
+                            <span className="text-xs font-semibold text-gray-700">{getSourceLabel(rx.source)}</span>
+                          </div>
                         </td>
                         <td className="px-4 py-4 whitespace-nowrap">
                           <span className={clsx(
@@ -142,8 +159,8 @@ export const PatientDetail17: React.FC<PatientDetailProps> = ({ onBack, patientI
                           </span>
                         </td>
                         <td className="px-4 py-4 whitespace-nowrap text-center">
-                          <button className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-bold border border-gray-300 rounded-lg bg-white hover:bg-blue-50 hover:border-blue-400 hover:text-blue-600 transition-colors">
-                            <ExternalLink size={13} />
+                          <button className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold border border-gray-300 rounded-md bg-white hover:bg-blue-50 hover:border-blue-400 hover:text-blue-600 transition-colors">
+                            <Eye size={13} />
                             보기
                           </button>
                         </td>
