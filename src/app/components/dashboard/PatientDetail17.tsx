@@ -42,6 +42,22 @@ const getSourceLabel = (source: string) => {
 
 export const PatientDetail17: React.FC<PatientDetailProps> = ({ onBack, patientId }) => {
   const [memo, setMemo] = useState("고객 특이사항:\n- 알약 삼키는 것을 힘들어함\n- 저녁 식후 복약 선호\n\n다음 상담 시 확인:\n- 어지럼증 호전 여부");
+  const [isSaving, setIsSaving] = useState(false);
+  const saveTimeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const handleMemoChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setMemo(e.target.value);
+    setIsSaving(true);
+
+    if (saveTimeoutRef.current) {
+      clearTimeout(saveTimeoutRef.current);
+    }
+
+    saveTimeoutRef.current = setTimeout(() => {
+      setIsSaving(false);
+    }, 1000);
+  };
+
   const [prescriptions, setPrescriptions] = useState<Prescription[]>(MOCK_PRESCRIPTIONS);
   const [selectedPrescription, setSelectedPrescription] = useState<Prescription | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -121,14 +137,15 @@ export const PatientDetail17: React.FC<PatientDetailProps> = ({ onBack, patientI
               <div className="flex justify-between items-center mb-4">
                 <span className="text-sm font-bold text-yellow-800 flex items-center gap-2">
                   <FileText size={18} />
-                  Private Note
                 </span>
-                <span className="text-xs text-yellow-600">자동 저장됨</span>
+                <span className={clsx("text-xs transition-colors", isSaving ? "text-blue-600 font-bold" : "text-yellow-600")}>
+                  {isSaving ? "작성 중" : "자동 저장됨"}
+                </span>
               </div>
               <textarea
                 className="flex-1 bg-transparent resize-none text-base text-gray-800 placeholder-yellow-800/50 outline-none leading-relaxed custom-scrollbar"
                 value={memo}
-                onChange={(e) => setMemo(e.target.value)}
+                onChange={handleMemoChange}
                 placeholder="환자에 대한 특이사항을 입력하세요..."
               />
             </div>
