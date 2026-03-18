@@ -43,28 +43,34 @@ export const REJECT_REASONS = [
 
 export const getSourceLabel = (source: PrescriptionSource) => {
   if (source === 'app_camera') return '고객 앱 촬영';
-  if (source === 'kiosk') return '키오스크 스캔';
+  if (source === 'kiosk') return '의사 웹 전송';
   return '의사 웹 전송';
 };
 
 export const STATUS_LABEL: Record<PrescriptionStatus, { label: string; color: string; bgColor: string }> = {
-  received:        { label: '신규 접수', color: 'text-red-500',    bgColor: 'bg-red-50' },
-  dispensing:      { label: '조제 중',   color: 'text-blue-500',   bgColor: 'bg-blue-50' },
-  dispensing_done: { label: '조제 완료', color: 'text-blue-500',   bgColor: 'bg-blue-50' },
-  payment_done:    { label: '결제 완료', color: 'text-emerald-500', bgColor: 'bg-emerald-50' },
-  completed:       { label: '수령 완료', color: 'text-emerald-500', bgColor: 'bg-emerald-50' },
-  rejected:        { label: '취소 / 반려', color: 'text-orange-500', bgColor: 'bg-orange-50' },
+  received:        { label: '신규 접수', color: 'text-red-600',    bgColor: 'bg-red-50' },
+  dispensing:      { label: '조제 중',   color: 'text-blue-600',   bgColor: 'bg-blue-50' },
+  dispensing_done: { label: '조제 완료', color: 'text-blue-600',   bgColor: 'bg-blue-50' },
+  payment_done:    { label: '결제 완료', color: 'text-emerald-600', bgColor: 'bg-emerald-50' },
+  completed:       { label: '수령 완료', color: 'text-emerald-600', bgColor: 'bg-emerald-50' },
+  rejected:        { label: '취소 / 반려', color: 'text-orange-600', bgColor: 'bg-orange-50' },
 };
 
 export const StatusText: React.FC<{ status: PrescriptionStatus }> = ({ status }) => {
   // Safety check: provide a default if status is not found in STATUS_LABEL
-  const { label, color, bgColor } = STATUS_LABEL[status] || { label: '알 수 없음', color: 'text-gray-500', bgColor: 'bg-gray-50' };
+  const { label, color, bgColor } = STATUS_LABEL[status] || { label: '알 수 없음', color: 'text-gray-600', bgColor: 'bg-gray-50' };
+  
+  const getBorderColor = (s: PrescriptionStatus) => {
+    if (s === 'received') return 'border-red-100';
+    if (s === 'dispensing' || s === 'dispensing_done') return 'border-blue-100';
+    if (s === 'rejected') return 'border-orange-100';
+    return 'border-emerald-100';
+  };
+
   return (
     <span className={clsx(
-      'inline-flex px-2 py-0.5 rounded text-[11px] font-bold whitespace-nowrap border',
-      status === 'received' ? 'border-red-100' : 
-      status === 'dispensing' ? 'border-blue-100' : 
-      status === 'rejected' ? 'border-orange-100' : 'border-emerald-100',
+      'inline-flex px-2 py-0.5 rounded text-xs font-semibold whitespace-nowrap border',
+      getBorderColor(status),
       color,
       bgColor
     )}>

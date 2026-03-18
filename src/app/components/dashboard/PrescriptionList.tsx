@@ -51,7 +51,7 @@ const BASE_PRESCRIPTIONS: Prescription[] = [
 // ── Helpers ────────────────────────────────────────────────────────────
 const getSourceIcon = (source: PrescriptionSource) => {
   if (source === 'app_camera') return <Camera size={15} className="text-blue-500" />;
-  if (source === 'kiosk') return <Monitor size={15} className="text-green-600" />;
+  if (source === 'kiosk') return <Printer size={15} className="text-purple-500" />;
   return <Printer size={15} className="text-purple-500" />;
 };
 
@@ -130,8 +130,8 @@ export const PrescriptionList: React.FC = () => {
   // ── Table classes
   const th = 'px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider';
   const thC = 'px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider';
-  const td = 'px-4 py-3 whitespace-nowrap text-sm text-gray-600';
-  const tdB = 'px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-800';
+  const td = 'px-4 py-4 whitespace-nowrap text-sm text-gray-600';
+  const tdB = 'px-4 py-4 whitespace-nowrap text-sm font-medium text-gray-800';
 
   // ── Header
   const renderHeader = () => {
@@ -188,7 +188,7 @@ export const PrescriptionList: React.FC = () => {
         <td className={td}>
           <div className="flex items-center gap-1.5">
             <span className={clsx('h-6 w-6 rounded-full flex items-center justify-center flex-shrink-0',
-              p.source === 'app_camera' ? 'bg-blue-100' : p.source === 'kiosk' ? 'bg-green-100' : 'bg-purple-100'
+              p.source === 'app_camera' ? 'bg-blue-100' : 'bg-purple-100'
             )}>{getSourceIcon(p.source)}</span>
             <span className="text-xs font-medium text-gray-700">{getSourceLabel(p.source)}</span>
           </div>
@@ -291,7 +291,7 @@ export const PrescriptionList: React.FC = () => {
             { value: 'all', label: '전체', icon: undefined as React.ReactNode },
             { value: 'app_camera', label: '고객 앱 촬영', icon: <Camera size={13} /> as React.ReactNode },
             { value: 'fax_telemed', label: '의사 웹 전송', icon: <Printer size={13} /> as React.ReactNode },
-            { value: 'kiosk', label: '키오스크 스캔', icon: <Monitor size={13} /> as React.ReactNode },
+            { value: 'kiosk', label: '의사 웹 전송', icon: <Printer size={13} /> as React.ReactNode },
           ]).map(({ value, label, icon }) => (
             <button key={value} onClick={() => setFilter(value as any)}
               className={clsx('inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[13px] font-medium border transition-all',
