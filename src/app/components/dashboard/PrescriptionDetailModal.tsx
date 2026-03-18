@@ -43,7 +43,7 @@ export const REJECT_REASONS = [
 
 export const getSourceLabel = (source: PrescriptionSource) => {
   if (source === 'app_camera') return '고객 앱 촬영';
-  if (source === 'kiosk') return '의사 웹 전송';
+  if (source === 'kiosk') return '키오스크 스캔(TBD)';
   return '의사 웹 전송';
 };
 
