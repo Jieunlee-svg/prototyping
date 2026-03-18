@@ -15,12 +15,14 @@ import { MedicationNotificationSettings } from './components/dashboard/Medicatio
 import { ConsultationHistory } from './components/dashboard/ConsultationHistory';
 import { WellcheckLanding } from './components/auth/WellcheckLanding';
 import { MyInfo } from './components/dashboard/MyInfo';
+import chatIcon from '../assets/chat-icon.png';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [view, setView] = useState<'list' | 'detail' | 'sms' | 'sms-history' | 'prescription' | 'settings' | 'notice' | 'consultation-c' | 'consultation-history' | 'consultation-reminder' | 'my-info'>('list');
   const [selectedPatientId, setSelectedPatientId] = useState<string | null>(null);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [showChatIcon, setShowChatIcon] = useState(false);
 
   const handlePatientClick = (id: string) => {
     setSelectedPatientId(id);
@@ -37,7 +39,7 @@ function App() {
   }
 
   return (
-    <div className="flex h-screen bg-gray-50 overflow-hidden font-sans">
+    <div className="flex h-screen bg-gray-50 overflow-hidden font-sans relative">
       <Sidebar
         collapsed={sidebarCollapsed}
         onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
@@ -52,6 +54,7 @@ function App() {
         onSettingsClick={() => setView('settings')}
         onNoticeClick={() => setView('notice')}
         onMyInfoClick={() => setView('my-info')}
+        onChatClick={() => setShowChatIcon(true)}
         onLogout={() => setIsLoggedIn(false)}
       />
       <div className="flex-1 flex flex-col h-screen overflow-hidden">
@@ -105,6 +108,23 @@ function App() {
         </main>
         <AppFooter />
       </div>
+
+      {/* Floating Chat Icon */}
+      {showChatIcon && (
+        <div className="fixed bottom-10 right-10 z-[1000] animate-in fade-in zoom-in duration-300">
+          <button 
+            className="group relative transition-transform hover:scale-105 active:scale-95 shadow-2xl rounded-full"
+            onClick={() => setShowChatIcon(false)}
+            title="상담 종료"
+          >
+            <img 
+              src={chatIcon} 
+              alt="1:1 채팅 문의" 
+              className="w-[70px] h-[70px] object-contain drop-shadow-xl"
+            />
+          </button>
+        </div>
+      )}
     </div>
   );
 }

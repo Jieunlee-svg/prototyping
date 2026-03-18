@@ -35,6 +35,7 @@ interface SidebarProps {
   onNoticeClick?: () => void;
   onMyInfoClick?: () => void;
   onLogout?: () => void;
+  onChatClick?: () => void;
   activeView?: 'list' | 'detail' | 'sms' | 'sms-history' | 'prescription' | 'settings' | 'notice' | 'consultation-c' | 'consultation-history' | 'consultation-reminder' | 'my-info';
 }
 
@@ -53,6 +54,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onNoticeClick,
   onMyInfoClick,
   onLogout,
+  onChatClick,
   activeView = 'list'
 }) => {
   const isConsultationActive = activeView === 'consultation-c' || activeView === 'consultation-history' || activeView === 'consultation-reminder';
@@ -333,17 +335,33 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <Settings size={16} className="mr-3" />
             약국 설정
           </button>
-          <button className="flex items-center w-full px-2 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded">
+          <button 
+            onClick={onChatClick}
+            className="flex items-center w-full px-2 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded"
+          >
             <HelpCircle size={16} className="mr-3" />
             1:1 채팅 문의
           </button>
-          <button
-            onClick={() => window.open('https://939.co.kr/01414/', '_blank')}
-            className="flex items-center w-full px-2 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded"
-          >
-            <MonitorSmartphone size={16} className="mr-3" />
-            원격지원 요청하기
-          </button>
+          
+          <div className="relative group/tooltip w-full">
+            <button
+              onClick={() => window.open('https://939.co.kr/01414/', '_blank')}
+              className="flex items-center w-full px-2 py-2 text-sm text-gray-600 hover:bg-gray-100 rounded"
+            >
+              <MonitorSmartphone size={16} className="mr-3" />
+              원격지원 요청하기
+            </button>
+            
+            {/* Tooltip */}
+            <div className="absolute left-[calc(100%+8px)] top-1/2 -translate-y-1/2 px-3 py-2 bg-gray-900 text-white text-[12px] rounded-lg shadow-xl opacity-0 invisible group-hover/tooltip:opacity-100 group-hover/tooltip:visible transition-all whitespace-nowrap z-[100] border border-gray-700 pointer-events-none">
+              <div className="flex flex-col gap-0.5">
+                <span className="font-medium text-gray-300">상담원 통화 후 진행해 주세요.</span>
+                <span className="font-bold text-white text-[13px]">☎️ 1551-3633</span>
+              </div>
+              {/* Arrow */}
+              <div className="absolute left-[-4px] top-1/2 -translate-y-1/2 w-2 h-2 bg-gray-900 border-l border-b border-gray-700 rotate-45" />
+            </div>
+          </div>
         </div>
 
         <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
