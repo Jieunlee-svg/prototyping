@@ -18,7 +18,7 @@ import { MyInfo } from './components/dashboard/MyInfo';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [view, setView] = useState<'list' | 'detail' | 'sms' | 'sms-history' | 'prescription' | 'settings' | 'notice' | 'consultation-c' | 'consultation-history' | 'consultation-reminder' | 'my-info'>('consultation-c');
+  const [view, setView] = useState<'list' | 'detail' | 'sms' | 'sms-history' | 'prescription' | 'settings' | 'notice' | 'consultation-c' | 'consultation-history' | 'consultation-reminder' | 'my-info'>('list');
   const [selectedPatientId, setSelectedPatientId] = useState<string | null>(null);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 

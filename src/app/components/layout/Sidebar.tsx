@@ -66,7 +66,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       onDashboardClick();
     } else if (label === '처방전' && onPrescriptionClick) {
       onPrescriptionClick();
-    } else if (label === '공지사항' && onNoticeClick) {
+    } else if (label === '공지사항 TBD' && onNoticeClick) {
       onNoticeClick();
     }
   };
@@ -74,7 +74,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const isItemActive = (label: string) => {
     if (label === '처방전' && activeView === 'prescription') return true;
     if (label === '단골 고객' && (activeView === 'list' || activeView === 'detail')) return true;
-    if (label === '공지사항' && activeView === 'notice') return true;
+    if (label === '공지사항 TBD' && activeView === 'notice') return true;
     if (label === '내 정보' && activeView === 'my-info') return true;
     return false;
   };
@@ -93,11 +93,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
         {/* Mini Navigation */}
         <div className="flex-1 w-full space-y-4 px-2 overflow-y-auto">
           {[
-            { icon: HeartPulse, label: '복약 상담', active: isConsultationActive, onClick: onConsultationCClick },
             { icon: Users, label: '단골 고객', active: isItemActive('단골 고객'), onClick: onDashboardClick },
             { icon: Stethoscope, label: '처방전', active: isItemActive('처방전'), onClick: onPrescriptionClick },
-            { icon: MessageSquare, label: '문자 발송', active: isSmsActive, onClick: onSmsClick },
-            { icon: Bell, label: '공지사항', active: isItemActive('공지사항'), onClick: onNoticeClick },
+            { icon: HeartPulse, label: '복약 상담 TBD', active: isConsultationActive, onClick: onConsultationCClick },
+            { icon: MessageSquare, label: '앱 설치 문자 발송 TBD', active: isSmsActive, onClick: onSmsClick },
+            { icon: Bell, label: '공지사항 TBD', active: isItemActive('공지사항 TBD'), onClick: onNoticeClick },
           ].map((item, idx) => (
             <div key={idx} className="relative group flex justify-center">
               <button
@@ -164,6 +164,28 @@ export const Sidebar: React.FC<SidebarProps> = ({
       {/* Navigation */}
       <nav className="flex-1 overflow-y-auto py-2">
         <ul className="space-y-1">
+          {/* 단골 고객, 처방전 */}
+          {[
+            { icon: Users, label: '단골 고객', id: '단골 고객' },
+            { icon: Stethoscope, label: '처방전', id: '처방전' },
+          ].map((item, index) => (
+            <li key={index}>
+              <a
+                href="#"
+                onClick={(e) => handleMenuClick(e, item.id)}
+                className={clsx(
+                  "flex items-center px-5 py-3 text-sm font-medium transition-colors",
+                  isItemActive(item.id)
+                    ? "text-white bg-blue-600"
+                    : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
+                )}
+              >
+                <item.icon size={18} className="mr-3" />
+                {item.label}
+              </a>
+            </li>
+          ))}
+
           {/* 복약 상담 with sub-menu */}
           <li>
             <a
@@ -184,7 +206,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               )}
             >
               <HeartPulse size={18} className="mr-3" />
-              복약 상담
+              복약 상담 TBD
               <span className="ml-auto">
                 {consultationOpen ? <ChevronDown size={14} /> : <ChevronRightIcon size={14} />}
               </span>
@@ -192,7 +214,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             {consultationOpen && (
               <ul className="mt-1 space-y-0.5">
                 {[
-                  { icon: PlayCircle, label: '복약 상담', view: 'consultation-c' as const, onClick: onConsultationCClick },
+                  { icon: PlayCircle, label: '복약 상담 TBD', view: 'consultation-c' as const, onClick: onConsultationCClick },
                   { icon: ClipboardList, label: '복약 상담 내역', view: 'consultation-history' as const, onClick: onConsultationHistoryClick },
                   { icon: BellRing, label: '복약 알림 설정', view: 'consultation-reminder' as const, onClick: onConsultationReminderClick },
                 ].map((sub) => (
@@ -219,28 +241,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
             )}
           </li>
 
-          {/* Other menu items: 단골 고객, 처방전 */}
-          {[
-            { icon: Users, label: '단골 고객', id: '단골 고객' },
-            { icon: Stethoscope, label: '처방전', id: '처방전' },
-          ].map((item, index) => (
-            <li key={index}>
-              <a
-                href="#"
-                onClick={(e) => handleMenuClick(e, item.id)}
-                className={clsx(
-                  "flex items-center px-5 py-3 text-sm font-medium transition-colors",
-                  isItemActive(item.id)
-                    ? "text-white bg-blue-600"
-                    : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
-                )}
-              >
-                <item.icon size={18} className="mr-3" />
-                {item.label}
-              </a>
-            </li>
-          ))}
-
           {/* 앱 설치 문자 발송 with sub-menu */}
           <li>
             <a
@@ -261,7 +261,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               )}
             >
               <MessageSquare size={18} className="mr-3" />
-              앱 설치 문자 발송
+              앱 설치 문자 발송 TBD
               <span className="ml-auto">
                 {smsOpen ? <ChevronDown size={14} /> : <ChevronRightIcon size={14} />}
               </span>
@@ -269,7 +269,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             {smsOpen && (
               <ul className="mt-1 space-y-0.5">
                 {[
-                  { icon: MessageSquare, label: '앱 설치 문자 발송', view: 'sms' as const, onClick: onSmsClick },
+                  { icon: MessageSquare, label: '앱 설치 문자 발송 TBD', view: 'sms' as const, onClick: onSmsClick },
                   { icon: ClipboardList, label: '앱 설치 문자 발송 내역', view: 'sms-history' as const, onClick: onSmsHistoryClick },
                 ].map((sub) => (
                   <li key={sub.view}>
@@ -297,7 +297,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
           {/* 공지사항 */}
           {[
-            { icon: Bell, label: '공지사항', id: '공지사항' },
+            { icon: Bell, label: '공지사항 TBD', id: '공지사항 TBD' },
           ].map((item, index) => (
             <li key={index}>
               <a
