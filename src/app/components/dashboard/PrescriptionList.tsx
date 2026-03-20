@@ -20,9 +20,12 @@ import {
   ChevronDown,
   ChevronUp,
   ExternalLink,
+  Send,
+  AlertCircle,
 } from 'lucide-react';
 import { clsx } from 'clsx';
 import { ImageWithFallback } from '../figma/ImageWithFallback';
+import { PrescriptionWorkflowModal } from './PrescriptionWorkflowModal';
 import {
   Prescription,
   PrescriptionStatus,
@@ -82,6 +85,7 @@ export const PrescriptionList: React.FC = () => {
   const [rejectReason, setRejectReason] = useState('');
   const [rejectNote, setRejectNote] = useState('');
   const [zoom, setZoom] = useState(1);
+  const [workflowPrescription, setWorkflowPrescription] = useState<Prescription | null>(null);
   const notifTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // ── 신규 처방전 트리거
@@ -128,6 +132,11 @@ export const PrescriptionList: React.FC = () => {
   });
 
   // ── Table classes
+  // KPI stats
+  const totalToday = prescriptions.length;
+  const waitingCount = prescriptions.filter(p => ['received', 'dispensing'].includes(p.status)).length;
+  const sentCount = prescriptions.filter(p => ['completed', 'payment_done'].includes(p.status)).length;
+
   const th = 'px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider';
   const thC = 'px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider';
   const td = 'px-4 py-4 whitespace-nowrap text-sm text-gray-600';
@@ -140,7 +149,7 @@ export const PrescriptionList: React.FC = () => {
         <th className={th}>접수일시</th><th className={th}>고객명</th><th className={th}>생년월일</th>
         <th className={th}>휴대폰 번호</th><th className={th}>발행 병원</th><th className={th}>접수 경로</th>
         <th className={th}>수령 방법</th><th className={thC}>대체조제 동의</th>
-        <th className={th}>조제 상태</th><th className={thC}>처방전 보기</th>
+        <th className={th}>조제 상태</th><th className={thC}>처방전 보기</th><th className={thC}>앱으로 보내기</th>
       </tr>
     );
     if (filter === 'fax_telemed') return (
@@ -148,21 +157,21 @@ export const PrescriptionList: React.FC = () => {
         <th className={th}>접수일시</th><th className={th}>고객명</th><th className={th}>생년월일</th>
         <th className={th}>휴대폰 번호</th><th className={th}>발행 병원</th><th className={th}>접수 경로</th>
         <th className={th}>수령 방법</th><th className={th}>결제 금액</th><th className={th}>결제 상태</th>
-        <th className={th}>조제 상태</th><th className={thC}>처방전 보기</th>
+        <th className={th}>조제 상태</th><th className={thC}>처방전 보기</th><th className={thC}>앱으로 보내기</th>
       </tr>
     );
     if (filter === 'kiosk') return (
       <tr>
         <th className={th}>접수일시</th><th className={th}>고객명</th><th className={th}>생년월일</th>
         <th className={th}>휴대폰 번호</th><th className={th}>발행 병원</th><th className={th}>접수 경로</th>
-        <th className={th}>결제 금액</th><th className={th}>조제 상태</th><th className={thC}>처방전 보기</th>
+        <th className={th}>결제 금액</th><th className={th}>조제 상태</th><th className={thC}>처방전 보기</th><th className={thC}>앱으로 보내기</th>
       </tr>
     );
     return (
       <tr>
         <th className={th}>접수일시</th><th className={th}>고객명</th><th className={th}>생년월일</th>
         <th className={th}>휴대폰 번호</th><th className={th}>발행 병원</th><th className={th}>접수 경로</th>
-        <th className={th}>조제 상태</th><th className={thC}>처방전 보기</th>
+        <th className={th}>조제 상태</th><th className={thC}>처방전 보기</th><th className={thC}>앱으로 보내기</th>
       </tr>
     );
   };
@@ -235,10 +244,28 @@ export const PrescriptionList: React.FC = () => {
       </td>
     );
 
-    if (filter === 'app_camera') return <tr key={p.id} className={rowCls}>{commonCells}{deliveryCell}{substituteCell}{statusCell}{viewBtn}</tr>;
-    if (filter === 'fax_telemed') return <tr key={p.id} className={rowCls}>{commonCells}{deliveryCell}{amountCell}{paymentStatusCell}{statusCell}{viewBtn}</tr>;
-    if (filter === 'kiosk') return <tr key={p.id} className={rowCls}>{commonCells}{amountCell}{statusCell}{viewBtn}</tr>;
-    return <tr key={p.id} className={rowCls}>{commonCells}{statusCell}{viewBtn}</tr>;
+    const canAction = ['received', 'dispensing'].includes(p.status);
+    const actionBtn = (
+      <td className={thC}>
+        {canAction ? (
+          <button
+            onClick={() => setWorkflowPrescription(p)}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-md bg-blue-600 text-white hover:bg-blue-700 transition-colors shadow-sm"
+          >
+            <Send size={12} />조제·발송 →
+          </button>
+        ) : (
+          <span className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-md bg-gray-100 text-gray-400 cursor-default">
+            {p.status === 'rejected' ? '취소됨' : '완료됨'}
+          </span>
+        )}
+      </td>
+    );
+
+    if (filter === 'app_camera') return <tr key={p.id} className={rowCls}>{commonCells}{deliveryCell}{substituteCell}{statusCell}{viewBtn}{actionBtn}</tr>;
+    if (filter === 'fax_telemed') return <tr key={p.id} className={rowCls}>{commonCells}{deliveryCell}{amountCell}{paymentStatusCell}{statusCell}{viewBtn}{actionBtn}</tr>;
+    if (filter === 'kiosk') return <tr key={p.id} className={rowCls}>{commonCells}{amountCell}{statusCell}{viewBtn}{actionBtn}</tr>;
+    return <tr key={p.id} className={rowCls}>{commonCells}{statusCell}{viewBtn}{actionBtn}</tr>;
   };
 
   // ── What button to show at bottom of modal
@@ -283,6 +310,27 @@ export const PrescriptionList: React.FC = () => {
           <Zap size={15} />신규 처방전 인입 테스트
         </button>
       </header>
+
+      {/* KPI Stats Row */}
+      <div className="px-6 py-3 bg-white border-b border-gray-100 flex-shrink-0">
+        <div className="grid grid-cols-3 gap-4">
+          <div className="bg-white border border-gray-200 rounded-xl px-4 py-3">
+            <div className="text-[11px] font-medium text-gray-400 mb-1">오늘 접수</div>
+            <div className="text-2xl font-bold text-gray-900 leading-none">{totalToday}</div>
+            <div className="text-[10px] text-gray-400 mt-1">건</div>
+          </div>
+          <div className="bg-white border border-gray-200 rounded-xl px-4 py-3">
+            <div className="text-[11px] font-medium text-gray-400 mb-1">조제 대기</div>
+            <div className="text-2xl font-bold text-orange-500 leading-none">{waitingCount}</div>
+            <div className="text-[10px] text-gray-400 mt-1">건 · 처리 필요</div>
+          </div>
+          <div className="bg-white border border-gray-200 rounded-xl px-4 py-3">
+            <div className="text-[11px] font-medium text-gray-400 mb-1">메시지 전송</div>
+            <div className="text-2xl font-bold text-emerald-500 leading-none">{sentCount}</div>
+            <div className="text-[10px] text-gray-400 mt-1">건 완료</div>
+          </div>
+        </div>
+      </div>
 
       {/* Filter Toolbar */}
       <div className="px-6 py-2.5 bg-white border-b border-gray-100 flex items-center justify-between gap-3 flex-shrink-0">
@@ -329,7 +377,7 @@ export const PrescriptionList: React.FC = () => {
               <tbody className="bg-white divide-y divide-gray-100">
                 {filteredPrescriptions.map(p => renderRow(p))}
                 {filteredPrescriptions.length === 0 && (
-                  <tr><td colSpan={11} className="py-16 text-center text-gray-400 text-sm">접수된 처방전이 없습니다.</td></tr>
+                  <tr><td colSpan={12} className="py-16 text-center text-gray-400 text-sm">접수된 처방전이 없습니다.</td></tr>
                 )}
               </tbody>
             </table>
@@ -354,6 +402,14 @@ export const PrescriptionList: React.FC = () => {
           prescription={selectedPrescription}
           onClose={() => setSelectedPrescription(null)}
           onUpdateStatus={updateStatus}
+        />
+      )}
+
+      {/* ── 4단계 워크플로우 모달 ── */}
+      {workflowPrescription && (
+        <PrescriptionWorkflowModal
+          prescription={workflowPrescription}
+          onClose={() => setWorkflowPrescription(null)}
         />
       )}
     </div>

@@ -1,0 +1,1373 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>웰체크 약사웹</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #1B6CA8;
+    --primary-light: #E8F3FB;
+    --primary-mid: #4A90C4;
+    --accent: #00B894;
+    --accent-light: #E0F7F2;
+    --warn: #E17055;
+    --warn-light: #FFF0ED;
+    --bg: #F4F7FA;
+    --surface: #FFFFFF;
+    --border: #DDE4ED;
+    --text: #1A2233;
+    --text-mid: #4A5568;
+    --text-light: #8896AA;
+    --shadow: 0 2px 12px rgba(27,108,168,0.10);
+    --shadow-lg: 0 8px 32px rgba(27,108,168,0.16);
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Sans KR', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 28px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .logo {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--primary);
+    letter-spacing: -0.5px;
+  }
+  .logo span { color: var(--accent); }
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-size: 13px;
+    color: var(--text-mid);
+  }
+  .pharmacy-badge {
+    background: var(--primary-light);
+    color: var(--primary);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 12px;
+  }
+
+  /* ── MAIN LAYOUT ── */
+  .main {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 28px 20px;
+  }
+
+  /* ── PAGE TITLE ── */
+  .page-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 24px;
+  }
+  .page-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .page-title small {
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--text-light);
+    margin-left: 10px;
+  }
+  .tab-row {
+    display: flex;
+    gap: 4px;
+    background: var(--border);
+    padding: 3px;
+    border-radius: 8px;
+  }
+  .tab {
+    padding: 6px 16px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    color: var(--text-mid);
+    transition: all .15s;
+    border: none;
+    background: transparent;
+  }
+  .tab.active {
+    background: var(--surface);
+    color: var(--primary);
+    box-shadow: 0 1px 4px rgba(0,0,0,.12);
+  }
+
+  /* ── STATS ── */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+    margin-bottom: 24px;
+  }
+  .stat-card {
+    background: var(--surface);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    border: 1px solid var(--border);
+  }
+  .stat-label { font-size: 12px; color: var(--text-light); margin-bottom: 6px; font-weight: 500; }
+  .stat-value { font-size: 26px; font-weight: 700; color: var(--text); line-height: 1; }
+  .stat-value.warn { color: var(--warn); }
+  .stat-value.ok { color: var(--accent); }
+  .stat-sub { font-size: 11px; color: var(--text-light); margin-top: 4px; }
+
+  /* ── SEARCH BAR ── */
+  .search-bar {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .search-input {
+    flex: 1;
+    padding: 10px 16px;
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-family: inherit;
+    font-size: 14px;
+    background: var(--surface);
+    outline: none;
+    transition: border-color .15s;
+  }
+  .search-input:focus { border-color: var(--primary); }
+  .btn {
+    padding: 10px 18px;
+    border-radius: var(--radius-sm);
+    font-family: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all .15s;
+  }
+  .btn-primary { background: var(--primary); color: #fff; }
+  .btn-primary:hover { background: #155a8a; }
+  .btn-ghost { background: var(--surface); color: var(--text-mid); border: 1.5px solid var(--border); }
+  .btn-ghost:hover { border-color: var(--primary); color: var(--primary); }
+  .btn-accent { background: var(--accent); color: #fff; }
+  .btn-accent:hover { background: #00a07e; }
+
+  /* ── PRESCRIPTION LIST ── */
+  .rx-table {
+    background: var(--surface);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    overflow: hidden;
+  }
+  .rx-table-header {
+    display: grid;
+    grid-template-columns: 56px 1fr 110px 130px 130px 110px 120px;
+    padding: 11px 18px;
+    background: #F8FAFB;
+    border-bottom: 1px solid var(--border);
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-light);
+    text-transform: uppercase;
+    letter-spacing: .04em;
+  }
+  .rx-row {
+    display: grid;
+    grid-template-columns: 56px 1fr 110px 130px 130px 110px 120px;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border);
+    align-items: center;
+    cursor: pointer;
+    transition: background .12s;
+  }
+  .rx-row:last-child { border-bottom: none; }
+  .rx-row:hover { background: var(--primary-light); }
+  .rx-num {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--text-light);
+  }
+  .rx-patient {
+    font-weight: 600;
+    font-size: 15px;
+    color: var(--text);
+  }
+  .rx-patient small {
+    font-weight: 400;
+    font-size: 12px;
+    color: var(--text-light);
+    margin-left: 6px;
+  }
+  .rx-drug {
+    font-size: 13px;
+    color: var(--text-mid);
+  }
+  .rx-doctor {
+    font-size: 13px;
+    color: var(--text-mid);
+  }
+  .rx-time {
+    font-size: 13px;
+    color: var(--text-mid);
+    font-family: 'IBM Plex Mono', monospace;
+  }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 9px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .badge-wait { background: #FFF3E0; color: #E65100; }
+  .badge-ready { background: var(--accent-light); color: #007A60; }
+  .badge-done { background: #EEF2F7; color: var(--text-light); }
+  .badge-urgent { background: var(--warn-light); color: var(--warn); }
+  .rx-action-btn {
+    padding: 6px 14px;
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background .15s;
+  }
+  .rx-action-btn:hover { background: #155a8a; }
+
+  /* ── MODAL OVERLAY ── */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(10,20,40,.45);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    backdrop-filter: blur(2px);
+  }
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: var(--surface);
+    border-radius: 16px;
+    width: 100%;
+    max-width: 980px;
+    max-height: 90vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    box-shadow: var(--shadow-lg);
+    animation: modalIn .2s ease;
+  }
+  @keyframes modalIn {
+    from { opacity:0; transform: translateY(16px) scale(.97); }
+    to { opacity:1; transform: translateY(0) scale(1); }
+  }
+
+  /* ── MODAL HEADER (STEP BAR) ── */
+  .modal-header {
+    padding: 20px 28px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .modal-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 18px;
+  }
+  .modal-patient-info {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .modal-avatar {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    background: var(--primary-light);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; font-weight: 700; color: var(--primary);
+  }
+  .modal-patient-name {
+    font-size: 17px;
+    font-weight: 700;
+  }
+  .modal-patient-sub {
+    font-size: 12px;
+    color: var(--text-light);
+    margin-top: 2px;
+  }
+  .modal-close {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: var(--bg);
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    color: var(--text-mid);
+    display: flex; align-items: center; justify-content: center;
+    transition: background .12s;
+  }
+  .modal-close:hover { background: var(--border); }
+
+  /* STEP BAR */
+  .step-bar {
+    display: flex;
+    gap: 0;
+  }
+  .step-item {
+    flex: 1;
+    padding: 10px 0 12px;
+    text-align: center;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-light);
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+    transition: all .15s;
+    position: relative;
+  }
+  .step-item .step-no {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px; height: 20px;
+    border-radius: 50%;
+    background: var(--border);
+    color: var(--text-light);
+    font-size: 11px;
+    margin-right: 6px;
+    transition: all .15s;
+  }
+  .step-item.active {
+    color: var(--primary);
+    border-bottom-color: var(--primary);
+  }
+  .step-item.active .step-no {
+    background: var(--primary);
+    color: #fff;
+  }
+  .step-item.done {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+  .step-item.done .step-no {
+    background: var(--accent);
+    color: #fff;
+  }
+
+  /* ── MODAL BODY ── */
+  .modal-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 24px 28px;
+  }
+
+  /* ── STEP 1: 처방전 확인 ── */
+  .step-content { display: none; }
+  .step-content.active { display: block; }
+
+  .rx-view-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    height: 100%;
+  }
+  .rx-image-panel {
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    background: #F8FAFB;
+    min-height: 420px;
+    display: flex;
+    flex-direction: column;
+  }
+  .panel-label {
+    padding: 11px 16px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text-mid);
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    text-transform: uppercase;
+    letter-spacing: .06em;
+  }
+  .rx-image-body {
+    flex: 1;
+    padding: 16px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+  }
+  .rx-mock-image {
+    width: 100%;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    font-size: 12px;
+    line-height: 1.9;
+    color: var(--text);
+    box-shadow: 0 2px 8px rgba(0,0,0,.06);
+  }
+  .rx-mock-image .rx-title {
+    text-align: center;
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 12px;
+    border-bottom: 2px solid #222;
+    padding-bottom: 8px;
+  }
+  .rx-mock-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+  .rx-mock-key {
+    color: var(--text-light);
+    min-width: 70px;
+    font-size: 11px;
+  }
+  .rx-mock-val {
+    font-weight: 600;
+    font-size: 12px;
+  }
+  .rx-drug-table {
+    margin-top: 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    overflow: hidden;
+    width: 100%;
+  }
+  .rx-drug-table th {
+    background: #eee;
+    padding: 5px 8px;
+    font-size: 10px;
+    font-weight: 600;
+    text-align: left;
+  }
+  .rx-drug-table td {
+    padding: 5px 8px;
+    font-size: 11px;
+    border-top: 1px solid #eee;
+  }
+
+  /* RIGHT PANEL - parsed info */
+  .parsed-panel {
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    min-height: 420px;
+  }
+  .drug-list { padding: 12px 14px; flex: 1; overflow-y: auto; }
+  .drug-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .drug-item:last-child { border-bottom: none; }
+  .drug-icon {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    background: var(--primary-light);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  .drug-name { font-size: 13px; font-weight: 600; }
+  .drug-sub { font-size: 11px; color: var(--text-light); margin-top: 2px; }
+  .drug-days {
+    margin-left: auto;
+    background: var(--primary-light);
+    color: var(--primary);
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  /* ── STEP 2: 복약상담 메시지 ── */
+  .consult-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  .keyword-section {}
+  .keyword-group { margin-bottom: 16px; }
+  .keyword-group-title {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: var(--text-light);
+    margin-bottom: 8px;
+  }
+  .keyword-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+  }
+  .chip {
+    padding: 6px 13px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1.5px solid var(--border);
+    background: var(--surface);
+    color: var(--text-mid);
+    transition: all .15s;
+    user-select: none;
+  }
+  .chip:hover { border-color: var(--primary); color: var(--primary); }
+  .chip.selected {
+    background: var(--primary);
+    color: #fff;
+    border-color: var(--primary);
+  }
+  .chip.selected::before { content: '✓ '; }
+
+  .preview-section {}
+  .preview-box {
+    background: #F0F7FF;
+    border: 1.5px solid #BEDAF5;
+    border-radius: var(--radius);
+    padding: 16px;
+    font-size: 13px;
+    line-height: 1.8;
+    color: var(--text);
+    min-height: 200px;
+    position: relative;
+  }
+  .preview-box .preview-label {
+    position: absolute;
+    top: -10px;
+    left: 14px;
+    background: var(--surface);
+    padding: 0 8px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--primary);
+    letter-spacing: .04em;
+  }
+  .preview-highlight {
+    background: #C8E6FF;
+    border-radius: 3px;
+    padding: 1px 3px;
+  }
+  .preview-added {
+    background: #D4F7EF;
+    border-radius: 3px;
+    padding: 1px 3px;
+    color: #006B50;
+  }
+
+  /* ── STEP 3: 복약알림 설정 ── */
+  .alarm-layout {}
+  .alarm-card {
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    margin-bottom: 14px;
+  }
+  .alarm-card-title {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .alarm-card-title .icon { font-size: 18px; }
+  .alarm-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .alarm-row label {
+    font-size: 13px;
+    color: var(--text-mid);
+    min-width: 100px;
+  }
+  .alarm-input {
+    padding: 8px 12px;
+    border: 1.5px solid var(--border);
+    border-radius: 7px;
+    font-family: inherit;
+    font-size: 13px;
+    outline: none;
+    transition: border-color .15s;
+    background: var(--surface);
+  }
+  .alarm-input:focus { border-color: var(--primary); }
+  .alarm-input.phone { width: 160px; font-family: 'IBM Plex Mono', monospace; letter-spacing: .04em; }
+  .alarm-input.days { width: 70px; text-align: center; }
+  .refill-check-row {
+    display: flex;
+    gap: 10px;
+  }
+  .refill-toggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-mid);
+    transition: all .15s;
+    background: var(--surface);
+  }
+  .refill-toggle.on {
+    border-color: var(--primary);
+    background: var(--primary-light);
+    color: var(--primary);
+  }
+  .refill-toggle .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--border);
+    transition: background .15s;
+  }
+  .refill-toggle.on .dot { background: var(--primary); }
+
+  .time-picker-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .time-pill {
+    padding: 6px 14px;
+    border-radius: 20px;
+    border: 1.5px solid var(--border);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    color: var(--text-mid);
+    background: var(--surface);
+    transition: all .15s;
+  }
+  .time-pill.on {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: #fff;
+  }
+
+  /* ── STEP 4: 전송 ── */
+  .send-layout {
+    max-width: 560px;
+    margin: 0 auto;
+  }
+  .send-preview-card {
+    background: #F0F7FF;
+    border: 1.5px solid #BEDAF5;
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 20px;
+    font-size: 13px;
+    line-height: 1.85;
+    color: var(--text);
+    position: relative;
+  }
+  .send-preview-card::before {
+    content: '📱 전송될 문자메시지';
+    display: block;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 10px;
+    letter-spacing: .04em;
+  }
+  .send-summary {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 18px;
+    margin-bottom: 20px;
+  }
+  .send-summary-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+  }
+  .send-summary-row:last-child { border-bottom: none; }
+  .send-summary-key { color: var(--text-light); font-size: 12px; }
+  .send-summary-val { font-weight: 600; }
+  .send-btn-row {
+    display: flex;
+    gap: 10px;
+  }
+  .btn-send {
+    flex: 1;
+    padding: 14px;
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background .15s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+  }
+  .btn-send:hover { background: #155a8a; }
+  .btn-send-accent {
+    flex: 1;
+    padding: 14px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+    transition: background .15s;
+  }
+  .btn-send-accent:hover { background: #00a07e; }
+
+  /* ── SUCCESS STATE ── */
+  .success-screen {
+    display: none;
+    text-align: center;
+    padding: 40px 20px;
+  }
+  .success-screen.show { display: block; }
+  .success-icon {
+    width: 72px; height: 72px;
+    background: var(--accent-light);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 32px;
+    margin: 0 auto 16px;
+  }
+  .success-title { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+  .success-sub { font-size: 14px; color: var(--text-light); margin-bottom: 24px; }
+
+  /* ── MODAL FOOTER ── */
+  .modal-footer {
+    padding: 16px 28px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--surface);
+  }
+  .step-indicator {
+    font-size: 12px;
+    color: var(--text-light);
+    font-weight: 500;
+  }
+  .footer-btns { display: flex; gap: 10px; }
+
+  /* scrollbar */
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="logo">웰<span>체크</span></div>
+  <div class="header-right">
+    <span class="pharmacy-badge">🏥 웰체크약국 · 김민정 약사</span>
+    <span>2024. 03. 15</span>
+  </div>
+</header>
+
+<!-- MAIN -->
+<main class="main">
+  <!-- PAGE HEADER -->
+  <div class="page-header">
+    <div>
+      <div class="page-title">처방전 접수 목록 <small>오늘 총 12건</small></div>
+    </div>
+    <div class="tab-row">
+      <button class="tab active">전체</button>
+      <button class="tab">대기중</button>
+      <button class="tab">조제완료</button>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-label">오늘 접수</div>
+      <div class="stat-value">12</div>
+      <div class="stat-sub">건</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">조제 대기</div>
+      <div class="stat-value warn">4</div>
+      <div class="stat-sub">건 · 처리 필요</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">메시지 전송</div>
+      <div class="stat-value ok">8</div>
+      <div class="stat-sub">건 완료</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">리필 알림 예정</div>
+      <div class="stat-value">3</div>
+      <div class="stat-sub">건 · 7일내</div>
+    </div>
+  </div>
+
+  <!-- SEARCH -->
+  <div class="search-bar">
+    <input class="search-input" placeholder="환자명 또는 처방번호 검색..." />
+    <button class="btn btn-ghost">필터</button>
+    <button class="btn btn-primary">검색</button>
+  </div>
+
+  <!-- TABLE -->
+  <div class="rx-table">
+    <div class="rx-table-header">
+      <span>번호</span>
+      <span>환자명</span>
+      <span>조제약 분류</span>
+      <span>처방병원</span>
+      <span>접수시간</span>
+      <span>상태</span>
+      <span>액션</span>
+    </div>
+
+    <!-- ROW 1 - 대기 -->
+    <div class="rx-row" onclick="openModal('이순희', '75세·여', 'rx1')">
+      <span class="rx-num">#0412</span>
+      <div>
+        <div class="rx-patient">이순희 <small>75세 · 여</small></div>
+      </div>
+      <span class="rx-drug">혈당강하제, 고지혈증</span>
+      <span class="rx-doctor">연세내과의원</span>
+      <span class="rx-time">09:14</span>
+      <span><span class="badge badge-wait">대기중</span></span>
+      <button class="rx-action-btn" onclick="event.stopPropagation(); openModal('이순희', '75세·여', 'rx1')">조제·발송 →</button>
+    </div>
+
+    <!-- ROW 2 -->
+    <div class="rx-row" onclick="openModal('박준혁', '52세·남', 'rx2')">
+      <span class="rx-num">#0411</span>
+      <div>
+        <div class="rx-patient">박준혁 <small>52세 · 남</small></div>
+      </div>
+      <span class="rx-drug">고혈압약, 아스피린</span>
+      <span class="rx-doctor">서울성모병원</span>
+      <span class="rx-time">09:02</span>
+      <span><span class="badge badge-wait">대기중</span></span>
+      <button class="rx-action-btn" onclick="event.stopPropagation(); openModal('박준혁', '52세·남', 'rx2')">조제·발송 →</button>
+    </div>
+
+    <!-- ROW 3 -->
+    <div class="rx-row" onclick="openModal('최미영', '63세·여', 'rx3')">
+      <span class="rx-num">#0410</span>
+      <div>
+        <div class="rx-patient">최미영 <small>63세 · 여</small></div>
+      </div>
+      <span class="rx-drug">골다공증약, 위장약</span>
+      <span class="rx-doctor">한양대병원</span>
+      <span class="rx-time">08:55</span>
+      <span><span class="badge badge-urgent">긴급</span></span>
+      <button class="rx-action-btn" onclick="event.stopPropagation(); openModal('최미영', '63세·여', 'rx3')">조제·발송 →</button>
+    </div>
+
+    <!-- ROW 4 -->
+    <div class="rx-row" style="opacity:.65">
+      <span class="rx-num">#0409</span>
+      <div><div class="rx-patient">김태호 <small>45세 · 남</small></div></div>
+      <span class="rx-drug">항생제</span>
+      <span class="rx-doctor">365이비인후과</span>
+      <span class="rx-time">08:32</span>
+      <span><span class="badge badge-done">완료</span></span>
+      <button class="rx-action-btn" style="background:#aaa; cursor:default">완료됨</button>
+    </div>
+
+    <div class="rx-row" style="opacity:.65">
+      <span class="rx-num">#0408</span>
+      <div><div class="rx-patient">정현주 <small>38세 · 여</small></div></div>
+      <span class="rx-drug">감기약, 소화제</span>
+      <span class="rx-doctor">미래소아과</span>
+      <span class="rx-time">08:10</span>
+      <span><span class="badge badge-done">완료</span></span>
+      <button class="rx-action-btn" style="background:#aaa; cursor:default">완료됨</button>
+    </div>
+  </div>
+</main>
+
+<!-- ══════════════ MODAL ══════════════ -->
+<div class="modal-overlay" id="modalOverlay" onclick="closeModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+
+    <!-- MODAL HEADER -->
+    <div class="modal-header">
+      <div class="modal-top">
+        <div class="modal-patient-info">
+          <div class="modal-avatar" id="modalAvatar">이</div>
+          <div>
+            <div class="modal-patient-name" id="modalName">이순희</div>
+            <div class="modal-patient-sub" id="modalSub">75세·여 · #0412 · 연세내과의원</div>
+          </div>
+        </div>
+        <button class="modal-close" onclick="closeModalDirect()">✕</button>
+      </div>
+
+      <!-- STEP BAR -->
+      <div class="step-bar">
+        <div class="step-item active" id="stepTab1" onclick="goStep(1)">
+          <span class="step-no">1</span>처방전 확인
+        </div>
+        <div class="step-item" id="stepTab2" onclick="goStep(2)">
+          <span class="step-no">2</span>복약상담 메시지
+        </div>
+        <div class="step-item" id="stepTab3" onclick="goStep(3)">
+          <span class="step-no">3</span>복약알림 설정
+        </div>
+        <div class="step-item" id="stepTab4" onclick="goStep(4)">
+          <span class="step-no">4</span>메시지 전송
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL BODY -->
+    <div class="modal-body">
+
+      <!-- ── STEP 1: 처방전 확인 ── -->
+      <div class="step-content active" id="step1">
+        <div class="rx-view-layout">
+          <!-- LEFT: 처방전 이미지 -->
+          <div class="rx-image-panel">
+            <div class="panel-label">📋 처방전 원본</div>
+            <div class="rx-image-body">
+              <div class="rx-mock-image">
+                <div class="rx-title">처 방 전</div>
+                <div class="rx-mock-row"><span class="rx-mock-key">환자성명</span><span class="rx-mock-val">이 순 희</span></div>
+                <div class="rx-mock-row"><span class="rx-mock-key">주민번호</span><span class="rx-mock-val">491203-2●●●●●●</span></div>
+                <div class="rx-mock-row"><span class="rx-mock-key">요양기관</span><span class="rx-mock-val">연세내과의원</span></div>
+                <div class="rx-mock-row"><span class="rx-mock-key">처방의</span><span class="rx-mock-val">이 재 훈</span></div>
+                <div class="rx-mock-row"><span class="rx-mock-key">처방일</span><span class="rx-mock-val">2024.03.15</span></div>
+                <table class="rx-drug-table">
+                  <tr>
+                    <th>약품명</th><th>1회량</th><th>횟수</th><th>일수</th>
+                  </tr>
+                  <tr>
+                    <td>메트포르민 500mg</td><td>1정</td><td>3</td><td>30</td>
+                  </tr>
+                  <tr>
+                    <td>글리메피리드 2mg</td><td>1정</td><td>1</td><td>30</td>
+                  </tr>
+                  <tr>
+                    <td>로수바스타틴 10mg</td><td>1정</td><td>1</td><td>30</td>
+                  </tr>
+                  <tr>
+                    <td>오메프라졸 20mg</td><td>1정</td><td>1</td><td>30</td>
+                  </tr>
+                </table>
+                <div style="margin-top:12px; font-size:10px; color:#888; text-align:right">
+                  요양기관번호: 12345678<br>
+                  처방전 교부번호: 2024-1234
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- RIGHT: 파싱된 조제 정보 -->
+          <div class="parsed-panel">
+            <div class="panel-label">💊 조제 내역 요약</div>
+            <div class="drug-list">
+              <div class="drug-item">
+                <div class="drug-icon">💉</div>
+                <div>
+                  <div class="drug-name">메트포르민 500mg</div>
+                  <div class="drug-sub">혈당강하제 · 1회 1정, 하루 3회 · 식후 복용</div>
+                </div>
+                <div class="drug-days">30일분</div>
+              </div>
+              <div class="drug-item">
+                <div class="drug-icon">🩸</div>
+                <div>
+                  <div class="drug-name">글리메피리드 2mg</div>
+                  <div class="drug-sub">인슐린 분비 촉진제 · 1회 1정, 하루 1회 · 아침 식전</div>
+                </div>
+                <div class="drug-days">30일분</div>
+              </div>
+              <div class="drug-item">
+                <div class="drug-icon">❤️</div>
+                <div>
+                  <div class="drug-name">로수바스타틴 10mg</div>
+                  <div class="drug-sub">고지혈증약 · 1회 1정, 하루 1회 · 저녁 복용</div>
+                </div>
+                <div class="drug-days">30일분</div>
+              </div>
+              <div class="drug-item">
+                <div class="drug-icon">🫃</div>
+                <div>
+                  <div class="drug-name">오메프라졸 20mg</div>
+                  <div class="drug-sub">위장보호제 · 1회 1정, 하루 1회 · 식전 30분</div>
+                </div>
+                <div class="drug-days">30일분</div>
+              </div>
+            </div>
+            <div style="padding:12px 14px; border-top:1px solid var(--border); background:#F8FAFB; font-size:12px; color:var(--text-mid);">
+              ✅ AI 자동 분석 완료 · <strong>혈당강하제, 고지혈증약</strong> 30일분
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── STEP 2: 복약상담 메시지 ── -->
+      <div class="step-content" id="step2">
+        <div class="consult-layout">
+          <!-- LEFT: 키워드 선택 -->
+          <div class="keyword-section">
+            <div style="font-size:13px; color:var(--text-mid); margin-bottom:16px;">
+              💬 전달할 복약 안내 내용을 선택하세요. 클릭하면 메시지에 자동 추가됩니다.
+            </div>
+
+            <div class="keyword-group">
+              <div class="keyword-group-title">⏰ 복용 시간</div>
+              <div class="keyword-chips">
+                <div class="chip" onclick="toggleChip(this, '식후 30분 복용하세요')">식후 30분 복용</div>
+                <div class="chip" onclick="toggleChip(this, '아침 식전에 복용하세요')">아침 식전 복용</div>
+                <div class="chip" onclick="toggleChip(this, '저녁에 복용하세요')">저녁 복용</div>
+                <div class="chip" onclick="toggleChip(this, '취침 전 복용하세요')">취침 전 복용</div>
+              </div>
+            </div>
+
+            <div class="keyword-group">
+              <div class="keyword-group-title">🚫 주의사항</div>
+              <div class="keyword-chips">
+                <div class="chip" onclick="toggleChip(this, '음주를 피하세요')">음주 피하기</div>
+                <div class="chip" onclick="toggleChip(this, '자몽 섭취를 피하세요')">자몽 피하기</div>
+                <div class="chip" onclick="toggleChip(this, '임의로 복용을 중단하지 마세요')">임의 중단 금지</div>
+                <div class="chip" onclick="toggleChip(this, '햇빛 노출에 주의하세요')">햇빛 주의</div>
+              </div>
+            </div>
+
+            <div class="keyword-group">
+              <div class="keyword-group-title">🩺 혈당 관련</div>
+              <div class="keyword-chips">
+                <div class="chip" onclick="toggleChip(this, '식사를 거르지 마세요 (저혈당 주의)')">식사 거르지 마세요</div>
+                <div class="chip" onclick="toggleChip(this, '어지러움, 식은땀 시 사탕/주스를 드세요')">저혈당 증상 대처</div>
+                <div class="chip" onclick="toggleChip(this, '정기적인 혈당 체크를 권장합니다')">정기 혈당 체크</div>
+              </div>
+            </div>
+
+            <div class="keyword-group">
+              <div class="keyword-group-title">💊 고지혈증 관련</div>
+              <div class="keyword-chips">
+                <div class="chip" onclick="toggleChip(this, '근육통이 생기면 즉시 내원하세요')">근육통 주의</div>
+                <div class="chip" onclick="toggleChip(this, '저지방 식단을 유지하세요')">저지방 식단</div>
+                <div class="chip" onclick="toggleChip(this, '꾸준히 복용해야 효과가 있습니다')">꾸준한 복용 중요</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- RIGHT: 메시지 미리보기 -->
+          <div class="preview-section">
+            <div style="font-size:13px; font-weight:600; margin-bottom:10px; color:var(--text);">📱 메시지 미리보기</div>
+            <div class="preview-box">
+              <span class="preview-label">SMS PREVIEW</span>
+              <div id="msgPreview">
+                <span class="preview-highlight">웰체크약국 김민정 약사</span>입니다.<br><br>
+                <span id="patientMsgName">이순희</span>님의 이번 조제약은
+                <span class="preview-highlight">혈당강하제(메트포르민, 글리메피리드), 고지혈증약(로수바스타틴)</span>
+                <strong>30일분</strong>입니다.<br><br>
+                <span id="addedKeywords"></span>
+                약을 빠짐없이 잘 챙겨드실 수 있도록 웰체크 복약알림 설정을 함께 보내드립니다. 약 다 떨어지기 <strong>7일 전, 3일 전</strong>에 다시 한 번 문자메시지가 갑니다. 🌿
+              </div>
+            </div>
+            <div style="margin-top:10px; font-size:11px; color:var(--text-light); text-align:right;" id="msgByteCount">
+              약 120자 · 단문SMS
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── STEP 3: 복약알림 설정 ── -->
+      <div class="step-content" id="step3">
+        <div class="alarm-layout">
+          <div class="alarm-card">
+            <div class="alarm-card-title"><span class="icon">📱</span> 환자 연락처</div>
+            <div class="alarm-row">
+              <label>핸드폰 번호</label>
+              <input class="alarm-input phone" id="phoneInput" placeholder="010-0000-0000" type="tel" />
+              <span style="font-size:12px; color:var(--accent);">✓ 문자 발송에 사용됩니다</span>
+            </div>
+          </div>
+
+          <div class="alarm-card">
+            <div class="alarm-card-title"><span class="icon">⏰</span> 복약 알림 시간 설정</div>
+            <div class="alarm-row">
+              <label>아침 알림</label>
+              <div class="time-picker-row">
+                <div class="time-pill on" onclick="toggleTimePill(this)">오전 8시</div>
+                <div class="time-pill" onclick="toggleTimePill(this)">오전 9시</div>
+                <div class="time-pill" onclick="toggleTimePill(this)">오전 10시</div>
+              </div>
+            </div>
+            <div class="alarm-row">
+              <label>저녁 알림</label>
+              <div class="time-picker-row">
+                <div class="time-pill" onclick="toggleTimePill(this)">오후 6시</div>
+                <div class="time-pill on" onclick="toggleTimePill(this)">오후 7시</div>
+                <div class="time-pill" onclick="toggleTimePill(this)">오후 8시</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="alarm-card">
+            <div class="alarm-card-title"><span class="icon">🔔</span> 리필(재처방) 알림</div>
+            <div style="font-size:12px; color:var(--text-mid); margin-bottom:12px;">
+              약이 다 떨어지기 전에 자동으로 알림을 보냅니다.
+            </div>
+            <div class="alarm-row">
+              <label>조제일수</label>
+              <input class="alarm-input days" value="30" /> 일분
+            </div>
+            <div class="alarm-row">
+              <label>알림 발송 시점</label>
+              <div class="refill-check-row">
+                <div class="refill-toggle on" onclick="this.classList.toggle('on')">
+                  <div class="dot"></div> 7일 전
+                </div>
+                <div class="refill-toggle on" onclick="this.classList.toggle('on')">
+                  <div class="dot"></div> 3일 전
+                </div>
+                <div class="refill-toggle" onclick="this.classList.toggle('on')">
+                  <div class="dot"></div> 당일
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── STEP 4: 전송 확인 ── -->
+      <div class="step-content" id="step4">
+        <div class="send-layout">
+          <!-- SUCCESS -->
+          <div class="success-screen" id="successScreen">
+            <div class="success-icon">✅</div>
+            <div class="success-title">전송 완료!</div>
+            <div class="success-sub" id="successMsg">이순희 님께 복약 안내 메시지와 복약알림이 발송되었습니다.</div>
+            <button class="btn btn-primary" onclick="closeModalDirect()" style="margin-top:8px;">목록으로 돌아가기</button>
+          </div>
+
+          <!-- SEND FORM -->
+          <div id="sendForm">
+            <div class="send-preview-card" id="finalMsgPreview">
+              웰체크약국 김민정 약사입니다.<br><br>
+              이순희님의 이번 조제약은 혈당강하제(메트포르민, 글리메피리드), 고지혈증약(로수바스타틴) 30일분입니다.<br><br>
+              <span id="finalKeywords"></span>
+              약을 빠짐없이 잘 챙겨드실 수 있도록 웰체크 복약알림 설정을 함께 보내드립니다. 약 다 떨어지기 7일 전, 3일 전에 다시 한 번 문자메시지가 갑니다. 🌿
+            </div>
+            <div class="send-summary">
+              <div class="send-summary-row">
+                <span class="send-summary-key">수신자</span>
+                <span class="send-summary-val" id="summaryName">이순희 (010-0000-0000)</span>
+              </div>
+              <div class="send-summary-row">
+                <span class="send-summary-key">조제약</span>
+                <span class="send-summary-val">혈당강하제, 고지혈증약 · 30일분</span>
+              </div>
+              <div class="send-summary-row">
+                <span class="send-summary-key">복약알림</span>
+                <span class="send-summary-val">오전 8시, 오후 7시</span>
+              </div>
+              <div class="send-summary-row">
+                <span class="send-summary-key">리필 알림</span>
+                <span class="send-summary-val">7일 전, 3일 전 자동발송</span>
+              </div>
+            </div>
+            <div class="send-btn-row">
+              <button class="btn btn-ghost" onclick="goStep(3)" style="flex:0; white-space:nowrap;">← 수정</button>
+              <button class="btn-send" onclick="sendMessage()">
+                📨 메시지 전송하기
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /modal-body -->
+
+    <!-- MODAL FOOTER -->
+    <div class="modal-footer">
+      <div class="step-indicator" id="stepIndicator">Step 1 / 4 · 처방전 확인</div>
+      <div class="footer-btns">
+        <button class="btn btn-ghost" id="btnPrev" onclick="prevStep()" style="display:none">← 이전</button>
+        <button class="btn btn-primary" id="btnNext" onclick="nextStep()">다음 단계 →</button>
+      </div>
+    </div>
+
+  </div><!-- /modal -->
+</div><!-- /modal-overlay -->
+
+<script>
+  let currentStep = 1;
+  const totalSteps = 4;
+  const stepLabels = ['처방전 확인', '복약상담 메시지', '복약알림 설정', '메시지 전송'];
+  let selectedKeywords = [];
+  let currentPatient = '이순희';
+
+  const stepIndicatorTexts = [
+    'Step 1 / 4 · 처방전 확인',
+    'Step 2 / 4 · 복약상담 메시지 선택',
+    'Step 3 / 4 · 복약알림 설정',
+    'Step 4 / 4 · 최종 확인 및 전송'
+  ];
+
+  function openModal(name, sub, rxId) {
+    currentPatient = name;
+    document.getElementById('modalName').textContent = name;
+    document.getElementById('modalSub').textContent = sub + ' · #0412 · 연세내과의원';
+    document.getElementById('modalAvatar').textContent = name[0];
+    document.getElementById('patientMsgName').textContent = name;
+    document.getElementById('summaryName').textContent = name + ' (010-0000-0000)';
+    document.getElementById('successMsg').textContent = name + ' 님께 복약 안내 메시지와 복약알림이 발송되었습니다.';
+
+    selectedKeywords = [];
+    document.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
+    document.getElementById('addedKeywords').innerHTML = '';
+    document.getElementById('finalKeywords').innerHTML = '';
+    document.getElementById('successScreen').classList.remove('show');
+    document.getElementById('sendForm').style.display = 'block';
+
+    goStep(1);
+    document.getElementById('modalOverlay').classList.add('open');
+  }
+
+  function closeModal(e) {
+    if (e.target === document.getElementById('modalOverlay')) closeModalDirect();
+  }
+
+  function closeModalDirect() {
+    document.getElementById('modalOverlay').classList.remove('open');
+  }
+
+  function goStep(n) {
+    currentStep = n;
+    // update step content
+    for (let i = 1; i <= totalSteps; i++) {
+      const content = document.getElementById('step' + i);
+      const tab = document.getElementById('stepTab' + i);
+      if (content) content.classList.toggle('active', i === n);
+      if (tab) {
+        tab.classList.remove('active', 'done');
+        if (i === n) tab.classList.add('active');
+        else if (i < n) tab.classList.add('done');
+      }
+    }
+    document.getElementById('stepIndicator').textContent = stepIndicatorTexts[n - 1];
+    document.getElementById('btnPrev').style.display = n > 1 ? 'inline-block' : 'none';
+    document.getElementById('btnNext').textContent = n < totalSteps ? '다음 단계 →' : '전송하기';
+
+    if (n === 4) updateFinalPreview();
+  }
+
+  function nextStep() {
+    if (currentStep < totalSteps) goStep(currentStep + 1);
+    else sendMessage();
+  }
+  function prevStep() {
+    if (currentStep > 1) goStep(currentStep - 1);
+  }
+
+  function toggleChip(el, keyword) {
+    const idx = selectedKeywords.indexOf(keyword);
+    if (idx >= 0) {
+      selectedKeywords.splice(idx, 1);
+      el.classList.remove('selected');
+    } else {
+      selectedKeywords.push(keyword);
+      el.classList.add('selected');
+    }
+    updatePreview();
+  }
+
+  function updatePreview() {
+    const kw = document.getElementById('addedKeywords');
+    if (selectedKeywords.length === 0) {
+      kw.innerHTML = '';
+    } else {
+      kw.innerHTML = selectedKeywords.map(k =>
+        `<span class="preview-added">✔ ${k}</span>`
+      ).join('&nbsp; ') + '<br><br>';
+    }
+    const total = 120 + selectedKeywords.join('').length;
+    const isLong = total > 90;
+    document.getElementById('msgByteCount').textContent = `약 ${total}자 · ${isLong ? '장문MMS' : '단문SMS'}`;
+  }
+
+  function updateFinalPreview() {
+    const kw = document.getElementById('finalKeywords');
+    const phone = document.getElementById('phoneInput').value || '010-0000-0000';
+    document.getElementById('summaryName').textContent = currentPatient + ' (' + phone + ')';
+    if (selectedKeywords.length > 0) {
+      kw.innerHTML = selectedKeywords.join(', ') + '<br><br>';
+    } else {
+      kw.innerHTML = '';
+    }
+  }
+
+  function toggleTimePill(el) {
+    el.classList.toggle('on');
+  }
+
+  function sendMessage() {
+    document.getElementById('successScreen').classList.add('show');
+    document.getElementById('sendForm').style.display = 'none';
+    document.getElementById('btnNext').style.display = 'none';
+    document.getElementById('btnPrev').style.display = 'none';
+    document.getElementById('stepIndicator').textContent = '✅ 전송 완료';
+    for (let i = 1; i <= totalSteps; i++) {
+      const tab = document.getElementById('stepTab' + i);
+      if (tab) { tab.classList.remove('active'); tab.classList.add('done'); }
+    }
+  }
+</script>
+</body>
+</html>
