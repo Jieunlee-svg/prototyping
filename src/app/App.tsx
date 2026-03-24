@@ -23,6 +23,12 @@ function App() {
   const [selectedPatientId, setSelectedPatientId] = useState<string | null>(null);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [showChatIcon, setShowChatIcon] = useState(false);
+  const [settingsInitialTab, setSettingsInitialTab] = useState<'basic' | 'hours' | 'reminder' | 'app'>('basic');
+
+  const openSettings = (tab: 'basic' | 'hours' | 'reminder' | 'app' = 'basic') => {
+    setSettingsInitialTab(tab);
+    setView('settings');
+  };
 
   const handlePatientClick = (id: string) => {
     setSelectedPatientId(id);
@@ -51,7 +57,7 @@ function App() {
         onConsultationCClick={() => setView('consultation-c')}
         onConsultationHistoryClick={() => setView('consultation-history')}
         onConsultationReminderClick={() => setView('consultation-reminder')}
-        onSettingsClick={() => setView('settings')}
+        onSettingsClick={() => openSettings('basic')}
         onNoticeClick={() => setView('notice')}
         onMyInfoClick={() => setView('my-info')}
         onChatClick={() => setShowChatIcon(true)}
@@ -74,7 +80,7 @@ function App() {
             </div>
           ) : view === 'prescription' ? (
             <div className="absolute inset-0 overflow-hidden">
-              <PrescriptionList />
+              <PrescriptionList onOpenSettings={() => openSettings('reminder')} />
             </div>
           ) : view === 'consultation-c' ? (
             <div className="absolute inset-0 overflow-hidden">
@@ -90,7 +96,7 @@ function App() {
             </div>
           ) : view === 'settings' ? (
             <div className="absolute inset-0 overflow-hidden">
-              <PharmacySettings />
+              <PharmacySettings initialTab={settingsInitialTab} />
             </div>
           ) : view === 'notice' ? (
             <div className="absolute inset-0 overflow-hidden">

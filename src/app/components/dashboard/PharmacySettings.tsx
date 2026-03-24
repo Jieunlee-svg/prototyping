@@ -54,7 +54,11 @@ const INITIAL_TIMES = [
   { label: '취침전', defaultTime: '22:00' },
 ];
 
-export const PharmacySettings: React.FC = () => {
+interface PharmacySettingsProps {
+  initialTab?: 'basic' | 'hours' | 'reminder' | 'app';
+}
+
+export const PharmacySettings: React.FC<PharmacySettingsProps> = ({ initialTab }) => {
   const [loading, setLoading] = useState(false);
   const [showTemplates, setShowTemplates] = useState(false);
   const [allowAppPrescription, setAllowAppPrescription] = useState(true);
@@ -77,7 +81,7 @@ export const PharmacySettings: React.FC = () => {
     } as Record<DayKey, DaySchedule>
   });
 
-  const [activeTab, setActiveTab] = useState<'basic' | 'hours' | 'app' | 'reminder'>('basic');
+  const [activeTab, setActiveTab] = useState<'basic' | 'hours' | 'app' | 'reminder'>(initialTab ?? 'basic');
 
   // ── 복약 알림 기본 설정 state ──
   const [freqSettings, setFreqSettings] = useState<typeof INITIAL_FREQ>(() => JSON.parse(JSON.stringify(INITIAL_FREQ)));

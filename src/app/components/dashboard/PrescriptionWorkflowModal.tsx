@@ -80,6 +80,7 @@ interface PrescriptionWorkflowModalProps {
   prescription: Prescription;
   onClose: () => void;
   onComplete?: () => void;
+  onOpenSettings?: () => void;
 }
 
 // ── Toast ───────────────────────────────────────────────────────────────
@@ -133,6 +134,7 @@ export const PrescriptionWorkflowModal: React.FC<PrescriptionWorkflowModalProps>
   prescription,
   onClose,
   onComplete,
+  onOpenSettings,
 }) => {
   const [currentStep, setCurrentStep] = useState(1);
   const [isCompleted, setIsCompleted] = useState(false);
@@ -326,16 +328,26 @@ export const PrescriptionWorkflowModal: React.FC<PrescriptionWorkflowModalProps>
       );
     }
     return (
-      <button
-        onClick={nextStep}
-        disabled={!canGoNext()}
-        className={clsx(
-          'px-5 py-2 rounded-lg text-sm font-semibold transition-all focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1',
-          canGoNext() ? 'bg-blue-600 hover:bg-blue-700 active:scale-95 text-white shadow-sm' : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+      <>
+        {currentStep === 3 && (
+          <button
+            onClick={nextStep}
+            className="px-4 py-2 rounded-lg text-sm font-medium text-gray-400 hover:text-gray-600 transition-colors focus:outline-none"
+          >
+            이 단계 건너뛰기
+          </button>
         )}
-      >
-        다음 단계 →
-      </button>
+        <button
+          onClick={nextStep}
+          disabled={!canGoNext()}
+          className={clsx(
+            'px-5 py-2 rounded-lg text-sm font-semibold transition-all focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-offset-1',
+            canGoNext() ? 'bg-blue-600 hover:bg-blue-700 active:scale-95 text-white shadow-sm' : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+          )}
+        >
+          다음 단계 →
+        </button>
+      </>
     );
   };
 
@@ -412,9 +424,6 @@ export const PrescriptionWorkflowModal: React.FC<PrescriptionWorkflowModalProps>
                   <div className="px-4 py-3 border-b border-gray-200 bg-white flex items-center justify-between">
                     <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">조제 내역</span>
                     <span className="text-[11px] text-blue-500 font-medium">대체 조제 시 직접 수정하세요</span>
-                  </div>
-                  <div className="mx-3 mt-3 px-3 py-2.5 bg-blue-50 border border-blue-100 rounded-lg text-xs text-blue-700 leading-relaxed">
-                    처방전과 다르게 대체 조제한 경우 아래 목록을 수정하거나 삭제할 수 있습니다.
                   </div>
                   <div className="flex-1 p-3 overflow-y-auto space-y-1.5">
                     {drugs.length === 0 && (
@@ -558,7 +567,16 @@ export const PrescriptionWorkflowModal: React.FC<PrescriptionWorkflowModalProps>
                                   formatted = `${formatted.slice(0,3)}-${formatted.slice(3)}`;
                                 }
                                 setCustomerQuery(formatted);
-                                setPatientPhone(raw.length >= 10 ? formatted : '');
+                                const phoneVal = raw.length >= 11 ? formatted : (raw.length >= 10 ? formatted : '');
+                                setPatientPhone(phoneVal);
+                                // 11자리 완성 시 자동 선택 처리
+                                if (raw.length === 11) {
+                                  setSelectedCustomer({ name: '', phone: formatted, birth: '' });
+                                  setPhoneTouched(true);
+                                  setPhoneError('');
+                                  setShowCustomerDrop(false);
+                                  setCustomerQuery('');
+                                }
                               } else {
                                 // 이름 검색 모드
                                 setCustomerQuery(inputVal);
@@ -616,11 +634,6 @@ export const PrescriptionWorkflowModal: React.FC<PrescriptionWorkflowModalProps>
                         {phoneTouched && phoneError && (
                           <p className="text-[11px] text-red-500 mt-1.5 flex items-center gap-1 font-medium">
                             <AlertCircle className="w-3.5 h-3.5" />{phoneError}
-                          </p>
-                        )}
-                        {!phoneError && patientPhone && !selectedCustomer && (
-                          <p className="text-[11px] text-blue-500 mt-1.5 flex items-center gap-1 font-medium">
-                            <Check className="w-3.5 h-3.5" />입력된 번호: {patientPhone}
                           </p>
                         )}
                       </>
@@ -877,7 +890,10 @@ export const PrescriptionWorkflowModal: React.FC<PrescriptionWorkflowModalProps>
                 <div className="bg-blue-50 border border-blue-100 rounded-xl px-4 py-3 flex items-center gap-2">
                   <Settings className="w-4 h-4 text-blue-500 flex-shrink-0" />
                   <span className="text-xs text-blue-700">복약 알림 기본 설정은 약국 설정에서 변경 할 수 있습니다.</span>
-                  <button className="text-xs text-blue-600 font-bold hover:underline flex items-center gap-0.5 ml-auto flex-shrink-0 focus:outline-none">설정 바로가기 <ChevronRight className="w-3 h-3" /></button>
+                  <button
+                    onClick={() => { onOpenSettings?.(); onClose(); }}
+                    className="text-xs text-blue-600 font-bold hover:underline flex items-center gap-0.5 ml-auto flex-shrink-0 focus:outline-none"
+                  >설정 바로가기 <ChevronRight className="w-3 h-3" /></button>
                 </div>
               </div>
             )}

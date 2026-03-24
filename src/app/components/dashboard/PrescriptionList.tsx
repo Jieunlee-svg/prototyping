@@ -73,7 +73,7 @@ const Toast: React.FC<ToastProps> = ({ message, onDone }) => {
 };
 
 // ── Main Component ─────────────────────────────────────────────────────
-export const PrescriptionList: React.FC = () => {
+export const PrescriptionList: React.FC<{ onOpenSettings?: () => void }> = ({ onOpenSettings }) => {
   const [filter, setFilter] = useState<'all' | PrescriptionSource>('all');
   const [statusFilter, setStatusFilter] = useState<'all' | PrescriptionStatus>('all');
   const [prescriptions, setPrescriptions] = useState<Prescription[]>(BASE_PRESCRIPTIONS);
@@ -311,26 +311,6 @@ export const PrescriptionList: React.FC = () => {
         </button>
       </header>
 
-      {/* KPI Stats Row */}
-      <div className="px-6 py-3 bg-white border-b border-gray-100 flex-shrink-0">
-        <div className="grid grid-cols-3 gap-4">
-          <div className="bg-white border border-gray-200 rounded-xl px-4 py-3">
-            <div className="text-[11px] font-medium text-gray-400 mb-1">오늘 접수</div>
-            <div className="text-2xl font-bold text-gray-900 leading-none">{totalToday}</div>
-            <div className="text-[10px] text-gray-400 mt-1">건</div>
-          </div>
-          <div className="bg-white border border-gray-200 rounded-xl px-4 py-3">
-            <div className="text-[11px] font-medium text-gray-400 mb-1">조제 대기</div>
-            <div className="text-2xl font-bold text-orange-500 leading-none">{waitingCount}</div>
-            <div className="text-[10px] text-gray-400 mt-1">건 · 처리 필요</div>
-          </div>
-          <div className="bg-white border border-gray-200 rounded-xl px-4 py-3">
-            <div className="text-[11px] font-medium text-gray-400 mb-1">메시지 전송</div>
-            <div className="text-2xl font-bold text-emerald-500 leading-none">{sentCount}</div>
-            <div className="text-[10px] text-gray-400 mt-1">건 완료</div>
-          </div>
-        </div>
-      </div>
 
       {/* Filter Toolbar */}
       <div className="px-6 py-2.5 bg-white border-b border-gray-100 flex items-center justify-between gap-3 flex-shrink-0">
@@ -410,6 +390,7 @@ export const PrescriptionList: React.FC = () => {
         <PrescriptionWorkflowModal
           prescription={workflowPrescription}
           onClose={() => setWorkflowPrescription(null)}
+          onOpenSettings={onOpenSettings}
         />
       )}
     </div>
