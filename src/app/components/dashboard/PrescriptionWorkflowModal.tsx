@@ -504,7 +504,6 @@ export const PrescriptionWorkflowModal: React.FC<PrescriptionWorkflowModalProps>
                   <label className="text-xs font-bold text-gray-700 block mb-0.5">
                     고객 휴대폰 번호 <span className="text-red-400">*</span>
                   </label>
-                  <p className="text-[11px] text-gray-400 mb-2">단골 고객의 이름이나 휴대폰 번호를 검색 검색하세요. (카카오 알림톡 발송용)</p>
 
                   <div ref={phoneDropRef} className="relative">
                     {selectedCustomer ? (
@@ -546,16 +545,26 @@ export const PrescriptionWorkflowModal: React.FC<PrescriptionWorkflowModalProps>
                             type="text"
                             value={customerQuery}
                             onChange={e => {
-                              setCustomerQuery(e.target.value);
-                              setShowCustomerDrop(true);
-                              // 숫자만 입력하면 직접 전화번호 입력으로도 사용
-                              const raw = e.target.value.replace(/[^0-9]/g, '');
-                              if (raw.length >= 10) {
-                                const fmt = raw.length > 7 ? `${raw.slice(0,3)}-${raw.slice(3,7)}-${raw.slice(7,11)}` : raw;
-                                setPatientPhone(fmt);
+                              const inputVal = e.target.value;
+                              const raw = inputVal.replace(/[^0-9]/g, '');
+                              const isNumericOnly = /^[0-9\-]*$/.test(inputVal);
+
+                              if (isNumericOnly && raw.length > 0) {
+                                // 숫자 입력: 실시간 하이픈 자동 포맷
+                                let formatted = raw.slice(0, 11); // 최대 11자리
+                                if (formatted.length > 7) {
+                                  formatted = `${formatted.slice(0,3)}-${formatted.slice(3,7)}-${formatted.slice(7)}`;
+                                } else if (formatted.length > 3) {
+                                  formatted = `${formatted.slice(0,3)}-${formatted.slice(3)}`;
+                                }
+                                setCustomerQuery(formatted);
+                                setPatientPhone(raw.length >= 10 ? formatted : '');
                               } else {
+                                // 이름 검색 모드
+                                setCustomerQuery(inputVal);
                                 setPatientPhone('');
                               }
+                              setShowCustomerDrop(true);
                             }}
                             onKeyDown={e => {
                               if (!showCustomerDrop || customerQuery.trim() === '') return;
@@ -623,8 +632,8 @@ export const PrescriptionWorkflowModal: React.FC<PrescriptionWorkflowModalProps>
                         {filteredCustomers.length > 0 ? (
                           <>
                             <div className="px-3 py-2 border-b border-gray-100 bg-gray-50/50 flex items-center justify-between">
-                              <span className="text-[11px] text-gray-500 font-bold uppercase tracking-wider">Suggestions</span>
-                              <span className="text-[11px] text-blue-500 font-bold">{filteredCustomers.length} results</span>
+                              <span className="text-[11px] text-gray-500 font-bold tracking-wider">검색 결과</span>
+                              <span className="text-[11px] text-blue-500 font-bold">{filteredCustomers.length}건</span>
                             </div>
                             <div className="py-1 max-h-[220px] overflow-y-auto">
                               {filteredCustomers.map((c, i) => {
@@ -674,7 +683,7 @@ export const PrescriptionWorkflowModal: React.FC<PrescriptionWorkflowModalProps>
                                       </div>
                                     </div>
                                     {isFocused && (
-                                      <span className="text-[10px] font-bold text-blue-500 mr-2 uppercase tracking-wide">Enter to select</span>
+                                      <span className="text-[10px] font-bold text-blue-500 mr-2">Enter로 선택</span>
                                     )}
                                   </button>
                                 );
@@ -682,9 +691,9 @@ export const PrescriptionWorkflowModal: React.FC<PrescriptionWorkflowModalProps>
                             </div>
                             {/* Footer shortcut hints */}
                             <div className="px-3 py-1.5 border-t border-gray-100 bg-gray-50 text-[10px] text-gray-400 flex items-center justify-end gap-3">
-                              <span className="flex items-center gap-1"><kbd className="px-1 py-0.5 rounded border border-gray-200 bg-white shadow-sm font-sans font-medium text-gray-500">↑</kbd> <kbd className="px-1 py-0.5 rounded border border-gray-200 bg-white shadow-sm font-sans font-medium text-gray-500">↓</kbd> to navigate</span>
-                              <span className="flex items-center gap-1"><kbd className="px-1 py-0.5 rounded border border-gray-200 bg-white shadow-sm font-sans font-medium text-gray-500">↵</kbd> to select</span>
-                              <span className="flex items-center gap-1"><kbd className="px-1 py-0.5 rounded border border-gray-200 bg-white shadow-sm font-sans font-medium text-gray-500">Esc</kbd> to close</span>
+                              <span className="flex items-center gap-1"><kbd className="px-1 py-0.5 rounded border border-gray-200 bg-white shadow-sm font-sans font-medium text-gray-500">↑</kbd> <kbd className="px-1 py-0.5 rounded border border-gray-200 bg-white shadow-sm font-sans font-medium text-gray-500">↓</kbd> 이동</span>
+                              <span className="flex items-center gap-1"><kbd className="px-1 py-0.5 rounded border border-gray-200 bg-white shadow-sm font-sans font-medium text-gray-500">↵</kbd> 선택</span>
+                              <span className="flex items-center gap-1"><kbd className="px-1 py-0.5 rounded border border-gray-200 bg-white shadow-sm font-sans font-medium text-gray-500">Esc</kbd> 닫기</span>
                             </div>
                           </>
                         ) : (
@@ -867,7 +876,7 @@ export const PrescriptionWorkflowModal: React.FC<PrescriptionWorkflowModalProps>
 
                 <div className="bg-blue-50 border border-blue-100 rounded-xl px-4 py-3 flex items-center gap-2">
                   <Settings className="w-4 h-4 text-blue-500 flex-shrink-0" />
-                  <span className="text-xs text-blue-700">복약 알림 기본 설정은 환경설정에서 변경할 수 있습니다.</span>
+                  <span className="text-xs text-blue-700">복약 알림 기본 설정은 약국 설정에서 변경 할 수 있습니다.</span>
                   <button className="text-xs text-blue-600 font-bold hover:underline flex items-center gap-0.5 ml-auto flex-shrink-0 focus:outline-none">설정 바로가기 <ChevronRight className="w-3 h-3" /></button>
                 </div>
               </div>
@@ -934,13 +943,7 @@ export const PrescriptionWorkflowModal: React.FC<PrescriptionWorkflowModalProps>
                         </div>
                       )}
 
-                      {!patientPhone && (
-                        <div className="flex items-center gap-2 px-4 py-3 bg-red-50 border border-red-200 rounded-xl text-xs text-red-600">
-                          <AlertCircle className="w-4 h-4 flex-shrink-0" />
-                          <span>고객 번호가 입력되지 않았습니다.</span>
-                          <button type="button" onClick={() => goStep(2)} className="ml-auto font-bold hover:underline whitespace-nowrap focus:outline-none">2단계로 이동 →</button>
-                        </div>
-                      )}
+
                     </div>
                   </div>
                 )}

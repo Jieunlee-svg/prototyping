@@ -99,7 +99,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
             { icon: Stethoscope, label: '처방전', active: isItemActive('처방전'), onClick: onPrescriptionClick },
             { icon: HeartPulse, label: '복약 상담 TBD', active: isConsultationActive, onClick: onConsultationCClick },
             { icon: MessageSquare, label: '앱 설치 문자 발송 TBD', active: isSmsActive, onClick: onSmsClick },
-            { icon: Bell, label: '공지사항 TBD', active: isItemActive('공지사항 TBD'), onClick: onNoticeClick },
+            // 공지사항 메뉴 숨김 (복원 시 아래 주석 해제)
+            // { icon: Bell, label: '공지사항 TBD', active: isItemActive('공지사항 TBD'), onClick: onNoticeClick },
           ].map((item, idx) => (
             <div key={idx} className="relative group flex justify-center">
               <button
@@ -297,7 +298,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             )}
           </li>
 
-          {/* 공지사항 */}
+          {/* 공지사항 메뉴 숨김 (복원 시 아래 주석 블록 전체를 해제)
           {[
             { icon: Bell, label: '공지사항 TBD', id: '공지사항 TBD' },
           ].map((item, index) => (
@@ -317,6 +318,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               </a>
             </li>
           ))}
+          */}
         </ul>
       </nav>
 

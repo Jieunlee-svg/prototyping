@@ -1,17 +1,19 @@
 import React, { useState } from 'react';
-import { 
-  Settings, 
-  MapPin, 
-  Clock, 
-  Store, 
-  Save, 
+import {
+  Settings,
+  MapPin,
+  Clock,
+  Store,
+  Save,
   Search,
   Check,
   Copy,
   Sparkles,
   Smartphone,
   Info,
-  EyeOff
+  EyeOff,
+  Bell,
+  RotateCcw,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { clsx } from 'clsx';
@@ -36,6 +38,22 @@ interface DaySchedule {
   lunchEnd: string;
 }
 
+// ── 복약 알림 상수 ──
+const TIME_OPTIONS = ['아침', '점심', '저녁', '취침전'] as const;
+const RELATION_OPTIONS = ['식전', '식후', '식후 30분'] as const;
+const INITIAL_FREQ = [
+  { count: 1, defaultTimes: ['아침'], defaultRelation: '식후 30분' },
+  { count: 2, defaultTimes: ['아침', '저녁'], defaultRelation: '식후 30분' },
+  { count: 3, defaultTimes: ['아침', '점심', '저녁'], defaultRelation: '식후 30분' },
+  { count: 4, defaultTimes: ['아침', '점심', '저녁', '취침전'], defaultRelation: '식후 30분' },
+];
+const INITIAL_TIMES = [
+  { label: '아침', defaultTime: '10:00' },
+  { label: '점심', defaultTime: '13:00' },
+  { label: '저녁', defaultTime: '18:00' },
+  { label: '취침전', defaultTime: '22:00' },
+];
+
 export const PharmacySettings: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [showTemplates, setShowTemplates] = useState(false);
@@ -59,7 +77,45 @@ export const PharmacySettings: React.FC = () => {
     } as Record<DayKey, DaySchedule>
   });
 
-  const [activeTab, setActiveTab] = useState<'basic' | 'hours' | 'app'>('basic');
+  const [activeTab, setActiveTab] = useState<'basic' | 'hours' | 'app' | 'reminder'>('basic');
+
+  // ── 복약 알림 기본 설정 state ──
+  const [freqSettings, setFreqSettings] = useState<typeof INITIAL_FREQ>(() => JSON.parse(JSON.stringify(INITIAL_FREQ)));
+  const [timeMappings, setTimeMappings] = useState<typeof INITIAL_TIMES>(() => JSON.parse(JSON.stringify(INITIAL_TIMES)));
+  const [showFourTimes, setShowFourTimes] = useState(false);
+  const [showAfterMeal30, setShowAfterMeal30] = useState(true);
+  const [reminderSaved, setReminderSaved] = useState(false);
+
+  const toggleFreqTime = (count: number, time: string) => {
+    const order = ['아침', '점심', '저녁', '취침전'];
+    setFreqSettings(prev => prev.map(item => {
+      if (item.count !== count || item.count === 4) return item;
+      const isSelected = item.defaultTimes.includes(time);
+      if (item.count === 1) return { ...item, defaultTimes: isSelected ? [] : [time] };
+      let next = isSelected ? item.defaultTimes.filter(t => t !== time) : [...item.defaultTimes, time];
+      next.sort((a, b) => order.indexOf(a) - order.indexOf(b));
+      return { ...item, defaultTimes: next };
+    }));
+  };
+  const setFreqRelation = (count: number, rel: string) => {
+    setFreqSettings(prev => prev.map(item => item.count === count ? { ...item, defaultRelation: rel } : item));
+  };
+  const updateTimeMapping = (label: string, newTime: string) => {
+    setTimeMappings(prev => prev.map(item => item.label === label ? { ...item, defaultTime: newTime } : item));
+  };
+  const handleReminderReset = () => {
+    setFreqSettings(JSON.parse(JSON.stringify(INITIAL_FREQ)));
+    setTimeMappings(JSON.parse(JSON.stringify(INITIAL_TIMES)));
+    setShowFourTimes(false);
+    setShowAfterMeal30(true);
+    setReminderSaved(false);
+  };
+  const handleReminderSave = () => {
+    setReminderSaved(true);
+    setTimeout(() => setReminderSaved(false), 2000);
+  };
+  const visibleRelations = showAfterMeal30 ? RELATION_OPTIONS : RELATION_OPTIONS.filter(r => r !== '식후 30분');
+  const displayedFreq = showFourTimes ? freqSettings : freqSettings.filter(s => s.count <= 3);
 
   // "설정 저장" 활성 조건: 약국명, 주소, 번호 중 하나라도 비어있으면 비활성
   const isFormValid =
@@ -177,11 +233,12 @@ export const PharmacySettings: React.FC = () => {
           {[
             { id: 'basic', label: '기본 정보', icon: Store },
             { id: 'hours', label: '영업 시간 설정', icon: Clock },
+            { id: 'reminder', label: '복약 알림 기본 설정', icon: Bell },
             { id: 'app', label: '앱 처방전 설정', icon: Smartphone },
           ].map((tab) => (
             <button
               key={tab.id}
-              onClick={() => setActiveTab(tab.id as any)}
+              onClick={() => setActiveTab(tab.id as typeof activeTab)}
               className={clsx(
                 "flex items-center gap-2 px-6 py-3 text-sm font-medium transition-all relative",
                 activeTab === tab.id
@@ -201,7 +258,7 @@ export const PharmacySettings: React.FC = () => {
 
       <div className="flex-1 overflow-auto p-6 pb-20">
         <div className="max-w-5xl mx-auto w-full">
-        
+
           {/* Basic Info Tab */}
           {activeTab === 'basic' && (
             <section className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden animate-in fade-in duration-300">
@@ -240,7 +297,7 @@ export const PharmacySettings: React.FC = () => {
                         placeholder="주소를 검색해주세요"
                       />
                     </div>
-                    <button 
+                    <button
                       type="button"
                       className="px-4 py-2.5 bg-gray-100 text-gray-700 rounded-lg font-medium hover:bg-gray-200 transition-colors flex items-center gap-2 border border-gray-200"
                     >
@@ -299,7 +356,7 @@ export const PharmacySettings: React.FC = () => {
                     <label htmlFor="intro" className="block text-sm font-medium text-gray-700">
                       인사말
                     </label>
-                    <button 
+                    <button
                       type="button"
                       onClick={() => setShowTemplates(!showTemplates)}
                       className="text-xs flex items-center gap-1 text-purple-600 bg-purple-50 hover:bg-purple-100 border border-purple-100 px-2 py-1 rounded transition-colors"
@@ -354,7 +411,7 @@ export const PharmacySettings: React.FC = () => {
                   <Clock size={18} className="text-gray-500" />
                   영업 시간 설정
                 </h2>
-                <button 
+                <button
                   onClick={applyMondayToWeekdays}
                   className="text-xs text-blue-600 font-medium hover:bg-blue-50 px-3 py-1.5 rounded transition-colors flex items-center gap-1.5 border border-transparent hover:border-blue-100"
                 >
@@ -367,14 +424,14 @@ export const PharmacySettings: React.FC = () => {
                   {dayKeys.map((day) => (
                     <div key={day} className={clsx(
                       "flex items-center gap-4 py-3.5 px-6 rounded-2xl border transition-all duration-200 group",
-                      formData.hours[day].active 
-                        ? "bg-white border-gray-100 hover:border-blue-200 hover:shadow-lg hover:shadow-blue-500/5 shadow-sm" 
+                      formData.hours[day].active
+                        ? "bg-white border-gray-100 hover:border-blue-200 hover:shadow-lg hover:shadow-blue-500/5 shadow-sm"
                         : "bg-gray-50/50 border-transparent border-dashed"
                     )}>
                       {/* Day Selector */}
                       <div className="flex items-center gap-3 w-32 flex-shrink-0">
-                        <input 
-                          type="checkbox" 
+                        <input
+                          type="checkbox"
                           id={`check-${day}`}
                           checked={formData.hours[day].active}
                           onChange={() => toggleDay(day)}
@@ -392,7 +449,7 @@ export const PharmacySettings: React.FC = () => {
                       <div className="flex items-center flex-1 gap-4">
                         {formData.hours[day].active ? (
                           <div className="flex items-center w-full">
-                            {/* Operating Hours: Fixed Width Section */}
+                            {/* Operating Hours */}
                             <div className="flex items-center gap-2 w-[240px] flex-shrink-0">
                               <div className="relative flex-shrink-0">
                                 <input
@@ -415,32 +472,32 @@ export const PharmacySettings: React.FC = () => {
                               </div>
                             </div>
 
-                            {/* Center Separator with Dot */}
+                            {/* Center Separator */}
                             <div className="flex-1 flex justify-center px-4">
                               <div className="h-6 w-px bg-gray-100 relative">
                                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1 h-1 rounded-full bg-gray-200"></div>
                               </div>
                             </div>
 
-                            {/* Lunch Break: Aligned Right */}
+                            {/* Lunch Break */}
                             <div className="flex items-center gap-4 flex-shrink-0 justify-end">
                               <label className="flex items-center gap-2 cursor-pointer group/lunch whitespace-nowrap">
-                                <input 
-                                  type="checkbox" 
+                                <input
+                                  type="checkbox"
                                   checked={formData.hours[day].hasLunch}
                                   onChange={(e) => handleTimeChange(day, 'hasLunch', e.target.checked)}
                                   className="w-4 h-4 text-orange-500 rounded border-gray-300 focus:ring-orange-500"
                                 />
                                 <span className={clsx(
                                   "text-[12px] font-bold px-2 py-0.5 rounded transition-all",
-                                  formData.hours[day].hasLunch 
-                                    ? "bg-orange-50 text-orange-600 border border-orange-100" 
+                                  formData.hours[day].hasLunch
+                                    ? "bg-orange-50 text-orange-600 border border-orange-100"
                                     : "text-gray-400 border border-transparent"
                                 )}>
                                   점심 시간
                                 </span>
                               </label>
-                              
+
                               <div className={clsx(
                                 "flex items-center gap-2 transition-all duration-300",
                                 !formData.hours[day].hasLunch && "opacity-20 pointer-events-none grayscale blur-[1px]"
@@ -548,6 +605,149 @@ export const PharmacySettings: React.FC = () => {
               </div>
             </section>
           )}
+
+          {/* ── 복약 알림 기본 설정 탭 ── */}
+          {activeTab === 'reminder' && (
+            <section className="space-y-5 animate-in fade-in duration-300">
+              {/* 탭 내부 액션 버튼 */}
+              <div className="flex justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={handleReminderReset}
+                  className="flex items-center gap-1.5 px-4 py-2 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  <RotateCcw size={14} />
+                  초기화
+                </button>
+                <button
+                  type="button"
+                  onClick={handleReminderSave}
+                  disabled={reminderSaved}
+                  className={clsx(
+                    'flex items-center gap-2 px-5 py-2 text-sm font-semibold rounded-lg transition-colors shadow-sm',
+                    reminderSaved ? 'bg-green-600 text-white' : 'bg-blue-600 text-white hover:bg-blue-700'
+                  )}
+                >
+                  {reminderSaved ? <><Check size={16} />저장 완료!</> : <><Save size={16} />설정 저장</>}
+                </button>
+              </div>
+
+              {/* 복용 횟수별 기본 설정 */}
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <div className="px-5 py-4 border-b border-gray-100 bg-gray-50/50 flex items-center gap-2">
+                  <Bell size={16} className="text-blue-600" />
+                  <h2 className="text-base font-semibold text-gray-900">복용 횟수별 기본 설정</h2>
+                </div>
+                <div className="p-5">
+                  {/* 토글 */}
+                  <div className="grid grid-cols-2 gap-6 pb-5 mb-5 border-b border-gray-100">
+                    {[
+                      { label: '복용 횟수 4회 버튼', desc: "복용 횟수 선택에 '4회' 버튼을 추가합니다", checked: showFourTimes, onChange: () => setShowFourTimes(v => !v) },
+                      { label: '식후 30분 버튼', desc: "복용 시점 선택에 '식후 30분' 버튼을 표시합니다", checked: showAfterMeal30, onChange: () => setShowAfterMeal30(v => !v) },
+                    ].map(t => (
+                      <div key={t.label} className="flex items-start justify-between gap-4">
+                        <div>
+                          <p className="text-sm font-medium text-gray-900">{t.label}</p>
+                          <p className="text-xs text-gray-500 mt-0.5">{t.desc}</p>
+                        </div>
+                        <button
+                          type="button"
+                          role="switch"
+                          aria-checked={t.checked}
+                          onClick={t.onChange}
+                          className={clsx('relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1', t.checked ? 'bg-blue-600' : 'bg-gray-200')}
+                        >
+                          <span className={clsx('inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform', t.checked ? 'translate-x-6' : 'translate-x-1')} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* 횟수별 설정 */}
+                  <div className="space-y-0">
+                    {displayedFreq.map((setting, idx) => (
+                      <div key={setting.count} className={clsx('flex gap-4 py-4', idx < displayedFreq.length - 1 && 'border-b border-dashed border-gray-100')}>
+                        <div className="w-14 shrink-0 flex flex-col items-center pt-1">
+                          <span className="inline-flex items-center justify-center w-10 h-10 rounded-full text-blue-600 bg-blue-50 text-[15px] font-medium">
+                            {setting.count}회
+                          </span>
+                        </div>
+                        <div className="flex-1 flex items-start gap-6">
+                          <div>
+                            <label className="block mb-2 text-xs font-medium text-gray-500 tracking-wide">복용 시간</label>
+                            <div className="flex gap-2 flex-wrap">
+                              {TIME_OPTIONS.map(time => (
+                                <button
+                                  key={time}
+                                  type="button"
+                                  onClick={() => toggleFreqTime(setting.count, time)}
+                                  className={clsx(
+                                    'px-4 py-[7px] border transition-all text-[13px] font-medium rounded-md',
+                                    setting.defaultTimes.includes(time)
+                                      ? 'bg-blue-600 text-white border-blue-600'
+                                      : 'bg-white text-gray-700 border-gray-200 hover:border-blue-400 hover:text-blue-600'
+                                  )}
+                                >{time}</button>
+                              ))}
+                            </div>
+                            {setting.defaultTimes.length !== setting.count && (
+                              <p className="mt-1.5 text-red-500 text-[11px] font-medium">복용 시간을 {setting.count}개 선택해주세요 (현재 {setting.defaultTimes.length}개)</p>
+                            )}
+                          </div>
+                          <div>
+                            <label className="block mb-2 text-xs font-medium text-gray-500 tracking-wide">복용 시점</label>
+                            <div className="flex gap-2 flex-wrap">
+                              {visibleRelations.map(rel => (
+                                <button
+                                  key={rel}
+                                  type="button"
+                                  onClick={() => setFreqRelation(setting.count, rel)}
+                                  className={clsx(
+                                    'px-4 py-[7px] border transition-all text-[13px] font-medium rounded-md',
+                                    setting.defaultRelation === rel
+                                      ? 'bg-blue-600 text-white border-blue-600'
+                                      : 'bg-white text-gray-700 border-gray-200 hover:border-blue-400 hover:text-blue-600'
+                                  )}
+                                >{rel}</button>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* 웰체크 앱 전송 시간 설정 */}
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <div className="px-5 py-4 border-b border-gray-100 bg-gray-50/50 flex items-center gap-2">
+                  <Clock size={16} className="text-blue-600" />
+                  <h2 className="text-base font-semibold text-gray-900">웰체크 앱 전송 시간 설정</h2>
+                </div>
+                <div className="p-5">
+                  <div className="flex items-start gap-2 p-3 mb-4 rounded-lg border border-gray-100 bg-gray-50/70">
+                    <Info size={14} className="mt-0.5 shrink-0 text-gray-400" />
+                    <p className="text-xs text-gray-500 leading-relaxed">고객의 웰체크 앱으로 알림 설정이 전송될 때 기본값으로 사용됩니다. 고객이 앱에서 변경 할 수 있습니다.</p>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    {timeMappings.map(mapping => (
+                      <div key={mapping.label} className="flex items-center justify-between px-4 py-3 rounded-lg border border-gray-200 bg-white hover:border-blue-400 transition-colors">
+                        <span className="text-[15px] font-medium text-gray-800">{mapping.label}</span>
+                        <input
+                          type="time"
+                          value={mapping.defaultTime}
+                          onChange={e => updateTimeMapping(mapping.label, e.target.value)}
+                          className="px-3 py-1.5 border border-gray-200 rounded-lg bg-gray-50 text-gray-700 focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none cursor-pointer w-[120px] text-right text-[13px] font-medium"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </section>
+          )}
+
         </div>
       </div>
     </div>
