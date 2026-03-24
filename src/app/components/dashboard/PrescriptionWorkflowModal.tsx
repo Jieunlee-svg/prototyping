@@ -751,15 +751,6 @@ export const PrescriptionWorkflowModal: React.FC<PrescriptionWorkflowModalProps>
                         </div>
                       </div>
 
-                      {/* 비가입자 경고 */}
-                      {!isAppUser && (
-                        <div className="flex items-start gap-2.5 px-4 py-3.5 bg-amber-50 border border-amber-200 rounded-xl">
-                          <AlertCircle className="w-4 h-4 text-amber-500 flex-shrink-0 mt-0.5" />
-                          <p className="text-xs text-amber-800 leading-relaxed">
-                            웰체크 앱 미가입자인 경우, 복약 알림과 재처방 알림을 받을 수 없습니다.
-                          </p>
-                        </div>
-                      )}
 
 
                     </div>
