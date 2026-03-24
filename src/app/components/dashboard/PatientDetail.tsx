@@ -20,16 +20,6 @@ export const PatientDetail: React.FC<PatientDetailProps> = ({ onBack, patientId 
     return <PatientDetailFull onBack={onBack} patientId={patientId} />;
   }
 
-  // Fallback
-  return (
-    <div className="flex flex-col items-center justify-center h-full bg-gray-50 text-gray-500">
-      <p>상세 정보를 불러올 수 없는 회원입니다.</p>
-      <button 
-        onClick={onBack}
-        className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg"
-      >
-        목록으로 돌아가기
-      </button>
-    </div>
-  );
+  // Fallback: 처방전 목록 등에서 클릭 시 PatientDetail17로 이동
+  return <PatientDetail17 onBack={onBack} patientId={patientId} />;
 };
