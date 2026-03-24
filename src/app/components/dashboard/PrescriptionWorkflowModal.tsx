@@ -389,7 +389,7 @@ export const PrescriptionWorkflowModal: React.FC<PrescriptionWorkflowModalProps>
                 <div>
                   <div className="text-[17px] font-bold text-gray-900">{prescription.patientName}</div>
                   <div className="text-xs text-gray-400 mt-0.5">
-                    {prescription.birthDate} · {prescription.gender || ''} · {prescription.id} · {prescription.hospitalName}
+                    {prescription.birthDate} · {prescription.gender || ''} · {prescription.phone}
                   </div>
                 </div>
               </div>
