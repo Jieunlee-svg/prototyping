@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Search, X, Plus, Phone, Send, User, ChevronRight, Trash2, Bell, Clock, Info, CheckCircle, AlertCircle, Smartphone, Users, Calendar as CalendarIcon, Pill, FileText, Minus, Check } from 'lucide-react';
 import { clsx } from 'clsx';
 import { ImageWithFallback } from '../figma/ImageWithFallback';
@@ -230,11 +230,13 @@ export const MedicationConsultationC = () => {
   const [durationDays, setDurationDays] = useState<number>(7);
   const [calendarOpen, setCalendarOpen] = useState(false);
 
-  // --- Recipient State (From Plan B) ---
-  const [recipientMode, setRecipientMode] = useState<'search' | 'direct'>('direct');
-  const [patientSearchQuery, setPatientSearchQuery] = useState('');
-  const [directPhone, setDirectPhone] = useState('');
-  const [selectedPatient, setSelectedPatient] = useState<{ name: string, condition: string, phone: string, lastVisit: string } | null>(null);
+  // --- Recipient State ---
+  const [customerQuery, setCustomerQuery] = useState('');
+  const [selectedCustomer, setSelectedCustomer] = useState<{ name: string; phone: string; condition?: string; lastVisit?: string } | null>(null);
+  const [showCustomerDrop, setShowCustomerDrop] = useState(false);
+  const [focusedIndex, setFocusedIndex] = useState(-1);
+  const phoneRef = useRef<HTMLInputElement>(null);
+  const phoneDropRef = useRef<HTMLDivElement>(null);
 
   // App Notification Settings State
   const [sendAppReminder, setSendAppReminder] = useState(false);
@@ -245,31 +247,43 @@ export const MedicationConsultationC = () => {
 
   const [isFullListOpen, setIsFullListOpen] = useState(false);
 
-  // 받는 사람 상태에 따른 헬퍼 메시지 (웰체크 앱으로 설정 전송 ON 일 때)
-  const directPhoneDigits = directPhone.replace(/\D/g, '').length;
-  const hasRecipient = recipientMode === 'direct'
-    ? directPhoneDigits === 11
-    : !!selectedPatient;
-
-  const appReminderHelperState: 'none' | 'select' | 'non_app' | 'app' = !hasRecipient
-    ? 'select'
-    : recipientMode === 'direct'
-      ? 'non_app'
-      : 'app';
-
-  // 단골 검색 목업 (이름/번호로 필터)
+  // 받는 사람 검색 목업
   const MOCK_PATIENTS = [
     { name: '김철수', condition: '고혈압 관리', phone: '010-1234-5678', lastVisit: '2024.02.05' },
     { name: '이영희', condition: '당뇨', phone: '010-2345-6789', lastVisit: '2024.02.04' },
     { name: '박지민', condition: '감기', phone: '010-3456-7890', lastVisit: '2024.02.03' },
   ];
-  const searchPatientResults = patientSearchQuery.trim()
-    ? MOCK_PATIENTS.filter(
-      p =>
-        p.name.includes(patientSearchQuery.trim()) ||
-        p.phone.replace(/\D/g, '').includes(patientSearchQuery.replace(/\D/g, ''))
-    )
-    : [];
+
+  const filteredCustomers = useMemo(() => {
+    const q = customerQuery.trim();
+    if (!q) return [];
+    return MOCK_PATIENTS.filter(c =>
+      c.name.includes(q) ||
+      c.phone.replace(/-/g, '').includes(q.replace(/-/g, ''))
+    ).slice(0, 6);
+  }, [customerQuery]);
+
+  const handleSelectCustomer = (c: typeof MOCK_PATIENTS[0]) => {
+    setSelectedCustomer(c);
+    setCustomerQuery('');
+    setShowCustomerDrop(false);
+    setFocusedIndex(-1);
+  };
+
+  const handleClearCustomer = () => {
+    setSelectedCustomer(null);
+    setCustomerQuery('');
+    setShowCustomerDrop(false);
+  };
+
+  // 받는 사람 상태에 따른 헬퍼 메시지 (웰체크 앱으로 설정 전송 ON 일 때)
+  const hasRecipient = !!selectedCustomer;
+
+  const appReminderHelperState: 'none' | 'select' | 'non_app' | 'app' = !hasRecipient
+    ? 'select'
+    : selectedCustomer?.name
+      ? 'app'
+      : 'non_app';
 
   // --- Effects ---
 
@@ -288,6 +302,17 @@ export const MedicationConsultationC = () => {
     );
     setSearchResults(results);
   }, [searchQuery]);
+
+  // 드롭다운 외부 클릭 시 닫기
+  useEffect(() => {
+    const handleOutsideClick = (e: MouseEvent) => {
+      if (phoneDropRef.current && !phoneDropRef.current.contains(e.target as Node)) {
+        setShowCustomerDrop(false);
+      }
+    };
+    document.addEventListener('mousedown', handleOutsideClick);
+    return () => document.removeEventListener('mousedown', handleOutsideClick);
+  }, []);
 
   // Auto-generate message when medicines or reminder settings change
   useEffect(() => {
@@ -818,117 +843,137 @@ export const MedicationConsultationC = () => {
           </h3>
         </div>
 
-        {/* 모드 전환 탭 (직접 입력 vs 단골 검색) */}
-        <div className="p-2 bg-gray-50 flex gap-1 m-4 rounded-lg border border-border">
-          <button
-            onClick={() => setRecipientMode('direct')}
-            className={clsx(
-              "flex-1 py-2 text-xs font-medium rounded-md transition-all flex items-center justify-center gap-1",
-              recipientMode === 'direct' ? "bg-white text-primary shadow-sm border border-border" : "text-muted-foreground hover:text-foreground"
-            )}
-          >
-            <Smartphone className="w-3.5 h-3.5" /> 직접 입력
-          </button>
-          <button
-            onClick={() => setRecipientMode('search')}
-            className={clsx(
-              "flex-1 py-2 text-xs font-medium rounded-md transition-all flex items-center justify-center gap-1",
-              recipientMode === 'search' ? "bg-white text-primary shadow-sm border border-border" : "text-muted-foreground hover:text-foreground"
-            )}
-          >
-            <Users className="w-3.5 h-3.5" /> 단골 검색
-          </button>
-        </div>
-
-        <div className="flex-1 px-5 pb-5 overflow-y-auto">
-          {/* CASE 1: 단골 검색 모드 */}
-          {recipientMode === 'search' ? (
-            <div className="space-y-4">
-              <div className="relative">
+        <div className="flex-1 px-5 pb-5 overflow-y-auto pt-4">
+          <div ref={phoneDropRef} className="relative">
+            {selectedCustomer ? (
+              /* 선택 완료 상태 — 칩 */
+              <div className="flex items-center gap-3 px-3 py-2.5 border rounded-xl transition-all shadow-sm border-blue-400 bg-blue-50 ring-2 ring-blue-100">
+                <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+                  <User className="w-4 h-4 text-blue-600" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-sm font-bold text-gray-900">{selectedCustomer.name || '직접 입력'}</div>
+                  <div className="text-xs text-gray-500 font-mono">{selectedCustomer.phone}</div>
+                </div>
+                <CheckCircle className="w-4 h-4 text-blue-500 flex-shrink-0" />
+                <button
+                  type="button"
+                  onClick={handleClearCustomer}
+                  className="p-1.5 ml-1 rounded-full hover:bg-white/60 text-blue-500 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-300"
+                  aria-label="선택 해제"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            ) : (
+              /* 검색 입력 상태 */
+              <div className="flex items-center gap-2.5 px-3 py-3 border rounded-xl transition-all shadow-sm border-gray-300 bg-gray-50 focus-within:bg-white focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-100">
+                <Search className={clsx('w-5 h-5 flex-shrink-0 transition-colors', showCustomerDrop ? 'text-blue-500' : 'text-gray-400')} />
                 <input
+                  ref={phoneRef}
                   type="text"
-                  value={patientSearchQuery}
-                  onChange={(e) => setPatientSearchQuery(e.target.value)}
-                  className="w-full pl-9 pr-3 py-2 bg-white border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
-                  placeholder="이름/번호 검색"
-                />
-                <Search className="absolute left-3 top-2.5 text-muted-foreground w-4 h-4" />
-              </div>
-
-              {selectedPatient ? (
-                /* 선택된 환자 정보 카드 */
-                <div className="bg-blue-50 p-4 rounded-xl border border-blue-100">
-                  <div className="flex justify-between items-start mb-2">
-                    <span className="font-bold text-blue-900">{selectedPatient.name}</span>
-                  </div>
-                  <div className="space-y-2 text-xs text-blue-800/80">
-                    <div className="flex items-center"><Phone className="mr-2 w-3 h-3" />{selectedPatient.phone}</div>
-                    <div className="flex items-center"><CalendarIcon className="mr-2 w-3 h-3" />최근: {selectedPatient.lastVisit}</div>
-                  </div>
-                  <button
-                    onClick={() => setSelectedPatient(null)}
-                    className="mt-3 w-full py-1.5 text-xs text-red-500 hover:bg-red-50 rounded border border-transparent hover:border-red-100 transition-colors"
-                  >
-                    선택 취소
-                  </button>
-                </div>
-              ) : searchPatientResults.length > 0 ? (
-                <div className="space-y-2">
-                  {searchPatientResults.map((p) => (
-                    <button
-                      key={p.phone}
-                      type="button"
-                      onClick={() => setSelectedPatient(p)}
-                      className="w-full text-left p-3 rounded-lg border border-gray-200 bg-white hover:bg-blue-50 hover:border-blue-200 transition-colors"
-                    >
-                      <div className="font-medium text-gray-900">{p.name}</div>
-                      <div className="text-xs text-gray-500 mt-0.5">
-                        {p.phone} · {p.condition}
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-8 text-muted-foreground bg-gray-50 rounded-xl border border-dashed text-xs border-gray-200">
-                  {patientSearchQuery.trim() ? '검색 결과 없음' : '이름 또는 휴대폰 번호를 검색해주세요'}
-                </div>
-              )}
-            </div>
-          ) : (
-            /* CASE 2: 직접 입력 모드 (전화번호 자동 포맷팅 포함) */
-            <div className="space-y-4">
-              <div>
-                <label className="block text-xs font-bold text-muted-foreground mb-1.5 uppercase tracking-wider">휴대폰 번호</label>
-                <input
-                  type="tel"
-                  value={directPhone}
-                  maxLength={13}
-                  onChange={(e) => {
-                    const raw = e.target.value.replace(/[^0-9]/g, '');
-                    let formatted = raw;
-                    if (raw.length > 3 && raw.length <= 7) formatted = `${raw.slice(0, 3)}-${raw.slice(3)}`;
-                    else if (raw.length > 7) formatted = `${raw.slice(0, 3)}-${raw.slice(3, 7)}-${raw.slice(7, 11)}`;
-                    setDirectPhone(formatted);
+                  value={customerQuery}
+                  onChange={e => {
+                    const inputVal = e.target.value;
+                    const raw = inputVal.replace(/[^0-9]/g, '');
+                    const isNumericOnly = /^[0-9\-]*$/.test(inputVal);
+                    if (isNumericOnly && raw.length > 0) {
+                      let formatted = raw.slice(0, 11);
+                      if (formatted.length > 7) formatted = `${formatted.slice(0,3)}-${formatted.slice(3,7)}-${formatted.slice(7)}`;
+                      else if (formatted.length > 3) formatted = `${formatted.slice(0,3)}-${formatted.slice(3)}`;
+                      setCustomerQuery(formatted);
+                      if (raw.length === 11) {
+                        setSelectedCustomer({ name: '', phone: formatted });
+                        setShowCustomerDrop(false);
+                        setCustomerQuery('');
+                      }
+                    } else {
+                      setCustomerQuery(inputVal);
+                    }
+                    setShowCustomerDrop(true);
                   }}
-                  className="w-full px-3 py-2.5 bg-white border border-border rounded-lg text-sm focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all"
-                  placeholder="010-0000-0000"
+                  onKeyDown={e => {
+                    if (!showCustomerDrop || customerQuery.trim() === '') return;
+                    if (e.key === 'ArrowDown') { e.preventDefault(); setFocusedIndex(prev => Math.min(prev + 1, filteredCustomers.length - 1)); }
+                    else if (e.key === 'ArrowUp') { e.preventDefault(); setFocusedIndex(prev => Math.max(prev - 1, 0)); }
+                    else if (e.key === 'Enter') { e.preventDefault(); if (focusedIndex >= 0 && filteredCustomers[focusedIndex]) handleSelectCustomer(filteredCustomers[focusedIndex]); else if (filteredCustomers.length > 0) handleSelectCustomer(filteredCustomers[0]); }
+                    else if (e.key === 'Escape') setShowCustomerDrop(false);
+                  }}
+                  onFocus={() => { if (customerQuery.trim() !== '') setShowCustomerDrop(true); }}
+                  placeholder="이름 또는 휴대폰 번호 검색..."
+                  className="flex-1 text-[15px] font-medium bg-transparent outline-none placeholder-gray-400 text-gray-900"
+                  autoComplete="off"
                 />
-                <p className="mt-2 text-xs text-muted-foreground flex items-center gap-1">
-                  <Info className="w-3 h-3" />
-                  메시지는 카카오 알림톡으로 우선 발송되며, 실패 시 문자로 발송됩니다.
-                </p>
+                {customerQuery && (
+                  <button
+                    type="button"
+                    onMouseDown={e => { e.preventDefault(); setCustomerQuery(''); setShowCustomerDrop(false); phoneRef.current?.focus(); }}
+                    className="p-1 text-gray-400 hover:text-gray-700 hover:bg-gray-200 rounded-full transition-colors focus:outline-none"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                )}
               </div>
-            </div>
-          )}
+            )}
+
+            {/* 실시간 검색 드롭다운 */}
+            {showCustomerDrop && customerQuery.trim() !== '' && (
+              <div className="absolute z-30 top-full left-0 mt-2 w-full bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden">
+                {filteredCustomers.length > 0 ? (
+                  <>
+                    <div className="px-3 py-2 border-b border-gray-100 bg-gray-50/50 flex items-center justify-between">
+                      <span className="text-[11px] text-gray-500 font-bold tracking-wider">검색 결과</span>
+                      <span className="text-[11px] text-blue-500 font-bold">{filteredCustomers.length}건</span>
+                    </div>
+                    <div className="py-1 max-h-[220px] overflow-y-auto">
+                      {filteredCustomers.map((c, i) => {
+                        const isFocused = i === focusedIndex;
+                        return (
+                          <button
+                            key={c.phone}
+                            type="button"
+                            onMouseEnter={() => setFocusedIndex(i)}
+                            onMouseDown={e => { e.preventDefault(); handleSelectCustomer(c); }}
+                            className={clsx('w-full flex items-center gap-3 px-3 py-2.5 text-left transition-colors', isFocused ? 'bg-blue-50' : 'hover:bg-gray-50')}
+                          >
+                            <div className={clsx('w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold', isFocused ? 'bg-blue-200 text-blue-700' : 'bg-gray-100 text-gray-500')}>
+                              {c.name.slice(0, 1)}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className={clsx('text-[14px] font-semibold', isFocused ? 'text-blue-900' : 'text-gray-900')}>{c.name}</div>
+                              <div className={clsx('text-xs font-mono mt-0.5', isFocused ? 'text-blue-700' : 'text-gray-500')}>{c.phone}{c.condition ? ` · ${c.condition}` : ''}</div>
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </>
+                ) : (
+                  <div className="px-4 py-8 text-center bg-gray-50/50">
+                    <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-2">
+                      <Search className="w-5 h-5 text-gray-400" />
+                    </div>
+                    <div className="text-sm font-bold text-gray-700 mb-1">검색 결과가 없습니다</div>
+                    <div className="text-xs text-gray-500">전화번호를 직접 입력해 주세요.</div>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+
+          <p className="mt-3 text-xs text-muted-foreground flex items-center gap-1">
+            <Info className="w-3 h-3 flex-shrink-0" />
+            메시지는 카카오 알림톡으로 우선 발송되며, 실패 시 문자로 발송됩니다.
+          </p>
         </div>
 
         {/* 전송 버튼 활성화 로직 */}
         <div className="p-5 border-t border-gray-100 bg-gray-50/50">
           <button
-            disabled={!(message.trim().length > 0 && (recipientMode === 'search' ? !!selectedPatient : directPhone.trim().length > 0))}
+            disabled={!(message.trim().length > 0 && !!selectedCustomer)}
             className={clsx(
               "w-full py-3.5 text-sm font-bold rounded-xl flex items-center justify-center shadow-lg transition-all",
-              (message.trim().length > 0 && (recipientMode === 'search' ? !!selectedPatient : directPhone.trim().length > 0))
+              (message.trim().length > 0 && !!selectedCustomer)
                 ? "text-primary-foreground bg-primary hover:bg-blue-600 hover:shadow-xl hover:translate-y-[-1px] active:translate-y-[0px]"
                 : "text-muted-foreground bg-gray-200 cursor-not-allowed shadow-none"
             )}

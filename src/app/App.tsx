@@ -80,7 +80,7 @@ function App() {
             </div>
           ) : view === 'prescription' ? (
             <div className="absolute inset-0 overflow-hidden">
-              <PrescriptionList onOpenSettings={() => openSettings('reminder')} />
+              <PrescriptionList onOpenSettings={() => openSettings('reminder')} onPatientClick={handlePatientClick} />
             </div>
           ) : view === 'consultation-c' ? (
             <div className="absolute inset-0 overflow-hidden">

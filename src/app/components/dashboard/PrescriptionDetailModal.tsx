@@ -11,7 +11,7 @@ import { clsx } from 'clsx';
 import { ImageWithFallback } from '../figma/ImageWithFallback';
 
 // ── Types ──────────────────────────────────────────────────────────────
-export type PrescriptionStatus = 'received' | 'dispensing' | 'dispensing_done' | 'payment_done' | 'completed' | 'rejected';
+export type PrescriptionStatus = 'received' | 'completed' | 'cancelled';
 export type PrescriptionSource = 'app_camera' | 'fax_telemed' | 'kiosk';
 
 export interface Prescription {
@@ -24,9 +24,7 @@ export interface Prescription {
   hospitalName: string;
   diseaseCode: string;
   status: PrescriptionStatus;
-  paymentStatus: 'paid' | 'pending' | 'refunded' | 'na';
-  paymentAmount?: string;
-  deliveryMethod?: '방문 수령' | '배송';
+  deliveryMethod?: '본인 방문' | '가족 방문' | '퀵' | '택배';
   isConsentSubstitute?: boolean;
   isMember?: boolean;
   receivedAt: string;
@@ -48,12 +46,9 @@ export const getSourceLabel = (source: PrescriptionSource) => {
 };
 
 export const STATUS_LABEL: Record<PrescriptionStatus, { label: string; color: string; bgColor: string }> = {
-  received:        { label: '신규 접수', color: 'text-red-600',    bgColor: 'bg-red-50' },
-  dispensing:      { label: '조제 중',   color: 'text-blue-600',   bgColor: 'bg-blue-50' },
-  dispensing_done: { label: '조제 완료', color: 'text-blue-600',   bgColor: 'bg-blue-50' },
-  payment_done:    { label: '결제 완료', color: 'text-emerald-600', bgColor: 'bg-emerald-50' },
-  completed:       { label: '수령 완료', color: 'text-emerald-600', bgColor: 'bg-emerald-50' },
-  rejected:        { label: '취소 / 반려', color: 'text-orange-600', bgColor: 'bg-orange-50' },
+  received:  { label: '접수됨',   color: 'text-blue-600',    bgColor: 'bg-blue-50' },
+  completed: { label: '조제 완료', color: 'text-emerald-600', bgColor: 'bg-emerald-50' },
+  cancelled: { label: '취소됨',   color: 'text-gray-500',    bgColor: 'bg-gray-100' },
 };
 
 export const StatusText: React.FC<{ status: PrescriptionStatus }> = ({ status }) => {

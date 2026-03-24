@@ -9,6 +9,7 @@ import {
   Prescription,
   PrescriptionStatus,
   PrescriptionSource,
+  STATUS_LABEL,
   getSourceLabel,
 } from './PrescriptionDetailModal';
 
@@ -16,15 +17,15 @@ import {
 const prescriptionImage = 'https://placehold.co/400x560/e2e8f0/64748b?text=처방전';
 
 const BASE_PRESCRIPTIONS: Prescription[] = [
-  { id: 'RX-001', source: 'app_camera', patientName: '김철수', birthDate: '1980-01-01', phone: '010-1234-5678', gender: '남성', hospitalName: '확인 안됨', diseaseCode: 'J20.9', status: 'received', paymentStatus: 'na', deliveryMethod: '본인 방문', isConsentSubstitute: true, isMember: true, receivedAt: '2026-03-12 14:30', imageUrl: prescriptionImage },
-  { id: 'RX-002', source: 'app_camera', patientName: '박지민', birthDate: '2015-05-05', phone: '010-3333-7777', gender: '여성', hospitalName: '확인 안됨', diseaseCode: 'J30.4', status: 'dispensing', paymentStatus: 'na', deliveryMethod: '본인 방문', isConsentSubstitute: true, isMember: false, receivedAt: '2026-03-12 13:45', imageUrl: prescriptionImage },
-  { id: 'RX-003', source: 'app_camera', patientName: '정수정', birthDate: '1998-07-07', phone: '010-6666-2222', gender: '여성', hospitalName: '확인 안됨', diseaseCode: 'F41.0', status: 'payment_done', paymentStatus: 'paid', deliveryMethod: '본인 방문', isConsentSubstitute: true, isMember: true, receivedAt: '2026-03-12 10:10', imageUrl: prescriptionImage },
-  { id: 'RX-004', source: 'fax_telemed', patientName: '이영희', birthDate: '1992-03-15', phone: '010-9876-5432', gender: '여성', hospitalName: '굿닥터이비인후과', diseaseCode: 'J00', status: 'dispensing', paymentStatus: 'paid', paymentAmount: '12,500원', deliveryMethod: '가족 방문', isConsentSubstitute: true, isMember: true, receivedAt: '2026-03-12 14:15', imageUrl: prescriptionImage },
-  { id: 'RX-005', source: 'fax_telemed', patientName: '최민수', birthDate: '1975-12-12', phone: '010-5555-1111', gender: '남성', hospitalName: '서울대병원', diseaseCode: 'E11.9', status: 'rejected', paymentStatus: 'refunded', paymentAmount: '28,000원', deliveryMethod: '택배', isConsentSubstitute: true, isMember: false, receivedAt: '2026-03-12 11:20', imageUrl: prescriptionImage },
-  { id: 'RX-006', source: 'fax_telemed', patientName: '김하준', birthDate: '1990-02-14', phone: '010-2222-8888', gender: '남성', hospitalName: '강북삼성병원', diseaseCode: 'J06.9', status: 'received', paymentStatus: 'pending', paymentAmount: '8,400원', deliveryMethod: '본인 방문', isConsentSubstitute: true, isMember: true, receivedAt: '2026-03-12 10:50', imageUrl: prescriptionImage },
-  { id: 'RX-007', source: 'fax_telemed', patientName: '한지수', birthDate: '2001-03-20', phone: '010-4444-9999', gender: '여성', hospitalName: '연세세브란스병원', diseaseCode: 'I10', status: 'received', paymentStatus: 'paid', paymentAmount: '15,200원', deliveryMethod: '퀵', isConsentSubstitute: true, receivedAt: '2026-03-12 09:50', imageUrl: prescriptionImage },
-  { id: 'RX-008', source: 'fax_telemed', patientName: '오민준', birthDate: '1988-09-22', phone: '010-7777-3333', gender: '남성', hospitalName: '강남성심병원', diseaseCode: 'M54.5', status: 'received', paymentStatus: 'na', paymentAmount: '9,800원', deliveryMethod: '본인 방문', isConsentSubstitute: true, receivedAt: '2026-03-12 09:35', imageUrl: prescriptionImage },
-  { id: 'RX-009', source: 'fax_telemed', patientName: '임태양', birthDate: '1973-04-30', phone: '010-1111-6666', gender: '남성', hospitalName: '고려대안암병원', diseaseCode: 'J45.9', status: 'received', paymentStatus: 'na', paymentAmount: '11,400원', deliveryMethod: '택배', isConsentSubstitute: true, receivedAt: '2026-03-12 08:55', imageUrl: prescriptionImage },
+  { id: 'RX-001', source: 'app_camera',  patientName: '김철수', birthDate: '1980-01-01', phone: '010-1234-5678', gender: '남성', hospitalName: '확인 안됨',        diseaseCode: 'J20.9', status: 'received',  deliveryMethod: '본인 방문', isConsentSubstitute: true, isMember: true,  receivedAt: '2026-03-12 14:30', imageUrl: prescriptionImage },
+  { id: 'RX-002', source: 'app_camera',  patientName: '박지민', birthDate: '2015-05-05', phone: '010-3333-7777', gender: '여성', hospitalName: '확인 안됨',        diseaseCode: 'J30.4', status: 'received',  deliveryMethod: '본인 방문', isConsentSubstitute: true, isMember: false, receivedAt: '2026-03-12 13:45', imageUrl: prescriptionImage },
+  { id: 'RX-003', source: 'app_camera',  patientName: '정수정', birthDate: '1998-07-07', phone: '010-6666-2222', gender: '여성', hospitalName: '확인 안됨',        diseaseCode: 'F41.0', status: 'completed', deliveryMethod: '본인 방문', isConsentSubstitute: true, isMember: true,  receivedAt: '2026-03-12 10:10', imageUrl: prescriptionImage },
+  { id: 'RX-004', source: 'fax_telemed', patientName: '이영희', birthDate: '1992-03-15', phone: '010-9876-5432', gender: '여성', hospitalName: '굿닥터이비인후과', diseaseCode: 'J00',   status: 'received',  deliveryMethod: '가족 방문', isConsentSubstitute: true, isMember: true,  receivedAt: '2026-03-12 14:15', imageUrl: prescriptionImage },
+  { id: 'RX-005', source: 'fax_telemed', patientName: '최민수', birthDate: '1975-12-12', phone: '010-5555-1111', gender: '남성', hospitalName: '서울대병원',       diseaseCode: 'E11.9', status: 'cancelled', deliveryMethod: '택배',     isConsentSubstitute: true, isMember: false, receivedAt: '2026-03-12 11:20', imageUrl: prescriptionImage },
+  { id: 'RX-006', source: 'fax_telemed', patientName: '김하준', birthDate: '1990-02-14', phone: '010-2222-8888', gender: '남성', hospitalName: '강북삼성병원',     diseaseCode: 'J06.9', status: 'received',  deliveryMethod: '본인 방문', isConsentSubstitute: true, isMember: true,  receivedAt: '2026-03-12 10:50', imageUrl: prescriptionImage },
+  { id: 'RX-007', source: 'fax_telemed', patientName: '한지수', birthDate: '2001-03-20', phone: '010-4444-9999', gender: '여성', hospitalName: '연세세브란스병원', diseaseCode: 'I10',   status: 'received',  deliveryMethod: '퀵',       isConsentSubstitute: true, isMember: true,  receivedAt: '2026-03-12 09:50', imageUrl: prescriptionImage },
+  { id: 'RX-008', source: 'fax_telemed', patientName: '오민준', birthDate: '1988-09-22', phone: '010-7777-3333', gender: '남성', hospitalName: '강남성심병원',     diseaseCode: 'M54.5', status: 'received',  deliveryMethod: '본인 방문', isConsentSubstitute: true, isMember: true,  receivedAt: '2026-03-12 09:35', imageUrl: prescriptionImage },
+  { id: 'RX-009', source: 'fax_telemed', patientName: '임태양', birthDate: '1973-04-30', phone: '010-1111-6666', gender: '남성', hospitalName: '고려대안암병원',   diseaseCode: 'J45.9', status: 'received',  deliveryMethod: '택배',     isConsentSubstitute: true, isMember: true,  receivedAt: '2026-03-12 08:55', imageUrl: prescriptionImage },
 ];
 
 // ── Helpers ────────────────────────────────────────────────────────────
@@ -48,7 +49,7 @@ const Toast: React.FC<ToastProps> = ({ message, onDone }) => {
 };
 
 // ── Main Component ─────────────────────────────────────────────────────
-export const PrescriptionList: React.FC<{ onOpenSettings?: () => void }> = ({ onOpenSettings }) => {
+export const PrescriptionList: React.FC<{ onOpenSettings?: () => void; onPatientClick?: (id: string) => void }> = ({ onOpenSettings, onPatientClick }) => {
   const [filter, setFilter] = useState<'all' | PrescriptionSource>('all');
   const [statusFilter, setStatusFilter] = useState<'all' | PrescriptionStatus>('all');
   const [prescriptions, setPrescriptions] = useState<Prescription[]>(BASE_PRESCRIPTIONS);
@@ -66,7 +67,7 @@ export const PrescriptionList: React.FC<{ onOpenSettings?: () => void }> = ({ on
     const newRx: Prescription = {
       id: `RX-NEW-${Date.now()}`, source: 'app_camera', patientName: '신규 고객', birthDate: '1990-06-15',
       phone: '010-0000-0000', hospitalName: '확인 안됨', diseaseCode: 'NEW', status: 'received',
-      paymentStatus: 'na', deliveryMethod: '본인 방문', isMember: false,
+      deliveryMethod: '본인 방문', isMember: false,
       receivedAt: new Date().toLocaleString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }),
       imageUrl: prescriptionImage, isNew: true,
     };
@@ -104,6 +105,7 @@ export const PrescriptionList: React.FC<{ onOpenSettings?: () => void }> = ({ on
       <th className={thC}>대체조제 동의</th>
       <th className={th}>수령 방법</th>
       <th className={th}>발행 병원</th>
+      <th className={th}>상태</th>
       <th className={thC}>복약 상담</th>
     </tr>
   );
@@ -112,26 +114,29 @@ export const PrescriptionList: React.FC<{ onOpenSettings?: () => void }> = ({ on
   const renderRow = (p: Prescription) => {
     const rowCls = clsx('transition-colors hover:bg-blue-50/30', p.isNew && p.status === 'received' && 'bg-blue-50');
 
-    const canSend = ['received', 'dispensing'].includes(p.status) && !sentIds.has(p.id);
+    const isCancelled = p.status === 'cancelled';
+    const isSent = sentIds.has(p.id);
+
+    const { label, color, bgColor } = STATUS_LABEL[p.status];
 
     const consultationBtn = (
       <td className={thC}>
-        {canSend ? (
+        {isCancelled ? (
+          <span className="text-xs text-gray-400">취소됨</span>
+        ) : isSent ? (
+          <button
+            onClick={() => setSelectedConsultation(sentConsultations[p.id])}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium border border-gray-300 rounded-md bg-white hover:bg-gray-50 transition-colors shadow-sm text-gray-500"
+          >
+            <CheckCircle2 size={13} className="text-green-500" />전송됨
+          </button>
+        ) : (
           <button
             onClick={() => setWorkflowPrescription(p)}
             className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-md bg-blue-600 text-white hover:bg-blue-700 transition-colors shadow-sm"
           >
             <Send size={12} />전송하기
           </button>
-        ) : sentIds.has(p.id) ? (
-          <button
-            onClick={() => setSelectedConsultation(sentConsultations[p.id])}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium border border-gray-300 rounded-md bg-white hover:bg-gray-50 transition-colors shadow-sm text-gray-500"
-          >
-            <CheckCircle2 size={13} className="text-green-500" />전송함
-          </button>
-        ) : (
-          <span className="text-xs text-gray-400">—</span>
         )}
       </td>
     );
@@ -142,7 +147,14 @@ export const PrescriptionList: React.FC<{ onOpenSettings?: () => void }> = ({ on
           <span className="text-xs">{p.receivedAt}</span>
           {p.isNew && <span className="ml-1 inline-flex px-1.5 py-0.5 rounded text-[10px] font-bold bg-red-100 text-red-600">NEW</span>}
         </td>
-        <td className={tdB}>{p.patientName}</td>
+        <td className={tdB}>
+          <button
+            onClick={() => onPatientClick?.(p.id)}
+            className="text-blue-600 hover:underline font-medium focus:outline-none"
+          >
+            {p.patientName}
+          </button>
+        </td>
         <td className={td}>{p.birthDate}</td>
         <td className={td}>{p.phone}</td>
         <td className={td}>
@@ -161,6 +173,9 @@ export const PrescriptionList: React.FC<{ onOpenSettings?: () => void }> = ({ on
           {p.source === 'app_camera'
             ? <span className="inline-flex px-2 py-0.5 rounded-full text-xs bg-gray-100 text-gray-400">확인 안됨</span>
             : p.hospitalName}
+        </td>
+        <td className={td}>
+          <span className={clsx('inline-flex px-2 py-0.5 rounded-full text-xs font-medium', bgColor, color)}>{label}</span>
         </td>
         {consultationBtn}
       </tr>
@@ -222,12 +237,9 @@ export const PrescriptionList: React.FC<{ onOpenSettings?: () => void }> = ({ on
           <select className="text-[13px] border border-gray-200 text-gray-500 rounded-full px-3 py-1 bg-white focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none cursor-pointer"
             value={statusFilter} onChange={e => setStatusFilter(e.target.value as any)}>
             <option value="all">모든 상태</option>
-            <option value="received">신규 접수</option>
-            <option value="dispensing">조제 중</option>
-            <option value="dispensing_done">조제 완료</option>
-            <option value="payment_done">결제 완료</option>
-            <option value="completed">수령 완료</option>
-            <option value="rejected">취소 / 반려</option>
+            <option value="received">접수됨</option>
+            <option value="completed">조제 완료</option>
+            <option value="cancelled">취소됨</option>
           </select>
         </div>
         <div className="flex items-center gap-3 flex-shrink-0">
@@ -248,7 +260,7 @@ export const PrescriptionList: React.FC<{ onOpenSettings?: () => void }> = ({ on
               <tbody className="bg-white divide-y divide-gray-100">
                 {filteredPrescriptions.map(p => renderRow(p))}
                 {filteredPrescriptions.length === 0 && (
-                  <tr><td colSpan={9} className="py-16 text-center text-gray-400 text-sm">접수된 처방전이 없습니다.</td></tr>
+                  <tr><td colSpan={10} className="py-16 text-center text-gray-400 text-sm">접수된 처방전이 없습니다.</td></tr>
                 )}
               </tbody>
             </table>

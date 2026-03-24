@@ -525,6 +525,8 @@ export const PrescriptionWorkflowModal: React.FC<PrescriptionWorkflowModalProps>
             {currentStep === 2 && (
               <div className="flex flex-col gap-4 h-full">
                 {/* 고객 검색 (상단 독립 영역) */}
+                {/* 고객 휴대폰 번호는 처방전 접수 시 이미 보유하므로 입력 UI 주석 처리 */}
+                {/*
                 <div className="border border-gray-200 rounded-xl p-4 flex-shrink-0">
                   <label className="text-xs font-bold text-gray-700 block mb-0.5">
                     고객 휴대폰 번호 <span className="text-red-400">*</span>
@@ -532,7 +534,6 @@ export const PrescriptionWorkflowModal: React.FC<PrescriptionWorkflowModalProps>
 
                   <div ref={phoneDropRef} className="relative">
                     {selectedCustomer ? (
-                      /* 선택 완료 상태 — 칩 + 수정 */
                       <div className={clsx(
                         'flex items-center gap-3 px-3 py-2.5 border rounded-xl transition-all shadow-sm',
                         'border-blue-400 bg-blue-50 ring-2 ring-blue-100'
@@ -555,7 +556,6 @@ export const PrescriptionWorkflowModal: React.FC<PrescriptionWorkflowModalProps>
                         </button>
                       </div>
                     ) : (
-                      /* 검색 입력 상태 */
                       <>
                         <div className={clsx(
                           'flex items-center gap-2.5 px-3 py-3 border rounded-xl transition-all shadow-sm',
@@ -573,10 +573,8 @@ export const PrescriptionWorkflowModal: React.FC<PrescriptionWorkflowModalProps>
                               const inputVal = e.target.value;
                               const raw = inputVal.replace(/[^0-9]/g, '');
                               const isNumericOnly = /^[0-9\-]*$/.test(inputVal);
-
                               if (isNumericOnly && raw.length > 0) {
-                                // 숫자 입력: 실시간 하이픈 자동 포맷
-                                let formatted = raw.slice(0, 11); // 최대 11자리
+                                let formatted = raw.slice(0, 11);
                                 if (formatted.length > 7) {
                                   formatted = `${formatted.slice(0,3)}-${formatted.slice(3,7)}-${formatted.slice(7)}`;
                                 } else if (formatted.length > 3) {
@@ -585,7 +583,6 @@ export const PrescriptionWorkflowModal: React.FC<PrescriptionWorkflowModalProps>
                                 setCustomerQuery(formatted);
                                 const phoneVal = raw.length >= 11 ? formatted : (raw.length >= 10 ? formatted : '');
                                 setPatientPhone(phoneVal);
-                                // 11자리 완성 시 자동 선택 처리
                                 if (raw.length === 11) {
                                   setSelectedCustomer({ name: '', phone: formatted, birth: '' });
                                   setPhoneTouched(true);
@@ -594,7 +591,6 @@ export const PrescriptionWorkflowModal: React.FC<PrescriptionWorkflowModalProps>
                                   setCustomerQuery('');
                                 }
                               } else {
-                                // 이름 검색 모드
                                 setCustomerQuery(inputVal);
                                 setPatientPhone('');
                               }
@@ -634,10 +630,9 @@ export const PrescriptionWorkflowModal: React.FC<PrescriptionWorkflowModalProps>
                             <button
                               type="button"
                               onMouseDown={e => {
-                                // onBlur 보다 먼저 동작하도록 onMouseDown 사용
                                 e.preventDefault();
-                                setCustomerQuery(''); 
-                                setPatientPhone(''); 
+                                setCustomerQuery('');
+                                setPatientPhone('');
                                 setShowCustomerDrop(false);
                                 phoneRef.current?.focus();
                               }}
@@ -655,7 +650,6 @@ export const PrescriptionWorkflowModal: React.FC<PrescriptionWorkflowModalProps>
                       </>
                     )}
 
-                    {/* 실시간 검색 드롭다운 */}
                     {showCustomerDrop && customerQuery.trim() !== '' && (
                       <div className="absolute z-30 top-full left-0 mt-2 w-full bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-150">
                         {filteredCustomers.length > 0 ? (
@@ -685,7 +679,6 @@ export const PrescriptionWorkflowModal: React.FC<PrescriptionWorkflowModalProps>
                                     key={c.phone}
                                     type="button"
                                     onMouseEnter={() => setFocusedIndex(i)}
-                                    // mousedown을 써야 blur보다 আগে 선택됨
                                     onMouseDown={(e) => {
                                       e.preventDefault();
                                       handleSelectCustomer(c);
@@ -738,6 +731,7 @@ export const PrescriptionWorkflowModal: React.FC<PrescriptionWorkflowModalProps>
                     )}
                   </div>
                 </div>
+                */}
 
                 {/* 2열: 태그 선택 | 메시지 편집 */}
                 <div className="grid grid-cols-[1fr_1fr] gap-4 flex-1 min-h-0">
@@ -948,19 +942,17 @@ export const PrescriptionWorkflowModal: React.FC<PrescriptionWorkflowModalProps>
                         <div className="px-4 py-3 border-b border-gray-100 bg-gray-50 text-xs font-bold text-gray-500">전송 요약</div>
                         <div className="divide-y divide-gray-100">
                           <div className="flex items-center justify-between px-4 py-3.5">
-                            <span className="text-xs text-gray-400">고객 이름</span>
+                            <span className="text-xs text-gray-400">고객명</span>
                             <span className="font-semibold text-sm text-gray-800">{prescription.patientName}</span>
                           </div>
                           <div className="flex items-center justify-between px-4 py-3.5">
-                            <span className="text-xs text-gray-400">고객 휴대폰 번호</span>
-                            <span className={clsx('font-semibold text-sm', patientPhone ? 'text-gray-800' : 'text-red-400')}>
-                              {patientPhone || '번호 미입력'}
-                            </span>
+                            <span className="text-xs text-gray-400">휴대폰 번호</span>
+                            <span className="font-semibold text-sm text-gray-800">{prescription.phone}</span>
                           </div>
                           <div className="flex items-center justify-between px-4 py-3.5">
-                            <span className="text-xs text-gray-400">웰체크 앱 가입 여부</span>
-                            <span className={clsx('text-xs font-bold px-2.5 py-1 rounded-full', isAppUser ? 'bg-emerald-100 text-emerald-700' : 'bg-amber-100 text-amber-700')}>
-                              {isAppUser ? '가입' : '미가입'}
+                            <span className="text-xs text-gray-400">단골 여부</span>
+                            <span className={clsx('text-xs font-bold px-2.5 py-1 rounded-full', prescription.isMember ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-500')}>
+                              {prescription.isMember ? '단골' : '단골 아님'}
                             </span>
                           </div>
                         </div>
