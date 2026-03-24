@@ -21,11 +21,11 @@ import {
 import { PatientEditModal } from './PatientEditModal';
 
 const MOCK_PRESCRIPTIONS: Prescription[] = [
-  { id: 'RX-17-005', receivedAt: '2026-03-17 10:30', source: 'app_camera', status: 'received', hospitalName: '성모병원', patientName: '십칠스프린트', birthDate: '1987-03-12', phone: '010-1234-5678', diseaseCode: 'I10', paymentStatus: 'na' },
-  { id: 'RX-17-004', receivedAt: '2026-03-17 09:15', source: 'fax_telemed', status: 'dispensing_done', hospitalName: '서울내과', patientName: '십칠스프린트', birthDate: '1987-03-12', phone: '010-1234-5678', diseaseCode: 'I10', paymentStatus: 'paid', paymentAmount: '12,500원' },
-  { id: 'RX-17-003', receivedAt: '2026-03-16 16:45', source: 'fax_telemed', status: 'payment_done', hospitalName: '연세세브란스', patientName: '십칠스프린트', birthDate: '1987-03-12', phone: '010-1234-5678', diseaseCode: 'I10', paymentStatus: 'paid', paymentAmount: '15,200원' },
-  { id: 'RX-17-002', receivedAt: '2026-03-15 14:30', source: 'app_camera', status: 'rejected', hospitalName: '김민수이비인후과', patientName: '십칠스프린트', birthDate: '1987-03-12', phone: '010-1234-5678', diseaseCode: 'I10', paymentStatus: 'na' },
-  { id: 'RX-17-001', receivedAt: '2026-03-14 11:20', source: 'app_camera', status: 'completed', hospitalName: '우리들병원', patientName: '십칠스프린트', birthDate: '1987-03-12', phone: '010-1234-5678', diseaseCode: 'I10', paymentStatus: 'na' },
+  { id: 'RX-17-005', receivedAt: '2026-03-17 10:30', source: 'app_camera',  status: 'received',  hospitalName: '성모병원',        patientName: '십칠스프린트', birthDate: '1987-03-12', phone: '010-1234-5678', diseaseCode: 'I10' },
+  { id: 'RX-17-004', receivedAt: '2026-03-17 09:15', source: 'fax_telemed', status: 'received',  hospitalName: '서울내과',        patientName: '십칠스프린트', birthDate: '1987-03-12', phone: '010-1234-5678', diseaseCode: 'I10' },
+  { id: 'RX-17-003', receivedAt: '2026-03-16 16:45', source: 'fax_telemed', status: 'completed', hospitalName: '연세세브란스',    patientName: '십칠스프린트', birthDate: '1987-03-12', phone: '010-1234-5678', diseaseCode: 'I10' },
+  { id: 'RX-17-002', receivedAt: '2026-03-15 14:30', source: 'app_camera',  status: 'cancelled', hospitalName: '김민수이비인후과', patientName: '십칠스프린트', birthDate: '1987-03-12', phone: '010-1234-5678', diseaseCode: 'I10' },
+  { id: 'RX-17-001', receivedAt: '2026-03-14 11:20', source: 'app_camera',  status: 'completed', hospitalName: '우리들병원',      patientName: '십칠스프린트', birthDate: '1987-03-12', phone: '010-1234-5678', diseaseCode: 'I10' },
 ];
 
 const getSourceIcon = (source: string) => {

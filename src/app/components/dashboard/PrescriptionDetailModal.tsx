@@ -52,22 +52,15 @@ export const STATUS_LABEL: Record<PrescriptionStatus, { label: string; color: st
 };
 
 export const StatusText: React.FC<{ status: PrescriptionStatus }> = ({ status }) => {
-  // Safety check: provide a default if status is not found in STATUS_LABEL
-  const { label, color, bgColor } = STATUS_LABEL[status] || { label: '알 수 없음', color: 'text-gray-600', bgColor: 'bg-gray-50' };
-  
-  const getBorderColor = (s: PrescriptionStatus) => {
-    if (s === 'received') return 'border-red-100';
-    if (s === 'dispensing' || s === 'dispensing_done') return 'border-blue-100';
-    if (s === 'rejected') return 'border-orange-100';
-    return 'border-emerald-100';
-  };
-
+  const { label, color, bgColor } = STATUS_LABEL[status];
+  const borderColor =
+    status === 'received'  ? 'border-blue-100' :
+    status === 'completed' ? 'border-emerald-100' :
+                             'border-gray-200';
   return (
     <span className={clsx(
       'inline-flex px-2 py-0.5 rounded text-xs font-semibold whitespace-nowrap border',
-      getBorderColor(status),
-      color,
-      bgColor
+      borderColor, color, bgColor
     )}>
       {label}
     </span>
@@ -88,8 +81,6 @@ export const PrescriptionDetailModal: React.FC<PrescriptionDetailModalProps> = (
   const [zoom, setZoom] = useState(1);
   const [rejectOpen, setRejectOpen] = useState(false);
   const [rejectReason, setRejectReason] = useState('');
-  const [paymentAmount, setPaymentAmount] = useState(prescription.paymentAmount ? prescription.paymentAmount.replace(/[^0-9]/g, '') : '');
-  const [isNoPayment, setIsNoPayment] = useState(false);
   const [isChangingStatus, setIsChangingStatus] = useState(false);
   const [tempStatus, setTempStatus] = useState<PrescriptionStatus>(prescription.status);
 
@@ -99,7 +90,7 @@ export const PrescriptionDetailModal: React.FC<PrescriptionDetailModalProps> = (
   };
 
   const confirmReject = () => {
-    handleUpdateStatus('rejected');
+    handleUpdateStatus('cancelled');
     setRejectOpen(false);
   };
 
@@ -137,7 +128,7 @@ export const PrescriptionDetailModal: React.FC<PrescriptionDetailModalProps> = (
                 <FileText size={15} className="text-blue-600" />
               </div>
               <span className="text-[15px] font-bold text-gray-900">
-                {prescription.status === 'rejected' ? '취소 / 반려 상세' : '처방전 검토'}
+                {prescription.status === 'cancelled' ? '취소 상세' : '처방전 검토'}
               </span>
             </div>
             <button onClick={onClose} className="text-gray-400 hover:text-gray-700 p-1.5 rounded-lg hover:bg-gray-100 transition-colors"><X size={18} /></button>
@@ -145,17 +136,6 @@ export const PrescriptionDetailModal: React.FC<PrescriptionDetailModalProps> = (
 
           {/* Scrollable info */}
           <div className="flex-1 overflow-y-auto px-5 py-6 space-y-8">
-            {/* 결제 금액 안내 (결제 완료 상태일 때만) */}
-            {prescription.status === 'payment_done' && (
-              <div className="bg-blue-50 border border-blue-100 rounded-lg px-4 py-3 flex items-center gap-2">
-                <div className="w-5 h-5 rounded-full bg-blue-500 flex items-center justify-center">
-                  <span className="text-white text-[10px] font-bold">₩</span>
-                </div>
-                <p className="text-sm font-bold text-blue-600">
-                  결제 금액: <span className="text-blue-700">{paymentAmount ? `${Number(paymentAmount).toLocaleString()}원` : '미입력'}</span>
-                </p>
-              </div>
-            )}
 
             {/* 조제 상태 */}
             <div className="flex items-center justify-between">
@@ -241,16 +221,14 @@ export const PrescriptionDetailModal: React.FC<PrescriptionDetailModalProps> = (
                   <div className="space-y-4">
                     <div>
                       <p className="text-xs font-bold text-gray-900 mb-2">상태 선택</p>
-                      <select 
+                      <select
                         value={tempStatus}
                         onChange={e => setTempStatus(e.target.value as PrescriptionStatus)}
                         className="w-full px-4 py-3 bg-white border border-gray-200 rounded-lg text-[15px] font-medium text-gray-900 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition-all cursor-pointer"
                       >
-                        <option value="received">신규 접수</option>
-                        <option value="dispensing">조제 중</option>
-                        <option value="dispensing_done">조제 완료</option>
-                        <option value="payment_done">결제 완료</option>
-                        <option value="rejected">취소 / 반려</option>
+                        <option value="received">접수됨</option>
+                        <option value="completed">조제 완료</option>
+                        <option value="cancelled">취소됨</option>
                       </select>
                     </div>
                     <div className="flex gap-2">
@@ -262,69 +240,20 @@ export const PrescriptionDetailModal: React.FC<PrescriptionDetailModalProps> = (
                   <>
                     {prescription.status === 'received' && (
                       <>
-                        <button onClick={() => handleUpdateStatus('dispensing')} className="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white text-[15px] font-bold rounded-lg transition-all shadow-lg active:scale-[0.98]">조제 시작</button>
-                        <button onClick={() => setRejectOpen(true)} className="w-full py-3 border border-gray-200 text-gray-700 text-[15px] font-medium rounded-lg hover:bg-gray-50">취소 / 반려</button>
+                        <button onClick={() => handleUpdateStatus('completed')} className="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white text-[15px] font-bold rounded-lg transition-all shadow-lg active:scale-[0.98]">조제 완료</button>
+                        <button onClick={() => setRejectOpen(true)} className="w-full py-3 border border-gray-200 text-gray-700 text-[15px] font-medium rounded-lg hover:bg-gray-50">취소</button>
                       </>
                     )}
-
-                    {prescription.status === 'dispensing' && (
-                      <>
-                        <button onClick={() => handleUpdateStatus('dispensing_done')} className="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white text-[15px] font-bold rounded-lg shadow-lg active:scale-[0.98]">조제 완료</button>
-                        <button onClick={() => handleUpdateStatus('received')} className="w-full py-3 border border-gray-200 text-gray-700 text-[15px] font-medium rounded-lg hover:bg-gray-50">조제 중단</button>
-                      </>
-                    )}
-
-                    {prescription.status === 'dispensing_done' && (
-                      <div className="space-y-4">
-                        <div>
-                          <div className="flex items-center gap-2 mb-2">
-                            <div className="w-5 h-5 rounded-full bg-blue-100 flex items-center justify-center">
-                              <span className="text-blue-600 text-[10px] font-bold">₩</span>
-                            </div>
-                            <span className="text-xs font-bold text-gray-900">결제 금액 입력</span>
-                          </div>
-                          <div className="flex items-center gap-3">
-                            <div className="flex-1 px-4 py-3 bg-white border border-gray-200 rounded-lg flex items-center justify-between gap-2 focus-within:border-blue-400 focus-within:ring-2 focus-within:ring-blue-100 transition-all">
-                              <input 
-                                type="text" 
-                                value={isNoPayment ? '' : paymentAmount} 
-                                disabled={isNoPayment}
-                                onChange={e => setPaymentAmount(e.target.value.replace(/[^0-9]/g, ''))}
-                                className="bg-transparent text-[15px] w-full outline-none font-bold text-gray-900 disabled:text-gray-300" 
-                                placeholder="0"
-                              />
-                              <span className={clsx("text-sm font-bold", isNoPayment ? "text-gray-300" : "text-gray-900")}>원</span>
-                            </div>
-                            <label className="flex items-center gap-1.5 cursor-pointer">
-                              <input 
-                                type="checkbox" 
-                                checked={isNoPayment}
-                                onChange={e => setIsNoPayment(e.target.checked)}
-                                className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                              />
-                              <span className="text-xs font-medium text-gray-500">미입력</span>
-                            </label>
-                          </div>
-                        </div>
-                        <button onClick={() => handleUpdateStatus('payment_done')} className="w-full py-4 bg-blue-600 hover:bg-blue-700 text-white text-[15px] font-bold rounded-lg shadow-lg active:scale-[0.98]">결제 완료</button>
-                      </div>
-                    )}
-
-                    {prescription.status === 'payment_done' && (
-                      <div className="space-y-3">
-                        <button disabled className="w-full py-4 bg-gray-50 border border-gray-200 text-gray-400 text-[15px] font-bold rounded-lg cursor-not-allowed">결제 완료된 처방전입니다.</button>
-                        <button onClick={() => { setTempStatus('payment_done'); setIsChangingStatus(true); }} className="w-full py-3 border border-gray-200 text-gray-700 text-[15px] font-medium rounded-lg hover:bg-gray-50">상태 변경</button>
-                      </div>
-                    )}
-
                     {prescription.status === 'completed' && (
-                      <button onClick={onClose} className="w-full py-3.5 bg-white border border-gray-200 text-gray-700 text-[15px] font-bold rounded-lg shadow-sm">닫기</button>
-                    )}
-
-                    {prescription.status === 'rejected' && (
                       <div className="space-y-3">
-                        <button disabled className="w-full py-4 bg-gray-50 border border-gray-200 text-gray-400 text-[15px] font-bold rounded-lg cursor-not-allowed">취소 / 반려된 처방전입니다.</button>
-                        <button onClick={() => { setTempStatus('rejected'); setIsChangingStatus(true); }} className="w-full py-3 border border-gray-200 text-gray-700 text-[15px] font-medium rounded-lg hover:bg-gray-50">상태 변경</button>
+                        <button disabled className="w-full py-4 bg-gray-50 border border-gray-200 text-gray-400 text-[15px] font-bold rounded-lg cursor-not-allowed">조제 완료된 처방전입니다.</button>
+                        <button onClick={() => { setTempStatus('completed'); setIsChangingStatus(true); }} className="w-full py-3 border border-gray-200 text-gray-700 text-[15px] font-medium rounded-lg hover:bg-gray-50">상태 변경</button>
+                      </div>
+                    )}
+                    {prescription.status === 'cancelled' && (
+                      <div className="space-y-3">
+                        <button disabled className="w-full py-4 bg-gray-50 border border-gray-200 text-gray-400 text-[15px] font-bold rounded-lg cursor-not-allowed">취소된 처방전입니다.</button>
+                        <button onClick={() => { setTempStatus('cancelled'); setIsChangingStatus(true); }} className="w-full py-3 border border-gray-200 text-gray-700 text-[15px] font-medium rounded-lg hover:bg-gray-50">상태 변경</button>
                       </div>
                     )}
                   </>
