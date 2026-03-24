@@ -37,7 +37,7 @@ const getSourceIcon = (source: string) => {
 const getSourceLabel = (source: string) => {
   if (source === 'app_camera') return '고객 앱 촬영';
   if (source === 'kiosk') return '키오스크 스캔(TBD)';
-  return '의사 웹 전송';
+  return '비대면 진료';
 };
 
 export const PatientDetail17: React.FC<PatientDetailProps> = ({ onBack, patientId }) => {

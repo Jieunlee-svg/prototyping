@@ -225,7 +225,7 @@ export const PrescriptionList: React.FC<{ onOpenSettings?: () => void; onPatient
           {([
             { value: 'all', label: '전체', icon: undefined as React.ReactNode },
             { value: 'app_camera', label: '고객 앱 촬영', icon: <Camera size={13} /> as React.ReactNode },
-            { value: 'fax_telemed', label: '의사 웹 전송', icon: <Printer size={13} /> as React.ReactNode },
+            { value: 'fax_telemed', label: '비대면 진료', icon: <Printer size={13} /> as React.ReactNode },
           ]).map(({ value, label, icon }) => (
             <button key={value} onClick={() => setFilter(value as any)}
               className={clsx('inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[13px] font-medium border transition-all',
