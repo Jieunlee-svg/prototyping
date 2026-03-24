@@ -8,6 +8,7 @@ import {
 import { clsx } from 'clsx';
 import { ImageWithFallback } from '../figma/ImageWithFallback';
 import type { Prescription } from './PrescriptionDetailModal';
+import { ConsultationData } from './ConsultationDetailModal';
 
 // ── Types ──────────────────────────────────────────────────────────────
 
@@ -79,7 +80,7 @@ const MOCK_IS_APP_USER = false;
 interface PrescriptionWorkflowModalProps {
   prescription: Prescription;
   onClose: () => void;
-  onComplete?: () => void;
+  onComplete?: (data: ConsultationData) => void;
   onOpenSettings?: () => void;
 }
 
@@ -295,8 +296,23 @@ export const PrescriptionWorkflowModal: React.FC<PrescriptionWorkflowModalProps>
     setIsSending(true);
     try {
       await new Promise(res => setTimeout(res, 1500));
+      const consultationData: ConsultationData = {
+        id: `CS-${Date.now()}`,
+        patientName: prescription.patientName,
+        phone: patientPhone,
+        sendMethod: isAppUser ? '웰체크 앱' : '알림톡',
+        sentAt: new Date().toLocaleString('ko-KR', { 
+          year: 'numeric', month: '2-digit', day: '2-digit', 
+          hour: '2-digit', minute: '2-digit', hour12: false 
+        }).replace(/\. /g, '-').replace(/\./g, ''),
+        frequency: reminder.frequency,
+        times: reminder.times,
+        relation: reminder.relation,
+        duration: durationDays,
+        messageContent: message,
+      };
       setIsCompleted(true);
-      onComplete?.();
+      onComplete?.(consultationData);
       showToast(`${prescription.patientName} 님께 복약 안내 메시지를 전송했습니다.`, 'success');
     } catch {
       showToast('전송 중 오류가 발생했습니다. 다시 시도해 주세요.', 'error');

@@ -1,31 +1,11 @@
 import React, { useState, useCallback, useRef } from 'react';
 import {
-  FileText,
-  Camera,
-  Printer,
-  Search,
-  CheckCircle2,
-  Clock,
-  XCircle,
-  Eye,
-  X,
-  Monitor,
-  Bell,
-  RefreshCw,
-  Truck,
-  Ban,
-  Zap,
-  ZoomIn,
-  ZoomOut,
-  ChevronDown,
-  ChevronUp,
-  ExternalLink,
-  Send,
-  AlertCircle,
+  FileText, Camera, Printer, Search, CheckCircle2, Clock, XCircle, Eye, X, Monitor, Bell, RefreshCw, Truck, Ban, Zap, ZoomIn, ZoomOut, ChevronDown, ChevronUp, ExternalLink, Send, Filter, MoreHorizontal, AlertCircle
 } from 'lucide-react';
 import { clsx } from 'clsx';
 import { ImageWithFallback } from '../figma/ImageWithFallback';
 import { PrescriptionWorkflowModal } from './PrescriptionWorkflowModal';
+import { ConsultationDetailModal, ConsultationData } from './ConsultationDetailModal';
 import {
   Prescription,
   PrescriptionStatus,
@@ -46,9 +26,9 @@ const BASE_PRESCRIPTIONS: Prescription[] = [
   { id: 'RX-004', source: 'fax_telemed', patientName: '이영희', birthDate: '1992-03-15', phone: '010-9876-5432', gender: '여성', hospitalName: '굿닥터이비인후과', diseaseCode: 'J00', status: 'dispensing', paymentStatus: 'paid', paymentAmount: '12,500원', deliveryMethod: '방문 수령', isConsentSubstitute: true, isMember: true, receivedAt: '2026-03-12 14:15', imageUrl: prescriptionImage },
   { id: 'RX-005', source: 'fax_telemed', patientName: '최민수', birthDate: '1975-12-12', phone: '010-5555-1111', gender: '남성', hospitalName: '서울대병원', diseaseCode: 'E11.9', status: 'rejected', paymentStatus: 'refunded', paymentAmount: '28,000원', deliveryMethod: '배송', isConsentSubstitute: true, isMember: false, receivedAt: '2026-03-12 11:20', imageUrl: prescriptionImage },
   { id: 'RX-006', source: 'fax_telemed', patientName: '김하준', birthDate: '1990-02-14', phone: '010-2222-8888', gender: '남성', hospitalName: '강북삼성병원', diseaseCode: 'J06.9', status: 'received', paymentStatus: 'pending', paymentAmount: '8,400원', deliveryMethod: '방문 수령', isConsentSubstitute: true, isMember: true, receivedAt: '2026-03-12 10:50', imageUrl: prescriptionImage },
-  { id: 'RX-007', source: 'kiosk', patientName: '한지수', birthDate: '2001-03-20', phone: '010-4444-9999', gender: '여성', hospitalName: '연세세브란스병원', diseaseCode: 'I10', status: 'completed', paymentStatus: 'paid', paymentAmount: '15,200원', isConsentSubstitute: true, receivedAt: '2026-03-12 09:50', imageUrl: prescriptionImage },
-  { id: 'RX-008', source: 'kiosk', patientName: '오민준', birthDate: '1988-09-22', phone: '010-7777-3333', gender: '남성', hospitalName: '강남성심병원', diseaseCode: 'M54.5', status: 'dispensing_done', paymentStatus: 'na', paymentAmount: '9,800원', isConsentSubstitute: true, receivedAt: '2026-03-12 09:35', imageUrl: prescriptionImage },
-  { id: 'RX-009', source: 'kiosk', patientName: '임태양', birthDate: '1973-04-30', phone: '010-1111-6666', gender: '남성', hospitalName: '고려대안암병원', diseaseCode: 'J45.9', status: 'received', paymentStatus: 'na', paymentAmount: '11,400원', isConsentSubstitute: true, receivedAt: '2026-03-12 08:55', imageUrl: prescriptionImage },
+  { id: 'RX-007', source: 'fax_telemed', patientName: '한지수', birthDate: '2001-03-20', phone: '010-4444-9999', gender: '여성', hospitalName: '연세세브란스병원', diseaseCode: 'I10', status: 'received', paymentStatus: 'paid', paymentAmount: '15,200원', isConsentSubstitute: true, receivedAt: '2026-03-12 09:50', imageUrl: prescriptionImage },
+  { id: 'RX-008', source: 'fax_telemed', patientName: '오민준', birthDate: '1988-09-22', phone: '010-7777-3333', gender: '남성', hospitalName: '강남성심병원', diseaseCode: 'M54.5', status: 'received', paymentStatus: 'na', paymentAmount: '9,800원', isConsentSubstitute: true, receivedAt: '2026-03-12 09:35', imageUrl: prescriptionImage },
+  { id: 'RX-009', source: 'fax_telemed', patientName: '임태양', birthDate: '1973-04-30', phone: '010-1111-6666', gender: '남성', hospitalName: '고려대안암병원', diseaseCode: 'J45.9', status: 'received', paymentStatus: 'na', paymentAmount: '11,400원', isConsentSubstitute: true, receivedAt: '2026-03-12 08:55', imageUrl: prescriptionImage },
 ];
 
 // ── Helpers ────────────────────────────────────────────────────────────
@@ -86,6 +66,9 @@ export const PrescriptionList: React.FC<{ onOpenSettings?: () => void }> = ({ on
   const [rejectNote, setRejectNote] = useState('');
   const [zoom, setZoom] = useState(1);
   const [workflowPrescription, setWorkflowPrescription] = useState<Prescription | null>(null);
+  const [sentIds, setSentIds] = useState<Set<string>>(new Set());
+  const [sentConsultations, setSentConsultations] = useState<Record<string, ConsultationData>>({});
+  const [selectedConsultation, setSelectedConsultation] = useState<ConsultationData | null>(null);
   const notifTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // ── 신규 처방전 트리거
@@ -244,7 +227,7 @@ export const PrescriptionList: React.FC<{ onOpenSettings?: () => void }> = ({ on
       </td>
     );
 
-    const canAction = ['received', 'dispensing'].includes(p.status);
+    const canAction = ['received', 'dispensing'].includes(p.status) && !sentIds.has(p.id);
     const actionBtn = (
       <td className={thC}>
         {canAction ? (
@@ -255,9 +238,18 @@ export const PrescriptionList: React.FC<{ onOpenSettings?: () => void }> = ({ on
             <Send size={12} />조제·발송 →
           </button>
         ) : (
-          <span className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-md bg-gray-100 text-gray-400 cursor-default">
-            {p.status === 'rejected' ? '취소됨' : '완료됨'}
-          </span>
+          sentIds.has(p.id) ? (
+            <button
+              onClick={() => setSelectedConsultation(sentConsultations[p.id])}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium border border-gray-300 rounded-md bg-white hover:bg-gray-50 transition-colors shadow-sm text-gray-700"
+            >
+              <Eye size={13} />보기
+            </button>
+          ) : (
+            <span className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium rounded-md bg-gray-100 text-gray-400 cursor-default">
+              {p.status === 'rejected' ? '취소됨' : '—'}
+            </span>
+          )
         )}
       </td>
     );
@@ -319,7 +311,8 @@ export const PrescriptionList: React.FC<{ onOpenSettings?: () => void }> = ({ on
             { value: 'all', label: '전체', icon: undefined as React.ReactNode },
             { value: 'app_camera', label: '고객 앱 촬영', icon: <Camera size={13} /> as React.ReactNode },
             { value: 'fax_telemed', label: '의사 웹 전송', icon: <Printer size={13} /> as React.ReactNode },
-            { value: 'kiosk', label: '키오스크 스캔(TBD)', icon: <Printer size={13} /> as React.ReactNode },
+            // 키오스크 스캔 필터 숨김 (복원 시 아래 주석 해제)
+            // { value: 'kiosk', label: '키오스크 스캔(TBD)', icon: <Printer size={13} /> as React.ReactNode },
           ]).map(({ value, label, icon }) => (
             <button key={value} onClick={() => setFilter(value as any)}
               className={clsx('inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[13px] font-medium border transition-all',
@@ -390,7 +383,25 @@ export const PrescriptionList: React.FC<{ onOpenSettings?: () => void }> = ({ on
         <PrescriptionWorkflowModal
           prescription={workflowPrescription}
           onClose={() => setWorkflowPrescription(null)}
+          onComplete={(data) => {
+            if (workflowPrescription) {
+              const rxId = workflowPrescription.id;
+              setSentIds(prev => new Set([...prev, rxId]));
+              setSentConsultations(prev => ({ ...prev, [rxId]: data }));
+              // 실제 처방전 상태도 'completed' (수령 완료)로 업데이트
+              setPrescriptions(prev => prev.map(rx => 
+                rx.id === rxId ? { ...rx, status: 'completed' } : rx
+              ));
+            }
+          }}
           onOpenSettings={onOpenSettings}
+        />
+      )}
+
+      {selectedConsultation && (
+        <ConsultationDetailModal
+          data={selectedConsultation}
+          onClose={() => setSelectedConsultation(null)}
         />
       )}
     </div>
