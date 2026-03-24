@@ -1,6 +1,6 @@
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import {
-  FileText, Camera, Printer, Search, CheckCircle2, X, Bell, Zap, Send
+  FileText, Camera, Printer, Search, CheckCircle2, X, Bell, Zap, Send, ChevronDown, Check
 } from 'lucide-react';
 import { clsx } from 'clsx';
 import { PrescriptionWorkflowModal } from './PrescriptionWorkflowModal';
@@ -60,7 +60,26 @@ export const PrescriptionList: React.FC<{ onOpenSettings?: () => void; onPatient
   const [sentIds, setSentIds] = useState<Set<string>>(new Set());
   const [sentConsultations, setSentConsultations] = useState<Record<string, ConsultationData>>({});
   const [selectedConsultation, setSelectedConsultation] = useState<ConsultationData | null>(null);
+  const [openStatusDropdown, setOpenStatusDropdown] = useState<string | null>(null);
   const notifTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const statusDropdownRef = useRef<HTMLDivElement | null>(null);
+
+  // ── 상태 드롭다운 click-outside
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (statusDropdownRef.current && !statusDropdownRef.current.contains(e.target as Node)) {
+        setOpenStatusDropdown(null);
+      }
+    };
+    if (openStatusDropdown) document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [openStatusDropdown]);
+
+  // ── 상태 변경 핸들러
+  const handleStatusChange = (id: string, newStatus: PrescriptionStatus) => {
+    setPrescriptions(prev => prev.map(p => p.id === id ? { ...p, status: newStatus } : p));
+    setOpenStatusDropdown(null);
+  };
 
   // ── 신규 처방전 트리거
   const triggerNewPrescription = useCallback(() => {
@@ -174,8 +193,46 @@ export const PrescriptionList: React.FC<{ onOpenSettings?: () => void; onPatient
             ? <span className="inline-flex px-2 py-0.5 rounded-full text-xs bg-gray-100 text-gray-400">확인 안됨</span>
             : p.hospitalName}
         </td>
-        <td className={td}>
-          <span className={clsx('inline-flex px-2 py-0.5 rounded-full text-xs font-medium', bgColor, color)}>{label}</span>
+        <td className={clsx(td, 'relative')}>
+          {/* 상태 변경 드롭다운 트리거 */}
+          <button
+            onClick={() => setOpenStatusDropdown(openStatusDropdown === p.id ? null : p.id)}
+            className={clsx(
+              'inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium transition-opacity hover:opacity-80',
+              bgColor, color
+            )}
+          >
+            {label}
+            <ChevronDown size={11} className="flex-shrink-0" />
+          </button>
+
+          {/* 드롭다운 패널 */}
+          {openStatusDropdown === p.id && (
+            <div
+              ref={statusDropdownRef}
+              className="absolute left-0 top-full mt-1 z-[150] bg-white border border-gray-200 rounded-xl shadow-xl w-44 py-3"
+            >
+              <p className="px-4 pb-2 text-xs font-bold text-gray-700 border-b border-gray-100 mb-2">상태 변경</p>
+              {(
+                [
+                  { value: 'received',  label: '접수됨',   bgColor: 'bg-blue-100',  color: 'text-blue-700' },
+                  { value: 'completed', label: '조제 완료', bgColor: 'bg-green-100', color: 'text-green-700' },
+                  { value: 'cancelled', label: '취소됨',   bgColor: 'bg-gray-100',  color: 'text-gray-500' },
+                ] as { value: PrescriptionStatus; label: string; bgColor: string; color: string }[]
+              ).map(opt => (
+                <button
+                  key={opt.value}
+                  onClick={() => handleStatusChange(p.id, opt.value)}
+                  className="flex items-center justify-between w-full px-4 py-1.5 hover:bg-gray-50 transition-colors"
+                >
+                  <span className={clsx('inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium', opt.bgColor, opt.color)}>
+                    {opt.label}
+                  </span>
+                  {p.status === opt.value && <Check size={13} className="text-gray-500 flex-shrink-0" />}
+                </button>
+              ))}
+            </div>
+          )}
         </td>
         {consultationBtn}
       </tr>
