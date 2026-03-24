@@ -880,6 +880,15 @@ export const PrescriptionWorkflowModal: React.FC<PrescriptionWorkflowModalProps>
                       </div>
                     </div>
                   </div>
+
+                  <div className="bg-blue-50 border border-blue-100 rounded-xl px-4 py-3 flex items-center gap-2">
+                    <Settings className="w-4 h-4 text-blue-500 flex-shrink-0" />
+                    <span className="text-xs text-blue-700">복약 알림 기본 설정은 약국 설정에서 변경 할 수 있습니다.</span>
+                    <button
+                      onClick={() => { onOpenSettings?.(); onClose(); }}
+                      className="text-xs text-blue-600 font-bold hover:underline flex items-center gap-0.5 ml-auto flex-shrink-0 focus:outline-none"
+                    >설정 바로가기 <ChevronRight className="w-3 h-3" /></button>
+                  </div>
                 </div>
 
                 {/* 재처방 알림 — 복약 알림과 동일한 패널 스타일, 토글만 */}
@@ -903,14 +912,6 @@ export const PrescriptionWorkflowModal: React.FC<PrescriptionWorkflowModalProps>
                   </div>
                 </div>
 
-                <div className="bg-blue-50 border border-blue-100 rounded-xl px-4 py-3 flex items-center gap-2">
-                  <Settings className="w-4 h-4 text-blue-500 flex-shrink-0" />
-                  <span className="text-xs text-blue-700">복약 알림 기본 설정은 약국 설정에서 변경 할 수 있습니다.</span>
-                  <button
-                    onClick={() => { onOpenSettings?.(); onClose(); }}
-                    className="text-xs text-blue-600 font-bold hover:underline flex items-center gap-0.5 ml-auto flex-shrink-0 focus:outline-none"
-                  >설정 바로가기 <ChevronRight className="w-3 h-3" /></button>
-                </div>
               </div>
             )}
 
