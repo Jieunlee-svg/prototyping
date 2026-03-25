@@ -55,7 +55,7 @@ const INITIAL_TIMES = [
 ];
 
 interface PharmacySettingsProps {
-  initialTab?: 'basic' | 'hours' | 'reminder' | 'app';
+  initialTab?: 'basic' | 'reminder' | 'app';
 }
 
 export const PharmacySettings: React.FC<PharmacySettingsProps> = ({ initialTab }) => {
@@ -81,7 +81,7 @@ export const PharmacySettings: React.FC<PharmacySettingsProps> = ({ initialTab }
     } as Record<DayKey, DaySchedule>
   });
 
-  const [activeTab, setActiveTab] = useState<'basic' | 'hours' | 'app' | 'reminder'>(initialTab ?? 'basic');
+  const [activeTab, setActiveTab] = useState<'basic' | 'app' | 'reminder'>(initialTab ?? 'basic');
 
   // ── 복약 알림 기본 설정 state ──
   const [freqSettings, setFreqSettings] = useState<typeof INITIAL_FREQ>(() => JSON.parse(JSON.stringify(INITIAL_FREQ)));
@@ -236,7 +236,6 @@ export const PharmacySettings: React.FC<PharmacySettingsProps> = ({ initialTab }
         <div className="flex border-b border-gray-100 -mb-4 mt-2">
           {[
             { id: 'basic', label: '기본 정보', icon: Store },
-            { id: 'hours', label: '영업 시간 설정', icon: Clock },
             { id: 'reminder', label: '복약 알림 기본 설정', icon: Bell },
             { id: 'app', label: '앱 처방전 설정', icon: Smartphone },
           ].map((tab) => (
@@ -402,143 +401,137 @@ export const PharmacySettings: React.FC<PharmacySettingsProps> = ({ initialTab }
                   <p className="text-xs text-gray-500 mt-1 text-right">{formData.intro.length} / 200자</p>
                 </div>
 
-                <SaveButton disabled={!isFormValid} />
-              </div>
-            </section>
-          )}
+                {/* 영업 시간 설정 */}
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <label className="block text-sm font-medium text-gray-700 flex items-center gap-2">
+                      <Clock size={16} className="text-gray-500" />
+                      영업 시간 설정
+                    </label>
+                    <button
+                      onClick={applyMondayToWeekdays}
+                      className="text-xs text-blue-600 font-medium hover:bg-blue-50 px-3 py-1.5 rounded transition-colors flex items-center gap-1.5 border border-transparent hover:border-blue-100"
+                    >
+                      <Copy size={14} />
+                      월요일 시간을 평일에 모두 적용
+                    </button>
+                  </div>
+                  <div className="space-y-3">
+                    {dayKeys.map((day) => (
+                      <div key={day} className={clsx(
+                        "flex items-center gap-4 py-3.5 px-6 rounded-2xl border transition-all duration-200 group",
+                        formData.hours[day].active
+                          ? "bg-white border-gray-100 hover:border-blue-200 hover:shadow-lg hover:shadow-blue-500/5 shadow-sm"
+                          : "bg-gray-50/50 border-transparent border-dashed"
+                      )}>
+                        {/* Day Selector */}
+                        <div className="flex items-center gap-3 w-32 flex-shrink-0">
+                          <input
+                            type="checkbox"
+                            id={`check-${day}`}
+                            checked={formData.hours[day].active}
+                            onChange={() => toggleDay(day)}
+                            className="w-5 h-5 text-blue-600 rounded-md border-gray-300 focus:ring-blue-500 cursor-pointer transition-transform group-hover:scale-105"
+                          />
+                          <label htmlFor={`check-${day}`} className={clsx(
+                            "font-bold text-[15px] cursor-pointer transition-colors",
+                            formData.hours[day].active ? "text-gray-900" : "text-gray-400"
+                          )}>
+                            {dayLabels[day]}
+                          </label>
+                        </div>
 
-          {/* Operating Hours Tab */}
-          {activeTab === 'hours' && (
-            <section className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden animate-in fade-in duration-300">
-              <div className="px-8 py-4 border-b border-gray-100 bg-gray-50/50 flex items-center justify-between">
-                <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
-                  <Clock size={18} className="text-gray-500" />
-                  영업 시간 설정
-                </h2>
-                <button
-                  onClick={applyMondayToWeekdays}
-                  className="text-xs text-blue-600 font-medium hover:bg-blue-50 px-3 py-1.5 rounded transition-colors flex items-center gap-1.5 border border-transparent hover:border-blue-100"
-                >
-                  <Copy size={14} />
-                  월요일 시간을 평일에 모두 적용
-                </button>
-              </div>
-              <div className="p-8">
-                <div className="space-y-3">
-                  {dayKeys.map((day) => (
-                    <div key={day} className={clsx(
-                      "flex items-center gap-4 py-3.5 px-6 rounded-2xl border transition-all duration-200 group",
-                      formData.hours[day].active
-                        ? "bg-white border-gray-100 hover:border-blue-200 hover:shadow-lg hover:shadow-blue-500/5 shadow-sm"
-                        : "bg-gray-50/50 border-transparent border-dashed"
-                    )}>
-                      {/* Day Selector */}
-                      <div className="flex items-center gap-3 w-32 flex-shrink-0">
-                        <input
-                          type="checkbox"
-                          id={`check-${day}`}
-                          checked={formData.hours[day].active}
-                          onChange={() => toggleDay(day)}
-                          className="w-5 h-5 text-blue-600 rounded-md border-gray-300 focus:ring-blue-500 cursor-pointer transition-transform group-hover:scale-105"
-                        />
-                        <label htmlFor={`check-${day}`} className={clsx(
-                          "font-bold text-[15px] cursor-pointer transition-colors",
-                          formData.hours[day].active ? "text-gray-900" : "text-gray-400"
-                        )}>
-                          {dayLabels[day]}
-                        </label>
-                      </div>
-
-                      {/* Content Area */}
-                      <div className="flex items-center flex-1 gap-4">
-                        {formData.hours[day].active ? (
-                          <div className="flex items-center w-full">
-                            {/* Operating Hours */}
-                            <div className="flex items-center gap-2 w-[240px] flex-shrink-0">
-                              <div className="relative flex-shrink-0">
-                                <input
-                                  type="time"
-                                  value={formData.hours[day].start}
-                                  onChange={(e) => handleTimeChange(day, 'start', e.target.value)}
-                                  className="pl-3 pr-8 py-2 border border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:ring-2 focus:ring-blue-500 outline-none text-[13px] w-[110px] font-semibold text-gray-700 transition-all cursor-pointer"
-                                />
-                                <Clock size={12} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+                        {/* Content Area */}
+                        <div className="flex items-center flex-1 gap-4">
+                          {formData.hours[day].active ? (
+                            <div className="flex items-center w-full">
+                              {/* Operating Hours */}
+                              <div className="flex items-center gap-2 w-[240px] flex-shrink-0">
+                                <div className="relative flex-shrink-0">
+                                  <input
+                                    type="time"
+                                    value={formData.hours[day].start}
+                                    onChange={(e) => handleTimeChange(day, 'start', e.target.value)}
+                                    className="pl-3 pr-8 py-2 border border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:ring-2 focus:ring-blue-500 outline-none text-[13px] w-[110px] font-semibold text-gray-700 transition-all cursor-pointer"
+                                  />
+                                  <Clock size={12} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+                                </div>
+                                <span className="text-gray-300 font-medium">—</span>
+                                <div className="relative flex-shrink-0">
+                                  <input
+                                    type="time"
+                                    value={formData.hours[day].end}
+                                    onChange={(e) => handleTimeChange(day, 'end', e.target.value)}
+                                    className="pl-3 pr-8 py-2 border border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:ring-2 focus:ring-blue-500 outline-none text-[13px] w-[110px] font-semibold text-gray-700 transition-all cursor-pointer"
+                                  />
+                                  <Clock size={12} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+                                </div>
                               </div>
-                              <span className="text-gray-300 font-medium">—</span>
-                              <div className="relative flex-shrink-0">
-                                <input
-                                  type="time"
-                                  value={formData.hours[day].end}
-                                  onChange={(e) => handleTimeChange(day, 'end', e.target.value)}
-                                  className="pl-3 pr-8 py-2 border border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:ring-2 focus:ring-blue-500 outline-none text-[13px] w-[110px] font-semibold text-gray-700 transition-all cursor-pointer"
-                                />
-                                <Clock size={12} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
-                              </div>
-                            </div>
 
-                            {/* Center Separator */}
-                            <div className="flex-1 flex justify-center px-4">
-                              <div className="h-6 w-px bg-gray-100 relative">
-                                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1 h-1 rounded-full bg-gray-200"></div>
+                              {/* Center Separator */}
+                              <div className="flex-1 flex justify-center px-4">
+                                <div className="h-6 w-px bg-gray-100 relative">
+                                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1 h-1 rounded-full bg-gray-200"></div>
+                                </div>
                               </div>
-                            </div>
 
-                            {/* Lunch Break */}
-                            <div className="flex items-center gap-4 flex-shrink-0 justify-end">
-                              <label className="flex items-center gap-2 cursor-pointer group/lunch whitespace-nowrap">
-                                <input
-                                  type="checkbox"
-                                  checked={formData.hours[day].hasLunch}
-                                  onChange={(e) => handleTimeChange(day, 'hasLunch', e.target.checked)}
-                                  className="w-4 h-4 text-orange-500 rounded border-gray-300 focus:ring-orange-500"
-                                />
-                                <span className={clsx(
-                                  "text-[12px] font-bold px-2 py-0.5 rounded transition-all",
-                                  formData.hours[day].hasLunch
-                                    ? "bg-orange-50 text-orange-600 border border-orange-100"
-                                    : "text-gray-400 border border-transparent"
+                              {/* Lunch Break */}
+                              <div className="flex items-center gap-4 flex-shrink-0 justify-end">
+                                <label className="flex items-center gap-2 cursor-pointer group/lunch whitespace-nowrap">
+                                  <input
+                                    type="checkbox"
+                                    checked={formData.hours[day].hasLunch}
+                                    onChange={(e) => handleTimeChange(day, 'hasLunch', e.target.checked)}
+                                    className="w-4 h-4 text-orange-500 rounded border-gray-300 focus:ring-orange-500"
+                                  />
+                                  <span className={clsx(
+                                    "text-[12px] font-bold px-2 py-0.5 rounded transition-all",
+                                    formData.hours[day].hasLunch
+                                      ? "bg-orange-50 text-orange-600 border border-orange-100"
+                                      : "text-gray-400 border border-transparent"
+                                  )}>
+                                    점심 시간
+                                  </span>
+                                </label>
+
+                                <div className={clsx(
+                                  "flex items-center gap-2 transition-all duration-300",
+                                  !formData.hours[day].hasLunch && "opacity-20 pointer-events-none grayscale blur-[1px]"
                                 )}>
-                                  점심 시간
-                                </span>
-                              </label>
-
-                              <div className={clsx(
-                                "flex items-center gap-2 transition-all duration-300",
-                                !formData.hours[day].hasLunch && "opacity-20 pointer-events-none grayscale blur-[1px]"
-                              )}>
-                                <div className="relative flex-shrink-0">
-                                  <input
-                                    type="time"
-                                    value={formData.hours[day].lunchStart}
-                                    onChange={(e) => handleTimeChange(day, 'lunchStart', e.target.value)}
-                                    className="pl-3 pr-8 py-2 border border-orange-100 bg-orange-50/20 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none text-[13px] w-[110px] font-semibold text-gray-700 transition-all cursor-pointer"
-                                  />
-                                  <Clock size={12} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-orange-300 pointer-events-none" />
-                                </div>
-                                <span className="text-orange-200 text-xs">~</span>
-                                <div className="relative flex-shrink-0">
-                                  <input
-                                    type="time"
-                                    value={formData.hours[day].lunchEnd}
-                                    onChange={(e) => handleTimeChange(day, 'lunchEnd', e.target.value)}
-                                    className="pl-3 pr-8 py-2 border border-orange-100 bg-orange-50/20 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none text-[13px] w-[110px] font-semibold text-gray-700 transition-all cursor-pointer"
-                                  />
-                                  <Clock size={12} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-orange-300 pointer-events-none" />
+                                  <div className="relative flex-shrink-0">
+                                    <input
+                                      type="time"
+                                      value={formData.hours[day].lunchStart}
+                                      onChange={(e) => handleTimeChange(day, 'lunchStart', e.target.value)}
+                                      className="pl-3 pr-8 py-2 border border-orange-100 bg-orange-50/20 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none text-[13px] w-[110px] font-semibold text-gray-700 transition-all cursor-pointer"
+                                    />
+                                    <Clock size={12} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-orange-300 pointer-events-none" />
+                                  </div>
+                                  <span className="text-orange-200 text-xs">~</span>
+                                  <div className="relative flex-shrink-0">
+                                    <input
+                                      type="time"
+                                      value={formData.hours[day].lunchEnd}
+                                      onChange={(e) => handleTimeChange(day, 'lunchEnd', e.target.value)}
+                                      className="pl-3 pr-8 py-2 border border-orange-100 bg-orange-50/20 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none text-[13px] w-[110px] font-semibold text-gray-700 transition-all cursor-pointer"
+                                    />
+                                    <Clock size={12} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-orange-300 pointer-events-none" />
+                                  </div>
                                 </div>
                               </div>
                             </div>
-                          </div>
-                        ) : (
-                          <div className="flex-1 flex justify-center py-2 bg-gray-100/30 rounded-xl border border-dotted border-gray-200">
-                            <span className="text-[13px] text-gray-400 font-bold tracking-[0.2em]">휴무일</span>
-                          </div>
-                        )}
+                          ) : (
+                            <div className="flex-1 flex justify-center py-2 bg-gray-100/30 rounded-xl border border-dotted border-gray-200">
+                              <span className="text-[13px] text-gray-400 font-bold tracking-[0.2em]">휴무일</span>
+                            </div>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
 
-                <SaveButton />
+                <SaveButton disabled={!isFormValid} />
               </div>
             </section>
           )}
