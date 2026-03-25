@@ -30,14 +30,26 @@ import {
   ConsultationData 
 } from './ConsultationDetailModal';
 import { clsx } from 'clsx';
-import { 
-  Prescription, 
-  PrescriptionDetailModal, 
-  StatusText, 
+import {
+  Prescription,
+  PrescriptionDetailModal,
+  StatusText,
   PrescriptionStatus,
   PrescriptionSource
 } from './PrescriptionDetailModal';
 import { PatientEditModal } from './PatientEditModal';
+
+const StatusToast: React.FC<{ message: string; onDone: () => void }> = ({ message, onDone }) => {
+  React.useEffect(() => { const t = setTimeout(onDone, 3000); return () => clearTimeout(t); }, [onDone]);
+  return (
+    <div className="fixed top-5 left-1/2 -translate-x-1/2 z-[300] animate-in slide-in-from-top-2 fade-in duration-300 pointer-events-none">
+      <div className="flex items-center gap-2.5 bg-white border border-green-200 text-green-800 rounded-xl shadow-xl px-5 py-3 text-sm font-medium whitespace-nowrap">
+        <CheckCircle2 size={16} className="text-green-500 flex-shrink-0" />
+        {message}
+      </div>
+    </div>
+  );
+};
 
 const MOCK_PRESCRIPTIONS: Prescription[] = [
   { id: 'RX-17-005', receivedAt: '2026-03-17 10:30', source: 'app_camera',  status: 'received',  hospitalName: '성모병원',        patientName: '십칠스프린트', birthDate: '1987-03-12', phone: '010-1234-5678', diseaseCode: 'I10', isConsentSubstitute: true, deliveryMethod: '본인 방문' },
@@ -97,6 +109,7 @@ export const PatientDetail17: React.FC<PatientDetailProps> = ({ onBack, patientI
   const [sentIds, setSentIds] = useState<Set<string>>(new Set());
   const [sentConsultations, setSentConsultations] = useState<Record<string, ConsultationData>>({});
   const [openStatusDropdown, setOpenStatusDropdown] = useState<string | null>(null);
+  const [toast, setToast] = useState<string | null>(null);
 
   const statusDropdownRef = React.useRef<HTMLDivElement | null>(null);
 
@@ -112,8 +125,12 @@ export const PatientDetail17: React.FC<PatientDetailProps> = ({ onBack, patientI
   }, [openStatusDropdown]);
 
   const handleStatusChange = (id: string, newStatus: PrescriptionStatus) => {
+    const target = prescriptions.find(p => p.id === id);
     setPrescriptions(prev => prev.map(p => p.id === id ? { ...p, status: newStatus } : p));
     setOpenStatusDropdown(null);
+    if (target) {
+      setToast(`'${target.patientName}' 님의 상태가 '${STATUS_LABEL[newStatus].label}'(으)로 변경되었습니다.`);
+    }
   };
 
   const filteredPrescriptions = prescriptions.filter(p => {
@@ -138,6 +155,9 @@ export const PatientDetail17: React.FC<PatientDetailProps> = ({ onBack, patientI
 
   return (
     <div className="flex flex-col h-full bg-gray-50 overflow-hidden">
+      {/* Toast */}
+      {toast && <StatusToast message={toast} onDone={() => setToast(null)} />}
+
       {/* Header Section */}
       <header className="bg-white border-b border-gray-200 px-6 py-4 flex-none z-20 shadow-sm relative">
         <div className="flex justify-between items-start">
