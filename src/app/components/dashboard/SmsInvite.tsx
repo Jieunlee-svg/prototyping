@@ -15,13 +15,13 @@ interface SmsInviteProps {
   // Props can be added here if needed
 }
 
-// Mock: 기존 고객 DB (isAppUser: true = 이미 웰체크 앱 가입됨)
+// Mock: 기존 고객 DB — 검색으로 조회되는 고객은 모두 앱 가입자
 const MOCK_PATIENTS = [
   { name: '김철수', phone: '010-1234-5678', isAppUser: true },
-  { name: '이영희', phone: '010-2345-6789', isAppUser: false },
-  { name: '박지민', phone: '010-3456-7890', isAppUser: false },
+  { name: '이영희', phone: '010-2345-6789', isAppUser: true },
+  { name: '박지민', phone: '010-3456-7890', isAppUser: true },
   { name: '최수진', phone: '010-4567-8901', isAppUser: true },
-  { name: '정민준', phone: '010-5678-9012', isAppUser: false },
+  { name: '정민준', phone: '010-5678-9012', isAppUser: true },
 ];
 
 type SelectedCustomer = { name: string; phone: string; isAppUser: boolean };
@@ -106,6 +106,29 @@ export const SmsInvite: React.FC<SmsInviteProps> = () => {
   // 발송 가능 여부: 수신자가 선택됐고 이미 앱 가입자가 아닐 때
   const canSend = !!selectedCustomer && !selectedCustomer.isAppUser;
   const isAlreadyMember = !!selectedCustomer && selectedCustomer.isAppUser;
+
+  // ── 발송 확인 / 완료 모달 상태 ──
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [consentChecked, setConsentChecked] = useState(false);
+
+  const handleSendClick = () => {
+    setConsentChecked(false);
+    setShowConfirmModal(true);
+  };
+
+  const handleConfirmSend = () => {
+    setShowConfirmModal(false);
+    setShowSuccessModal(true);
+  };
+
+  const handleSuccessClose = () => {
+    setShowSuccessModal(false);
+    // 발송 완료 후 초기화
+    setSelectedCustomer(null);
+    setCustomerQuery('');
+    setTimeout(() => phoneRef.current?.focus(), 50);
+  };
 
   return (
     <div className="flex flex-col h-full bg-gray-50 overflow-hidden">
@@ -224,11 +247,9 @@ export const SmsInvite: React.FC<SmsInviteProps> = () => {
                                       <div className={clsx('text-[14px] font-semibold', isFocused ? 'text-blue-900' : 'text-gray-900')}>{c.name}</div>
                                       <div className={clsx('text-xs mt-0.5', isFocused ? 'text-blue-700' : 'text-gray-500')}>{c.phone}</div>
                                     </div>
-                                    {c.isAppUser && (
-                                      <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded-full flex-shrink-0">
-                                        앱 가입됨
-                                      </span>
-                                    )}
+                                    <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded-full flex-shrink-0">
+                                      앱 가입됨
+                                    </span>
                                   </button>
                                 );
                               })}
@@ -298,6 +319,7 @@ export const SmsInvite: React.FC<SmsInviteProps> = () => {
               <div className="mt-8 pt-6 border-t border-gray-100">
                 <button
                   disabled={!canSend}
+                  onClick={handleSendClick}
                   className={clsx(
                     'w-full font-bold py-3.5 px-4 rounded-xl shadow-md transition-all flex items-center justify-center gap-2',
                     canSend
@@ -374,6 +396,86 @@ export const SmsInvite: React.FC<SmsInviteProps> = () => {
 
         </div>
       </div>
+
+      {/* ── 발송 확인 모달 ── */}
+      {showConfirmModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/40" onClick={() => setShowConfirmModal(false)} />
+          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md mx-4 overflow-hidden">
+            {/* Header */}
+            <div className="px-6 pt-6 pb-4">
+              <h2 className="text-lg font-bold text-gray-900 mb-1">초대장을 보내시겠습니까?</h2>
+              <p className="text-sm text-gray-500 leading-relaxed">
+                * 같은 번호로 하루에 최대 10번까지 보낼 수 있습니다.
+              </p>
+            </div>
+
+            {/* 동의 체크박스 */}
+            <div className="px-6 pb-6">
+              <label className="flex items-start gap-3 cursor-pointer group">
+                <input
+                  type="checkbox"
+                  checked={consentChecked}
+                  onChange={e => setConsentChecked(e.target.checked)}
+                  className="mt-0.5 w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500 cursor-pointer flex-shrink-0"
+                />
+                <span className="text-sm text-gray-700 leading-relaxed group-hover:text-gray-900 transition-colors">
+                  초대장 문자 발송 대상자가 수신에 동의함을 확인했으며, 해당 정보 제공에 정당한 권한이 있음을 확인합니다.
+                </span>
+              </label>
+            </div>
+
+            {/* 버튼 */}
+            <div className="flex border-t border-gray-100">
+              <button
+                type="button"
+                onClick={() => setShowConfirmModal(false)}
+                className="flex-1 py-4 text-sm font-semibold text-gray-600 hover:bg-gray-50 transition-colors"
+              >
+                아니오
+              </button>
+              <div className="w-px bg-gray-100" />
+              <button
+                type="button"
+                disabled={!consentChecked}
+                onClick={handleConfirmSend}
+                className={clsx(
+                  'flex-1 py-4 text-sm font-semibold transition-colors',
+                  consentChecked
+                    ? 'text-blue-600 hover:bg-blue-50'
+                    : 'text-gray-300 cursor-not-allowed'
+                )}
+              >
+                예
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── 발송 완료 모달 ── */}
+      {showSuccessModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/40" onClick={handleSuccessClose} />
+          <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-sm mx-4 overflow-hidden text-center">
+            <div className="px-6 pt-8 pb-6">
+              <div className="w-14 h-14 rounded-full bg-blue-50 flex items-center justify-center mx-auto mb-4">
+                <CheckCircle className="w-8 h-8 text-blue-600" />
+              </div>
+              <h2 className="text-lg font-bold text-gray-900 mb-1">초대장 발송이 완료되었습니다.</h2>
+            </div>
+            <div className="border-t border-gray-100">
+              <button
+                type="button"
+                onClick={handleSuccessClose}
+                className="w-full py-4 text-sm font-semibold text-blue-600 hover:bg-blue-50 transition-colors"
+              >
+                확인
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
