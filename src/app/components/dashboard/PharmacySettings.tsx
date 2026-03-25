@@ -90,12 +90,18 @@ const TIME_SLOTS = Array.from({ length: 48 }, (_, i) => {
 
 const TimePicker = ({ value, onChange }: { value: string; onChange: (v: string) => void }) => {
   const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
+  const [pos, setPos] = useState({ top: 0, right: 0 });
+  const wrapperRef = useRef<HTMLDivElement>(null);
+  const btnRef = useRef<HTMLButtonElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+      if (
+        wrapperRef.current && !wrapperRef.current.contains(e.target as Node) &&
+        dropdownRef.current && !dropdownRef.current.contains(e.target as Node)
+      ) setOpen(false);
     };
     if (open) document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
@@ -111,11 +117,20 @@ const TimePicker = ({ value, onChange }: { value: string; onChange: (v: string) 
     }
   }, [open, value]);
 
+  const handleToggle = () => {
+    if (!open && btnRef.current) {
+      const rect = btnRef.current.getBoundingClientRect();
+      setPos({ top: rect.bottom + 4, right: window.innerWidth - rect.right });
+    }
+    setOpen(o => !o);
+  };
+
   return (
-    <div ref={ref} className="relative">
+    <div ref={wrapperRef} className="relative">
       <button
+        ref={btnRef}
         type="button"
-        onClick={() => setOpen(o => !o)}
+        onClick={handleToggle}
         className={clsx(
           'flex items-center gap-1.5 px-3 py-1.5 border rounded-lg text-[13px] font-medium w-[120px] justify-end transition-all',
           open
@@ -127,7 +142,11 @@ const TimePicker = ({ value, onChange }: { value: string; onChange: (v: string) 
         {formatTimeDisplay(value)}
       </button>
       {open && (
-        <div className="absolute right-0 top-full mt-1 z-[200] bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden w-36">
+        <div
+          ref={dropdownRef}
+          style={{ position: 'fixed', top: pos.top, right: pos.right, zIndex: 9999 }}
+          className="bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden w-36"
+        >
           <div ref={listRef} className="max-h-52 overflow-y-auto py-1">
             {TIME_SLOTS.map(slot => (
               <button
@@ -525,7 +544,7 @@ export const PharmacySettings: React.FC<PharmacySettingsProps> = ({ initialTab }
                       value={formData.fax}
                       onChange={handleChange}
                       className="w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                      placeholder="FAX 번호를 입력하세요 (예: 02-1234-5679)"
+                      placeholder="예) 02-1234-5679"
                     />
                   </div>
 

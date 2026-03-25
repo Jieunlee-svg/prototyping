@@ -308,7 +308,7 @@ export const SmsInvite: React.FC<SmsInviteProps> = () => {
                   <textarea
                     value={messageText}
                     onChange={(e) => setMessageText(e.target.value)}
-                    className="w-full h-96 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow resize-none text-sm leading-relaxed"
+                    className="w-full h-[500px] px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow resize-none text-sm leading-relaxed"
                   />
                   <p className="text-right text-xs text-gray-400 mt-1">
                     {messageText.length} / 2000자 (LMS)
