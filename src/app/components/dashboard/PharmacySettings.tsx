@@ -56,6 +56,41 @@ const INITIAL_TIMES = [
   { label: '취침전', defaultTime: '22:00' },
 ];
 
+// ── 컴포넌트 외부에 정의: 내부 정의 시 매 렌더마다 재생성되어 자식 언마운트 발생 ──
+const SectionCard = ({ icon: Icon, title, children, headerRight }: { icon: React.ElementType; title: string; children: React.ReactNode; headerRight?: React.ReactNode }) => (
+  <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+    <div className="px-6 py-4 border-b border-gray-100 bg-gray-50/50 flex items-center justify-between">
+      <div className="flex items-center gap-2">
+        <Icon size={16} className="text-blue-600" />
+        <h2 className="text-sm font-semibold text-gray-800">{title}</h2>
+      </div>
+      {headerRight}
+    </div>
+    <div className="p-6">
+      {children}
+    </div>
+  </div>
+);
+
+const SaveBtn = ({ disabled = false, loading, onClick }: { disabled?: boolean; loading: boolean; onClick: () => void }) => (
+  <button
+    onClick={onClick}
+    disabled={loading || disabled}
+    className={clsx(
+      'flex items-center gap-2 px-5 py-2 text-sm font-semibold rounded-lg transition-colors shadow-sm',
+      !disabled && !loading
+        ? 'bg-blue-600 text-white hover:bg-blue-700 cursor-pointer'
+        : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+    )}
+  >
+    {loading ? (
+      <><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />저장 중...</>
+    ) : (
+      <><Save size={16} />설정 저장</>
+    )}
+  </button>
+);
+
 interface PharmacySettingsProps {
   initialTab?: 'basic' | 'reminder' | 'app';
 }
@@ -249,40 +284,6 @@ export const PharmacySettings: React.FC<PharmacySettingsProps> = ({ initialTab }
 
   const dayKeys: DayKey[] = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday', 'holiday'];
 
-  const SaveBtn = ({ disabled = false }: { disabled?: boolean }) => (
-    <button
-      onClick={handleSave}
-      disabled={loading || disabled}
-      className={clsx(
-        'flex items-center gap-2 px-5 py-2 text-sm font-semibold rounded-lg transition-colors shadow-sm',
-        !disabled && !loading
-          ? 'bg-blue-600 text-white hover:bg-blue-700 cursor-pointer'
-          : 'bg-gray-200 text-gray-400 cursor-not-allowed'
-      )}
-    >
-      {loading ? (
-        <><div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />저장 중...</>
-      ) : (
-        <><Save size={16} />설정 저장</>
-      )}
-    </button>
-  );
-
-  const SectionCard = ({ icon: Icon, title, children, headerRight }: { icon: React.ElementType; title: string; children: React.ReactNode; headerRight?: React.ReactNode }) => (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-      <div className="px-6 py-4 border-b border-gray-100 bg-gray-50/50 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Icon size={16} className="text-blue-600" />
-          <h2 className="text-sm font-semibold text-gray-800">{title}</h2>
-        </div>
-        {headerRight}
-      </div>
-      <div className="p-6">
-        {children}
-      </div>
-    </div>
-  );
-
   return (
     <div className="flex flex-col h-full bg-gray-50 overflow-hidden">
       <HideTimePickerIcon />
@@ -331,7 +332,7 @@ export const PharmacySettings: React.FC<PharmacySettingsProps> = ({ initialTab }
           {activeTab === 'basic' && (
             <section className="space-y-5 animate-in fade-in duration-300 px-6 py-5 overflow-y-auto">
               <div className="flex justify-end">
-                <SaveBtn disabled={!isFormValid} />
+                <SaveBtn disabled={!isFormValid} loading={loading} onClick={handleSave} />
               </div>
 
               <SectionCard icon={Store} title="기본 정보">
@@ -584,7 +585,7 @@ export const PharmacySettings: React.FC<PharmacySettingsProps> = ({ initialTab }
           {activeTab === 'app' && (
             <section className="space-y-5 animate-in fade-in duration-300 px-6 py-5 overflow-y-auto">
               <div className="flex justify-end">
-                <SaveBtn disabled={allowAppPrescription && !isValidNotifyPhone} />
+                <SaveBtn disabled={allowAppPrescription && !isValidNotifyPhone} loading={loading} onClick={handleSave} />
               </div>
 
               <SectionCard icon={Smartphone} title="앱 처방전 접수 설정">
