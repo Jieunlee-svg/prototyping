@@ -253,7 +253,7 @@ export const PrescriptionWorkflowModal: React.FC<PrescriptionWorkflowModalProps>
   // ── Phone validation
   const validatePhone = (val: string) => {
     const raw = val.replace(/[^0-9]/g, '');
-    if (!raw) return '고객 휴대폰 번호를 입력해 주세요.';
+    if (!raw) return '고객 휴대전화 번호를 입력해 주세요.';
     if (raw.length < 10 || raw.length > 11) return '올바른 형식으로 입력해 주세요. (예: 010-1234-5678)';
     return '';
   };
@@ -524,7 +524,7 @@ export const PrescriptionWorkflowModal: React.FC<PrescriptionWorkflowModalProps>
             {/* ════ STEP 2 ════ */}
             {currentStep === 2 && (
               <div className="flex flex-col gap-4 h-full">
-                {/* 고객 휴대폰 번호는 처방전 접수 시 이미 보유하므로 입력 UI 생략 */}
+                {/* 고객 휴대전화 번호는 처방전 접수 시 이미 보유하므로 입력 UI 생략 */}
 
                 {/* 2열: 태그 선택 | 메시지 편집 */}
                 <div className="grid grid-cols-[1fr_1fr] gap-4 flex-1 min-h-0">

@@ -114,10 +114,10 @@ export const SmsInvite: React.FC<SmsInviteProps> = () => {
 
               <div className="space-y-4">
 
-                {/* 고객 휴대폰 번호 */}
+                {/* 고객 휴대전화 번호 */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1.5">
-                    고객 휴대폰 번호
+                    고객 휴대전화 번호
                   </label>
 
                   <div ref={phoneDropRef} className="relative">
@@ -176,7 +176,7 @@ export const SmsInvite: React.FC<SmsInviteProps> = () => {
                             else if (e.key === 'Escape') setShowCustomerDrop(false);
                           }}
                           onFocus={() => { if (customerQuery.trim() !== '') setShowCustomerDrop(true); }}
-                          placeholder="이름 또는 휴대폰 번호 검색..."
+                          placeholder="이름 또는 휴대전화 번호 검색..."
                           className="flex-1 text-[15px] font-medium bg-transparent outline-none placeholder-gray-400 text-gray-900"
                           autoComplete="off"
                         />

@@ -127,7 +127,7 @@ export const PatientList: React.FC<PatientListProps> = ({ onPatientClick }) => {
           <div className="relative">
             <input
               type="text"
-              placeholder="이름 또는 휴대폰 번호 검색"
+              placeholder="이름 또는 휴대전화 번호 검색"
               className="w-56 pl-8 pr-3 py-1.5 text-[13px] border border-gray-200 rounded-full bg-gray-50 focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none transition-all placeholder:text-gray-400"
             />
             <Search className="absolute left-2.5 top-2 text-gray-400" size={14} />
@@ -158,7 +158,7 @@ export const PatientList: React.FC<PatientListProps> = ({ onPatientClick }) => {
                       <ArrowUpDown size={14} className={clsx("transition-colors", sortKey === 'birthDate' ? "text-blue-500" : "text-gray-300 group-hover:text-gray-400")} />
                     </div>
                   </th>
-                  <th className="px-4 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider w-[12%]">휴대폰 번호</th>
+                  <th className="px-4 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider w-[12%]">휴대전화 번호</th>
                   <th className="px-4 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider w-[8%]">성별</th>
                   <th className="px-4 py-4 text-center text-xs font-bold text-gray-500 uppercase tracking-wider w-[10%] cursor-pointer group" onClick={() => handleSort('prescriptionCount')}>
                     <div className="flex items-center justify-center gap-1">

@@ -76,7 +76,7 @@ export const ConsultationDetailModal: React.FC<ConsultationDetailModalProps> = (
                   <span className="text-sm font-medium text-gray-900">{data.patientName}</span>
                 </div>
                 <div>
-                  <span className="block text-xs text-gray-500 mb-1">휴대폰 번호</span>
+                  <span className="block text-xs text-gray-500 mb-1">휴대전화 번호</span>
                   <span className="text-sm font-medium text-gray-900">{data.phone}</span>
                 </div>
                 <div>

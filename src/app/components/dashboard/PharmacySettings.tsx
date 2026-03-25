@@ -576,7 +576,7 @@ export const PharmacySettings: React.FC<PharmacySettingsProps> = ({ initialTab }
                   <div className="mt-10 space-y-6 pt-10 border-t border-gray-100 animate-in fade-in slide-in-from-top-4 duration-500">
                     <div>
                       <label htmlFor="notifyPhone" className="block text-sm font-bold text-gray-900 mb-2">
-                        알림 수신 휴대폰 번호
+                        알림 수신 휴대전화 번호
                       </label>
                       <input
                         type="tel"

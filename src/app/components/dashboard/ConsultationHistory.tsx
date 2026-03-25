@@ -234,7 +234,7 @@ export const ConsultationHistory = ({ onBack }: { onBack?: () => void }) => {
                   </span>
                 </th>
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  휴대폰 번호
+                  휴대전화 번호
                 </th>
                 <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   전송 방법

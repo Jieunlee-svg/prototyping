@@ -171,7 +171,7 @@ export const PrescriptionList: React.FC<{ onOpenSettings?: () => void; onPatient
         </button>
       </th>
       <th className={th}>생년월일</th>
-      <th className={th}>휴대폰 번호</th>
+      <th className={th}>휴대전화 번호</th>
       <th className={th}>접수 경로</th>
       <th className={thC}>대체조제 동의</th>
       <th className={th}>수령 방법</th>

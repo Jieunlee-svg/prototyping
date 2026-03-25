@@ -900,7 +900,7 @@ export const MedicationConsultationC = () => {
                     else if (e.key === 'Escape') setShowCustomerDrop(false);
                   }}
                   onFocus={() => { if (customerQuery.trim() !== '') setShowCustomerDrop(true); }}
-                  placeholder="이름 또는 휴대폰 번호 검색..."
+                  placeholder="이름 또는 휴대전화 번호 검색..."
                   className="flex-1 text-[15px] font-medium bg-transparent outline-none placeholder-gray-400 text-gray-900"
                   autoComplete="off"
                 />

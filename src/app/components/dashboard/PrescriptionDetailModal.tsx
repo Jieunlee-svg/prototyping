@@ -158,7 +158,7 @@ export const PrescriptionDetailModal: React.FC<PrescriptionDetailModalProps> = (
                   </div>
                 </div>
                 <div>
-                  <p className="text-xs text-gray-400 mb-1">휴대폰 번호</p>
+                  <p className="text-xs text-gray-400 mb-1">휴대전화 번호</p>
                   <p className="text-sm font-medium text-gray-900">{prescription.phone}</p>
                 </div>
               </div>

@@ -3,7 +3,10 @@
     "allow": [
       "Bash(./node_modules/.bin/tsc --noEmit)",
       "Bash(npm run:*)",
-      "Bash(node_modules/.bin/tsc --noEmit)"
+      "Bash(node_modules/.bin/tsc --noEmit)",
+      "Bash(while read:*)",
+      "Bash(do sed:*)",
+      "Bash(done)"
     ]
   }
 }
