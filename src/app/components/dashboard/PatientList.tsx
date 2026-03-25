@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Search,
-  Info
+  Info,
+  ArrowUpDown
 } from 'lucide-react';
 import { clsx } from 'clsx';
 
@@ -22,19 +23,21 @@ interface Patient {
   lastVisit: string;
   membership: boolean;
   managementStatus: string;
+  registeredAt: string; // 단골 등록 일시
+  prescriptionCount: number; // 처방전 수
 }
 
 const MOCK_DATA: Patient[] = [
-  { id: '1', name: '십칠스프린트', status: 'normal', medicationStatus: '고혈압', birthDate: '1987-08-03', gender: '여성', age: 40, prescriptionNo: '2305-1201', comorbidities: '-', adherenceRate: 85, phone: '010-3423-7918', pharmacist: '김약사', lastVisit: '2026-02-05', membership: true, managementStatus: '정기 상담 예정' },
-  { id: '2', name: '미정스프린트', status: 'new', medicationStatus: '당뇨', birthDate: '2001-04-18', gender: '여성', age: 26, prescriptionNo: '2305-1202', comorbidities: '-', adherenceRate: 40, phone: '010-2488-3976', pharmacist: '김약사', lastVisit: '2026-02-05', membership: true, managementStatus: '상담 필요' },
-  { id: '3', name: '최수리', status: 'risk', medicationStatus: '고혈압', birthDate: '1998-03-04', gender: '여성', age: 29, prescriptionNo: '-', comorbidities: '비만', adherenceRate: 20, phone: '010-7793-6958', pharmacist: '이약사', lastVisit: '2026-02-05', membership: true, managementStatus: '집중 관리' },
-  { id: '4', name: '박민지', status: 'risk', medicationStatus: '당뇨(전) • 고혈압', birthDate: '1996-05-08', gender: '여성', age: 31, prescriptionNo: '2305-1150', comorbidities: '수면장애', adherenceRate: 95, phone: '010-6485-1585', pharmacist: '박약사', lastVisit: '2026-02-04', membership: false, managementStatus: '가입 권유' },
-  { id: '5', name: '김미래', status: 'normal', medicationStatus: '미실시', birthDate: '1987-03-17', gender: '여성', age: 40, prescriptionNo: '-', comorbidities: '-', adherenceRate: 0, phone: '010-6371-5228', pharmacist: '김약사', lastVisit: '2026-02-04', membership: true, managementStatus: '정기 상담' },
-  { id: '6', name: '류현미', status: 'normal', medicationStatus: '미실시', birthDate: '1982-04-22', gender: '여성', age: 45, prescriptionNo: '-', comorbidities: '-', adherenceRate: 0, phone: '010-8867-6868', pharmacist: '최약사', lastVisit: '2026-02-04', membership: true, managementStatus: '정기 상담' },
-  { id: '7', name: '이용운', status: 'normal', medicationStatus: '미실시', birthDate: '1977-05-20', gender: '남성', age: 50, prescriptionNo: '-', comorbidities: '-', adherenceRate: 0, phone: '010-2626-6159', pharmacist: '최약사', lastVisit: '2026-02-04', membership: false, managementStatus: '초대하기' },
-  { id: '8', name: '임유미', status: 'normal', medicationStatus: '미실시', birthDate: '1992-11-14', gender: '여성', age: 35, prescriptionNo: '-', comorbidities: '-', adherenceRate: 0, phone: '010-3616-8575', pharmacist: '최약사', lastVisit: '2026-02-04', membership: true, managementStatus: '정기 상담' },
-  { id: '9', name: '수민테스트', status: 'risk', medicationStatus: '당뇨 • 고혈압', birthDate: '1971-02-04', gender: '남성', age: 56, prescriptionNo: '-', comorbidities: '-', adherenceRate: 60, phone: '010-0160-0247', pharmacist: '박약사', lastVisit: '2026-02-04', membership: true, managementStatus: '상담 필요' },
-  { id: '10', name: '박서희', status: 'risk', medicationStatus: '당뇨(전) • 고혈압(전)', birthDate: '1996-08-24', gender: '여성', age: 31, prescriptionNo: '-', comorbidities: '비만, 우울증', adherenceRate: 88, phone: '010-9914-8158', pharmacist: '김약사', lastVisit: '2026-02-03', membership: true, managementStatus: '집중 관리' },
+  { id: '1', name: '십칠스프린트', status: 'normal', medicationStatus: '고혈압', birthDate: '1987-08-03', gender: '여성', age: 40, prescriptionNo: '2305-1201', comorbidities: '-', adherenceRate: 85, phone: '010-3423-7918', pharmacist: '김약사', lastVisit: '2026-02-05', membership: true, managementStatus: '정기 상담 예정', registeredAt: '2026-01-20 14:30', prescriptionCount: 12 },
+  { id: '2', name: '미정스프린트', status: 'new', medicationStatus: '당뇨', birthDate: '2001-04-18', gender: '여성', age: 26, prescriptionNo: '2305-1202', comorbidities: '-', adherenceRate: 40, phone: '010-2488-3976', pharmacist: '김약사', lastVisit: '2026-02-05', membership: true, managementStatus: '상담 필요', registeredAt: '2026-02-01 10:15', prescriptionCount: 5 },
+  { id: '3', name: '최수리', status: 'risk', medicationStatus: '고혈압', birthDate: '1998-03-04', gender: '여성', age: 29, prescriptionNo: '-', comorbidities: '비만', adherenceRate: 20, phone: '010-7793-6958', pharmacist: '이약사', lastVisit: '2026-02-05', membership: true, managementStatus: '집중 관리', registeredAt: '2025-12-15 09:40', prescriptionCount: 24 },
+  { id: '4', name: '박민지', status: 'risk', medicationStatus: '당뇨(전) • 고혈압', birthDate: '1996-05-08', gender: '여성', age: 31, prescriptionNo: '2305-1150', comorbidities: '수면장애', adherenceRate: 95, phone: '010-6485-1585', pharmacist: '박약사', lastVisit: '2026-02-04', membership: false, managementStatus: '가입 권유', registeredAt: '2026-02-10 16:20', prescriptionCount: 3 },
+  { id: '5', name: '김미래', status: 'normal', medicationStatus: '미실시', birthDate: '1987-03-17', gender: '여성', age: 40, prescriptionNo: '-', comorbidities: '-', adherenceRate: 0, phone: '010-6371-5228', pharmacist: '김약사', lastVisit: '2026-02-04', membership: true, managementStatus: '정기 상담', registeredAt: '2026-01-05 11:00', prescriptionCount: 8 },
+  { id: '6', name: '류현미', status: 'normal', medicationStatus: '미실시', birthDate: '1982-04-22', gender: '여성', age: 45, prescriptionNo: '-', comorbidities: '-', adherenceRate: 0, phone: '010-8867-6868', pharmacist: '최약사', lastVisit: '2026-02-04', membership: true, managementStatus: '정기 상담', registeredAt: '2025-11-20 15:45', prescriptionCount: 15 },
+  { id: '7', name: '이용운', status: 'normal', medicationStatus: '미실시', birthDate: '1977-05-20', gender: '남성', age: 50, prescriptionNo: '-', comorbidities: '-', adherenceRate: 0, phone: '010-2626-6159', pharmacist: '최약사', lastVisit: '2026-02-04', membership: false, managementStatus: '초대하기', registeredAt: '2026-02-15 13:10', prescriptionCount: 1 },
+  { id: '8', name: '임유미', status: 'normal', medicationStatus: '미실시', birthDate: '1992-11-14', gender: '여성', age: 35, prescriptionNo: '-', comorbidities: '-', adherenceRate: 0, phone: '010-3616-8575', pharmacist: '최약사', lastVisit: '2026-02-04', membership: true, managementStatus: '정기 상담', registeredAt: '2026-01-30 17:20', prescriptionCount: 4 },
+  { id: '9', name: '수민테스트', status: 'risk', medicationStatus: '당뇨 • 고혈압', birthDate: '1971-02-04', gender: '남성', age: 56, prescriptionNo: '-', comorbidities: '-', adherenceRate: 60, phone: '010-0160-0247', pharmacist: '박약사', lastVisit: '2026-02-04', membership: true, managementStatus: '상담 필요', registeredAt: '2025-10-10 12:00', prescriptionCount: 30 },
+  { id: '10', name: '박서희', status: 'risk', medicationStatus: '당뇨(전) • 고혈압(전)', birthDate: '1996-08-24', gender: '여성', age: 31, prescriptionNo: '-', comorbidities: '비만, 우울증', adherenceRate: 88, phone: '010-9914-8158', pharmacist: '김약사', lastVisit: '2026-02-03', membership: true, managementStatus: '집중 관리', registeredAt: '2026-02-05 08:50', prescriptionCount: 7 },
 ];
 
 interface PatientListProps {
@@ -74,11 +77,31 @@ const DiseaseTooltip: React.FC = () => (
 
 
 export const PatientList: React.FC<PatientListProps> = ({ onPatientClick }) => {
+  const [sortKey, setSortKey] = useState<keyof Patient>('registeredAt');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+
   const handlePatientClick = (patient: Patient) => {
     if (onPatientClick && (patient.name === '십칠스프린트' || patient.name === '미정스프린트')) {
       onPatientClick(patient.id);
     }
   };
+
+  const handleSort = (key: keyof Patient) => {
+    if (sortKey === key) {
+      setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+    } else {
+      setSortKey(key);
+      setSortOrder('desc');
+    }
+  };
+
+  const sortedPatients = [...MOCK_DATA].sort((a, b) => {
+    const aVal = a[sortKey];
+    const bVal = b[sortKey];
+    if (aVal < bVal) return sortOrder === 'asc' ? -1 : 1;
+    if (aVal > bVal) return sortOrder === 'asc' ? 1 : -1;
+    return 0;
+  });
 
   return (
     <div className="bg-gray-50 min-h-[calc(100vh-64px)]">
@@ -116,29 +139,53 @@ export const PatientList: React.FC<PatientListProps> = ({ onPatientClick }) => {
           <div className="overflow-x-auto">
             <table className="w-full min-w-[1200px] table-fixed">
               <thead className="bg-gray-50 border-b border-gray-200">
-              <tr>
-                  <th className="px-4 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider w-[14.28%]">이름</th>
-                  <th className="px-4 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider w-[14.28%]">휴대폰 번호</th>
-                  <th className="px-4 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider w-[14.28%]">성별</th>
-                  <th className="px-4 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider w-[14.28%]">생년월일</th>
-                  <th className="px-4 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider w-[14.28%]">나이</th>
-                  <th className="px-4 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider w-[14.28%]">
-                    <span className="flex items-center gap-1">
+                <tr>
+                  <th className="px-4 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider w-[14%] cursor-pointer group" onClick={() => handleSort('registeredAt')}>
+                    <div className="flex items-center gap-1">
+                      단골 등록 일시
+                      <ArrowUpDown size={14} className={clsx("transition-colors", sortKey === 'registeredAt' ? "text-blue-500" : "text-gray-300 group-hover:text-gray-400")} />
+                    </div>
+                  </th>
+                  <th className="px-4 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider w-[10%] cursor-pointer group" onClick={() => handleSort('name')}>
+                    <div className="flex items-center gap-1">
+                      고객명
+                      <ArrowUpDown size={14} className={clsx("transition-colors", sortKey === 'name' ? "text-blue-500" : "text-gray-300 group-hover:text-gray-400")} />
+                    </div>
+                  </th>
+                  <th className="px-4 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider w-[10%] cursor-pointer group" onClick={() => handleSort('birthDate')}>
+                    <div className="flex items-center gap-1">
+                      생년월일
+                      <ArrowUpDown size={14} className={clsx("transition-colors", sortKey === 'birthDate' ? "text-blue-500" : "text-gray-300 group-hover:text-gray-400")} />
+                    </div>
+                  </th>
+                  <th className="px-4 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider w-[12%]">휴대폰 번호</th>
+                  <th className="px-4 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider w-[8%]">성별</th>
+                  <th className="px-4 py-4 text-center text-xs font-bold text-gray-500 uppercase tracking-wider w-[10%] cursor-pointer group" onClick={() => handleSort('prescriptionCount')}>
+                    <div className="flex items-center justify-center gap-1">
+                      처방전 수
+                      <ArrowUpDown size={14} className={clsx("transition-colors", sortKey === 'prescriptionCount' ? "text-blue-500" : "text-gray-300 group-hover:text-gray-400")} />
+                    </div>
+                  </th>
+                  <th className="px-4 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider w-[22%] cursor-pointer group" onClick={() => handleSort('medicationStatus')}>
+                    <div className="flex items-center gap-1">
                       관리 질환
                       <DiseaseTooltip />
-                    </span>
+                      <ArrowUpDown size={14} className={clsx("transition-colors", sortKey === 'medicationStatus' ? "text-blue-500" : "text-gray-300 group-hover:text-gray-400")} />
+                    </div>
                   </th>
-                  <th className="px-4 py-4 text-center text-xs font-bold text-gray-500 uppercase tracking-wider w-[14.28%]">
-                    <span className="flex items-center justify-center gap-1">
-                      복약 순응도 (30일)
+                  <th className="px-4 py-4 text-center text-xs font-bold text-gray-500 uppercase tracking-wider w-[14%] cursor-pointer group" onClick={() => handleSort('adherenceRate')}>
+                    <div className="flex items-center justify-center gap-1">
+                      30일 복약 순응도
                       <AdherenceTooltip />
-                    </span>
+                      <ArrowUpDown size={14} className={clsx("transition-colors", sortKey === 'adherenceRate' ? "text-blue-500" : "text-gray-300 group-hover:text-gray-400")} />
+                    </div>
                   </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
-                {MOCK_DATA.map((patient) => (
+                {sortedPatients.map((patient) => (
                   <tr key={patient.id} className="hover:bg-blue-50/50 transition-colors">
+                    <td className="px-4 py-4 text-sm text-gray-600 tabular-nums">{patient.registeredAt}</td>
                     <td className="px-4 py-4">
                       <button
                         onClick={() => handlePatientClick(patient)}
@@ -156,10 +203,10 @@ export const PatientList: React.FC<PatientListProps> = ({ onPatientClick }) => {
                         </span>
                       </button>
                     </td>
+                    <td className="px-4 py-4 text-sm text-gray-600 tabular-nums">{patient.birthDate}</td>
                     <td className="px-4 py-4 text-sm text-gray-600 font-medium">{patient.phone}</td>
                     <td className="px-4 py-4 text-sm text-gray-600">{patient.gender}</td>
-                    <td className="px-4 py-4 text-sm text-gray-600 tabular-nums">{patient.birthDate}</td>
-                    <td className="px-4 py-4 text-sm text-gray-600">{patient.age}세</td>
+                    <td className="px-4 py-4 text-center text-sm text-gray-900 font-bold">{patient.prescriptionCount}건</td>
                     <td className="px-4 py-4 text-sm text-gray-600">
                       <div className="flex flex-wrap gap-1">
                         {patient.medicationStatus === '미실시' ? (
@@ -185,7 +232,10 @@ export const PatientList: React.FC<PatientListProps> = ({ onPatientClick }) => {
                     </td>
                     <td className="px-4 py-4 text-center">
                       <div className="flex flex-col items-center">
-                        <span className="text-sm text-gray-600">
+                        <span className={clsx(
+                          "text-sm font-bold",
+                          patient.adherenceRate >= 80 ? "text-emerald-600" : patient.adherenceRate >= 50 ? "text-orange-600" : "text-red-500"
+                        )}>
                           {patient.adherenceRate}%
                         </span>
                       </div>

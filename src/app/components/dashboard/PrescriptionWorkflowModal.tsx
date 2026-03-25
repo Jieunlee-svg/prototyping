@@ -389,7 +389,7 @@ export const PrescriptionWorkflowModal: React.FC<PrescriptionWorkflowModalProps>
                 <div>
                   <div className="text-[17px] font-bold text-gray-900">{prescription.patientName}</div>
                   <div className="text-xs text-gray-400 mt-0.5">
-                    {prescription.birthDate} · {prescription.gender || ''} · {prescription.phone}
+                    {prescription.birthDate} · 40세 · {prescription.gender || ''} · {prescription.phone}
                   </div>
                 </div>
               </div>
@@ -739,8 +739,10 @@ export const PrescriptionWorkflowModal: React.FC<PrescriptionWorkflowModalProps>
                             <span className="font-semibold text-sm text-gray-800">{prescription.patientName}</span>
                           </div>
                           <div className="flex items-center justify-between px-4 py-3.5">
-                            <span className="text-xs text-gray-400">휴대폰 번호</span>
-                            <span className="font-semibold text-sm text-gray-800">{prescription.phone}</span>
+                            <span className="text-xs text-gray-400">고객 정보</span>
+                            <span className="font-semibold text-sm text-gray-800">
+                              {prescription.birthDate} · 40세 · {prescription.gender || '—'} · {prescription.phone}
+                            </span>
                           </div>
                           <div className="flex items-center justify-between px-4 py-3.5">
                             <span className="text-xs text-gray-400">단골 여부</span>

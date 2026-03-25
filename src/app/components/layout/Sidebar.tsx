@@ -97,7 +97,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           {[
             { icon: Users, label: '단골 고객', active: isItemActive('단골 고객'), onClick: onDashboardClick },
             { icon: Stethoscope, label: '처방전', active: isItemActive('처방전'), onClick: onPrescriptionClick },
-            { icon: HeartPulse, label: '복약 상담 TBD', active: isConsultationActive, onClick: onConsultationCClick },
+            // { icon: HeartPulse, label: '복약 상담 TBD', active: isConsultationActive, onClick: onConsultationCClick },
             { icon: MessageSquare, label: '앱 설치 문자 발송 TBD', active: isSmsActive, onClick: onSmsClick },
             // 공지사항 메뉴 숨김 (복원 시 아래 주석 해제)
             // { icon: Bell, label: '공지사항 TBD', active: isItemActive('공지사항 TBD'), onClick: onNoticeClick },
@@ -189,7 +189,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </li>
           ))}
 
-          {/* 복약 상담 with sub-menu */}
+          {/* 복약 상담 메뉴 숨김 (복원 시 아래 주석 블록 전체를 해제)
           <li>
             <a
               href="#"
@@ -243,6 +243,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               </ul>
             )}
           </li>
+          */}
 
           {/* 앱 설치 문자 발송 with sub-menu */}
           <li>

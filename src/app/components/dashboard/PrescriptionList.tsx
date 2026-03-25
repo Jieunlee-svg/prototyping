@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import {
-  FileText, Camera, Printer, Search, CheckCircle2, X, Bell, Zap, Send, ChevronDown, Check
+  FileText, Camera, Printer, Search, CheckCircle2, X, Bell, Zap, Send, ChevronDown, Check, ArrowUpDown
 } from 'lucide-react';
 import { clsx } from 'clsx';
 import { PrescriptionWorkflowModal } from './PrescriptionWorkflowModal';
@@ -64,6 +64,20 @@ export const PrescriptionList: React.FC<{ onOpenSettings?: () => void; onPatient
   const notifTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const statusDropdownRef = useRef<HTMLDivElement | null>(null);
 
+  // ── Sorting State
+  const [sortConfig, setSortConfig] = useState<{ key: keyof Prescription | null; direction: 'asc' | 'desc' }>({
+    key: 'receivedAt',
+    direction: 'desc'
+  });
+
+  const handleSort = (key: keyof Prescription) => {
+    let direction: 'asc' | 'desc' = 'asc';
+    if (sortConfig.key === key && sortConfig.direction === 'asc') {
+      direction = 'desc';
+    }
+    setSortConfig({ key, direction });
+  };
+
   // ── 상태 드롭다운 click-outside
   useEffect(() => {
     const handler = (e: MouseEvent) => {
@@ -107,6 +121,16 @@ export const PrescriptionList: React.FC<{ onOpenSettings?: () => void; onPatient
     return (filter === 'all' || p.source === filter) && (statusFilter === 'all' || p.status === statusFilter);
   });
 
+  // ── Sorted rows
+  const sortedPrescriptions = [...filteredPrescriptions].sort((a, b) => {
+    const key = sortConfig.key || 'receivedAt';
+    const aVal = a[key] ?? '';
+    const bVal = b[key] ?? '';
+    if (aVal < bVal) return sortConfig.direction === 'asc' ? -1 : 1;
+    if (aVal > bVal) return sortConfig.direction === 'asc' ? 1 : -1;
+    return 0;
+  });
+
   // ── Table classes
   const th = 'px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wider';
   const thC = 'px-4 py-3 text-center text-xs font-semibold text-gray-500 uppercase tracking-wider';
@@ -116,8 +140,36 @@ export const PrescriptionList: React.FC<{ onOpenSettings?: () => void; onPatient
   // ── Header
   const renderHeader = () => (
     <tr>
-      <th className={th}>접수일시</th>
-      <th className={th}>고객명</th>
+      <th className={th}>
+        <button
+          onClick={() => handleSort('receivedAt')}
+          className="flex items-center gap-1.5 hover:text-gray-900 group transition-colors focus:outline-none"
+        >
+          접수일시
+          <ArrowUpDown 
+            size={12} 
+            className={clsx(
+              'transition-colors',
+              sortConfig.key === 'receivedAt' ? 'text-blue-500' : 'text-gray-300 group-hover:text-blue-400'
+            )} 
+          />
+        </button>
+      </th>
+      <th className={th}>
+        <button
+          onClick={() => handleSort('patientName')}
+          className="flex items-center gap-1.5 hover:text-gray-900 group transition-colors focus:outline-none"
+        >
+          고객명
+          <ArrowUpDown 
+            size={12} 
+            className={clsx(
+              'transition-colors',
+              sortConfig.key === 'patientName' ? 'text-blue-500' : 'text-gray-300 group-hover:text-blue-400'
+            )} 
+          />
+        </button>
+      </th>
       <th className={th}>생년월일</th>
       <th className={th}>휴대폰 번호</th>
       <th className={th}>접수 경로</th>
@@ -315,8 +367,8 @@ export const PrescriptionList: React.FC<{ onOpenSettings?: () => void; onPatient
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">{renderHeader()}</thead>
               <tbody className="bg-white divide-y divide-gray-100">
-                {filteredPrescriptions.map(p => renderRow(p))}
-                {filteredPrescriptions.length === 0 && (
+                {sortedPrescriptions.map(p => renderRow(p))}
+                {sortedPrescriptions.length === 0 && (
                   <tr><td colSpan={10} className="py-16 text-center text-gray-400 text-sm">접수된 처방전이 없습니다.</td></tr>
                 )}
               </tbody>
