@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import {
-  FileText, Camera, Printer, Search, CheckCircle2, X, Bell, Zap, Send, ChevronDown, Check, ArrowUpDown
+  FileText, Camera, Printer, Search, CheckCircle2, X, Bell, Zap, Send, ChevronDown, Check, ArrowUpDown, Info
 } from 'lucide-react';
 import { clsx } from 'clsx';
 import { PrescriptionWorkflowModal } from './PrescriptionWorkflowModal';
@@ -180,7 +180,18 @@ export const PrescriptionList: React.FC<{ onOpenSettings?: () => void; onPatient
       <th className={thC}>대체조제 동의</th>
       <th className={th}>수령 방법</th>
       <th className={th}>발행 병원</th>
-      <th className={th}>상태</th>
+      <th className={th}>
+        <div className="flex items-center gap-1">
+          상태
+          <span className="relative group inline-flex">
+            <Info size={12} className="text-gray-400 cursor-help" />
+            <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-52 rounded-xl bg-gray-900 px-3 py-2 text-xs text-white shadow-2xl opacity-0 group-hover:opacity-100 transition-all duration-200 z-[200] normal-case font-normal text-center leading-relaxed invisible group-hover:visible border border-gray-700 whitespace-nowrap">
+              <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-gray-900 transform rotate-45 border-b border-r border-gray-700" />
+              이 상태는 고객 앱에 반영됩니다.
+            </span>
+          </span>
+        </div>
+      </th>
       <th className={thC}>복약 상담</th>
     </tr>
   );

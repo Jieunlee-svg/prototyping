@@ -81,7 +81,7 @@ export const PatientList: React.FC<PatientListProps> = ({ onPatientClick }) => {
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
   const handlePatientClick = (patient: Patient) => {
-    if (onPatientClick && (patient.name === '십칠스프린트' || patient.name === '미정스프린트')) {
+    if (onPatientClick && patient.name !== '미정스프린트') {
       onPatientClick(patient.id);
     }
   };
@@ -189,15 +189,15 @@ export const PatientList: React.FC<PatientListProps> = ({ onPatientClick }) => {
                     <td className="px-4 py-4">
                       <button
                         onClick={() => handlePatientClick(patient)}
-                        disabled={patient.name !== '십칠스프린트' && patient.name !== '미정스프린트'}
+                        disabled={patient.name === '미정스프린트'}
                         className={clsx(
                           "flex items-center space-x-2 text-left group",
-                          (patient.name === '십칠스프린트' || patient.name === '미정스프린트') ? "cursor-pointer" : "cursor-default"
+                          patient.name !== '미정스프린트' ? "cursor-pointer" : "cursor-default"
                         )}
                       >
                         <span className={clsx(
                           "font-bold text-gray-900 text-sm",
-                          (patient.name === '십칠스프린트' || patient.name === '미정스프린트') && "group-hover:text-blue-600"
+                          patient.name !== '미정스프린트' && "group-hover:text-blue-600"
                         )}>
                           {patient.name}
                         </span>
@@ -232,12 +232,16 @@ export const PatientList: React.FC<PatientListProps> = ({ onPatientClick }) => {
                     </td>
                     <td className="px-4 py-4 text-center">
                       <div className="flex flex-col items-center">
-                        <span className={clsx(
-                          "text-sm font-bold",
-                          patient.adherenceRate >= 80 ? "text-emerald-600" : patient.adherenceRate >= 50 ? "text-orange-600" : "text-red-500"
-                        )}>
-                          {patient.adherenceRate}%
-                        </span>
+                        {(patient.adherenceRate === 20 || patient.adherenceRate === 40) ? (
+                          <span className="text-sm font-medium text-gray-400">기록 없음</span>
+                        ) : (
+                          <span className={clsx(
+                            "text-sm font-bold",
+                            patient.adherenceRate >= 80 ? "text-emerald-600" : patient.adherenceRate >= 50 ? "text-orange-600" : "text-red-500"
+                          )}>
+                            {patient.adherenceRate}%
+                          </span>
+                        )}
                       </div>
                     </td>
                   </tr>
