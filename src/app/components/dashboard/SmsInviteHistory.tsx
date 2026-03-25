@@ -6,6 +6,8 @@ import {
     XCircle,
     Clock,
     ChevronDown,
+    ChevronUp,
+    ChevronsUpDown,
 } from 'lucide-react';
 import { clsx } from 'clsx';
 
@@ -50,27 +52,55 @@ function JoinedBadge({ status }: { status: SmsRecord['joined'] }) {
         return (
             <span className="inline-flex items-center gap-1 text-xs font-medium text-amber-500 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-100">
                 <Clock size={12} />
-                가입 대기 중
+                초대 전송됨
             </span>
         );
     }
     return (
         <span className="inline-flex items-center gap-1 text-xs font-medium text-gray-400 bg-gray-50 px-2 py-0.5 rounded-full border border-gray-100">
             <XCircle size={12} />
-            초대 링크 만료
+            초대 만료
         </span>
     );
 }
 
+type SortKey = 'sentAt' | 'joinedAt';
+type SortDir = 'asc' | 'desc';
+
 export const SmsInviteHistory: React.FC = () => {
     const [joinedFilter, setJoinedFilter] = useState<'all' | 'joined' | 'pending' | 'expired'>('all');
     const [search, setSearch] = useState('');
+    const [sortKey, setSortKey] = useState<SortKey>('sentAt');
+    const [sortDir, setSortDir] = useState<SortDir>('desc');
 
-    const filtered = MOCK_RECORDS.filter((r) => {
-        if (joinedFilter !== 'all' && r.joined !== joinedFilter) return false;
-        if (search && !r.phone.includes(search)) return false;
-        return true;
-    });
+    const handleSort = (key: SortKey) => {
+        if (sortKey === key) {
+            setSortDir(d => d === 'asc' ? 'desc' : 'asc');
+        } else {
+            setSortKey(key);
+            setSortDir('desc');
+        }
+    };
+
+    const filtered = MOCK_RECORDS
+        .filter((r) => {
+            if (joinedFilter !== 'all' && r.joined !== joinedFilter) return false;
+            if (search && !r.phone.includes(search)) return false;
+            return true;
+        })
+        .sort((a, b) => {
+            let aVal: string;
+            let bVal: string;
+            if (sortKey === 'sentAt') {
+                aVal = a.sentAt;
+                bVal = b.sentAt;
+            } else {
+                aVal = a.joinedAt ?? '';
+                bVal = b.joinedAt ?? '';
+            }
+            const cmp = aVal.localeCompare(bVal);
+            return sortDir === 'asc' ? cmp : -cmp;
+        });
 
     return (
         <div className="flex flex-col h-full bg-gray-50 relative">
@@ -82,8 +112,8 @@ export const SmsInviteHistory: React.FC = () => {
                     {([
                         { value: 'all', label: '전체 가입상태' },
                         { value: 'joined', label: '가입 완료' },
-                        { value: 'pending', label: '가입 대기 중' },
-                        { value: 'expired', label: '초대 링크 만료' },
+                        { value: 'pending', label: '초대 전송됨' },
+                        { value: 'expired', label: '초대 만료' },
                     ] as const).map(({ value, label }) => (
                         <button
                             key={value}
@@ -125,9 +155,12 @@ export const SmsInviteHistory: React.FC = () => {
                             <thead className="bg-gray-50 border-b border-gray-200 sticky top-0 z-10">
                                 <tr>
                                     <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                                        <div className="flex items-center gap-1 cursor-pointer hover:text-gray-700">
-                                            초대장 발송일시 <ChevronDown size={12} />
-                                        </div>
+                                        <button onClick={() => handleSort('sentAt')} className="flex items-center gap-1 hover:text-gray-700 transition-colors">
+                                            초대장 발송일시
+                                            {sortKey === 'sentAt'
+                                                ? (sortDir === 'asc' ? <ChevronUp size={12} /> : <ChevronDown size={12} />)
+                                                : <ChevronsUpDown size={12} className="text-gray-300" />}
+                                        </button>
                                     </th>
                                     <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">
                                         휴대전화 번호
@@ -136,7 +169,12 @@ export const SmsInviteHistory: React.FC = () => {
                                         상태
                                     </th>
                                     <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                                        웰체크 가입일시
+                                        <button onClick={() => handleSort('joinedAt')} className="flex items-center gap-1 hover:text-gray-700 transition-colors">
+                                            웰체크 가입일시
+                                            {sortKey === 'joinedAt'
+                                                ? (sortDir === 'asc' ? <ChevronUp size={12} /> : <ChevronDown size={12} />)
+                                                : <ChevronsUpDown size={12} className="text-gray-300" />}
+                                        </button>
                                     </th>
                                 </tr>
                             </thead>
@@ -156,7 +194,7 @@ export const SmsInviteHistory: React.FC = () => {
                                             <td className="px-4 py-3.5 text-gray-700 font-medium">
                                                 {r.sentAt}
                                             </td>
-                                            <td className="px-4 py-3.5 text-gray-800 font-mono tracking-wide">
+                                            <td className="px-4 py-3.5 text-gray-700 font-medium">
                                                 {r.phone}
                                             </td>
                                             <td className="px-4 py-3.5">
@@ -167,7 +205,7 @@ export const SmsInviteHistory: React.FC = () => {
                                                     r.joinedAt
                                                 ) : (
                                                     <span className="text-gray-400">
-                                                        {r.joined === 'pending' ? '가입 대기 중' : '초대 링크 만료'}
+                                                        {r.joined === 'pending' ? '초대 전송됨' : '초대 만료'}
                                                     </span>
                                                 )}
                                             </td>
