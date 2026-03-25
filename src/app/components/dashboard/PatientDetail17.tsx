@@ -43,7 +43,7 @@ const MOCK_PRESCRIPTIONS: Prescription[] = [
   { id: 'RX-17-005', receivedAt: '2026-03-17 10:30', source: 'app_camera',  status: 'received',  hospitalName: '성모병원',        patientName: '십칠스프린트', birthDate: '1987-03-12', phone: '010-1234-5678', diseaseCode: 'I10', isConsentSubstitute: true, deliveryMethod: '본인 방문' },
   { id: 'RX-17-004', receivedAt: '2026-03-17 09:15', source: 'fax_telemed', status: 'received',  hospitalName: '서울내과',        patientName: '십칠스프린트', birthDate: '1987-03-12', phone: '010-1234-5678', diseaseCode: 'I10', isConsentSubstitute: true, deliveryMethod: '본인 방문' },
   { id: 'RX-17-003', receivedAt: '2026-03-16 16:45', source: 'fax_telemed', status: 'completed', hospitalName: '연세세브란스',    patientName: '십칠스프린트', birthDate: '1987-03-12', phone: '010-1234-5678', diseaseCode: 'I10', isConsentSubstitute: true, deliveryMethod: '가족 방문' },
-  { id: 'RX-17-002', receivedAt: '2026-03-15 14:30', source: 'app_camera',  status: 'cancelled', hospitalName: '김민수이비인후과', patientName: '십칠스프린트', birthDate: '1987-03-12', phone: '010-1234-5678', diseaseCode: 'I10', isConsentSubstitute: false },
+  { id: 'RX-17-002', receivedAt: '2026-03-15 14:30', source: 'app_camera',  status: 'cancelled', hospitalName: '김민수이비인후과', patientName: '십칠스프린트', birthDate: '1987-03-12', phone: '010-1234-5678', diseaseCode: 'I10', isConsentSubstitute: true, deliveryMethod: '본인 방문' },
   { id: 'RX-17-001', receivedAt: '2026-03-14 11:20', source: 'app_camera',  status: 'completed', hospitalName: '우리들병원',      patientName: '십칠스프린트', birthDate: '1987-03-12', phone: '010-1234-5678', diseaseCode: 'I10', isConsentSubstitute: true, deliveryMethod: '본인 방문' },
 ];
 
@@ -249,14 +249,7 @@ export const PatientDetail17: React.FC<PatientDetailProps> = ({ onBack, patientI
                     <input type="text" placeholder="병원명 검색" className="w-44 pl-8 pr-3 py-1.5 text-[13px] border border-gray-200 rounded-full bg-gray-50 focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none transition-all placeholder:text-gray-400" />
                     <Search className="absolute left-2.5 top-2 text-gray-400" size={14} />
                   </div>
-                </div>
               </div>
-
-              <p className="text-xs text-blue-600 flex items-center gap-1.5 leading-relaxed bg-blue-50 border border-blue-100 rounded-lg px-3 py-2">
-                <CheckCircle2 size={14} />
-                최근 접수된 처방전부터 상단에 표시됩니다. "보기" 버튼을 클릭하여 상세 내용을 확인하고 조제를 시작할 수 있습니다.
-              </p>
-            </div>
 
             <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-auto flex-1 custom-scrollbar">
               <table className="min-w-full divide-y divide-gray-200">
