@@ -77,7 +77,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     if (label === '처방전' && activeView === 'prescription') return true;
     if (label === '단골 고객' && (activeView === 'list' || activeView === 'detail')) return true;
     if (label === '공지사항 TBD' && activeView === 'notice') return true;
-    if (label === '내 정보' && activeView === 'my-info') return true;
+    if (label === '계정 정보' && activeView === 'my-info') return true;
     return false;
   };
 
@@ -350,7 +350,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   : "border-gray-300 hover:bg-gray-50 text-gray-700"
               )}
             >
-              내 정보
+              계정 정보
             </button>
             <button
               onClick={onLogout}

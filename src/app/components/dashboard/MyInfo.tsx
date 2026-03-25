@@ -88,7 +88,7 @@ export const MyInfo: React.FC = () => {
 
             {/* Header */}
             <div className="bg-white border-b border-gray-200 p-6 z-10">
-                <h1 className="text-2xl font-bold text-gray-900">내 정보</h1>
+                <h1 className="text-2xl font-bold text-gray-900">계정 정보</h1>
                 <p className="text-sm text-gray-500 mt-1">계정 정보를 확인하고 수정할 수 있습니다.</p>
             </div>
 
