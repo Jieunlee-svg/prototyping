@@ -41,6 +41,11 @@ export const SmsInvite: React.FC<SmsInviteProps> = () => {
   const phoneRef = useRef<HTMLInputElement>(null);
   const phoneDropRef = useRef<HTMLDivElement>(null);
 
+  // 최초 진입 시 입력 필드 자동 포커스
+  useEffect(() => {
+    phoneRef.current?.focus();
+  }, []);
+
   // 외부 클릭 시 드롭다운 닫기
   useEffect(() => {
     const handler = (e: MouseEvent) => {
