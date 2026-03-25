@@ -300,7 +300,7 @@ export const PharmacySettings: React.FC<PharmacySettingsProps> = ({ initialTab }
 
           {/* ── 기본 정보 탭 ── */}
           {activeTab === 'basic' && (
-            <section className="space-y-5 animate-in fade-in duration-300">
+            <section className="space-y-5 animate-in fade-in duration-300 px-6 py-5 overflow-y-auto">
               <div className="flex justify-end">
                 <SaveBtn disabled={!isFormValid} />
               </div>
@@ -553,7 +553,7 @@ export const PharmacySettings: React.FC<PharmacySettingsProps> = ({ initialTab }
 
           {/* ── 앱 처방전 설정 탭 ── */}
           {activeTab === 'app' && (
-            <section className="space-y-5 animate-in fade-in duration-300">
+            <section className="space-y-5 animate-in fade-in duration-300 px-6 py-5 overflow-y-auto">
               <div className="flex justify-end">
                 <SaveBtn />
               </div>
@@ -608,7 +608,7 @@ export const PharmacySettings: React.FC<PharmacySettingsProps> = ({ initialTab }
 
           {/* ── 복약 알림 기본 설정 탭 ── */}
           {activeTab === 'reminder' && (
-            <section className="space-y-5 animate-in fade-in duration-300">
+            <section className="space-y-5 animate-in fade-in duration-300 px-6 py-5 overflow-y-auto">
               <div className="flex justify-end gap-2">
                 <button
                   type="button"
