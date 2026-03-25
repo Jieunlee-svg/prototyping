@@ -26,18 +26,6 @@ interface ConsultationDetailModalProps {
   onClose: () => void;
 }
 
-const getSendMethodBadge = (method: string) => {
-  const styles: Record<string, string> = {
-    '알림톡': 'bg-yellow-100 text-yellow-800',
-    '웰체크 앱': 'bg-blue-100 text-blue-800',
-    '문자': 'bg-green-100 text-green-800',
-  };
-  return (
-    <span className={clsx('inline-flex px-2.5 py-0.5 rounded-full text-xs font-semibold', styles[method] ?? 'bg-gray-100 text-gray-600')}>
-      {method}
-    </span>
-  );
-};
 
 // 컬럼 섹션 헤더
 const ColHeader: React.FC<{ icon: React.ReactNode; title: string; accent: string }> = ({ icon, title, accent }) => (
@@ -150,7 +138,6 @@ export const ConsultationDetailModal: React.FC<ConsultationDetailModalProps> = (
               accent="bg-emerald-50/70"
             />
             <div className="px-1">
-              <Row label="전송 방법" value={getSendMethodBadge(data.sendMethod)} />
               <Row label="전송 시각" value={data.sentAt} />
               <Row
                 label="복용 횟수"
