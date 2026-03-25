@@ -179,7 +179,7 @@ export const PatientDetail17: React.FC<PatientDetailProps> = ({ onBack, patientI
       </header>
 
       {/* Main Content */}
-      <div className="flex-1 overflow-hidden p-6 max-w-[1600px] mx-auto w-full h-full">
+      <div className="flex-1 overflow-hidden p-6 w-full h-full">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 h-full">
           {/* Left Column: Pharmacist Memo (2 cols) */}
           <section className="lg:col-span-2 flex flex-col min-h-0">
