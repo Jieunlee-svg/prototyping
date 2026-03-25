@@ -446,7 +446,7 @@ export const PharmacySettings: React.FC<PharmacySettingsProps> = ({ initialTab }
                       value={formData.fax}
                       onChange={handleChange}
                       className="w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                      placeholder="예) 02-1234-5679"
+                      placeholder="FAX 번호를 입력하세요 (예: 02-1234-5679)"
                     />
                   </div>
 
