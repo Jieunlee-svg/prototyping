@@ -747,6 +747,10 @@ export const PrescriptionWorkflowModal: React.FC<PrescriptionWorkflowModalProps>
                             <span className="font-semibold text-sm text-gray-800">40세</span>
                           </div>
                           <div className="flex items-center justify-between px-4 py-3.5">
+                            <span className="text-xs text-gray-400">성별</span>
+                            <span className="font-semibold text-sm text-gray-800">{prescription.gender || '—'}</span>
+                          </div>
+                          <div className="flex items-center justify-between px-4 py-3.5">
                             <span className="text-xs text-gray-400">휴대폰 번호</span>
                             <span className="font-semibold text-sm text-gray-800">{prescription.phone}</span>
                           </div>
