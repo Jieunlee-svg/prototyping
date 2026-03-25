@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ChevronDown, X } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 import { LoginScreen } from './LoginScreen';
 
 interface WellcheckLandingProps {
@@ -19,13 +19,7 @@ export const WellcheckLanding: React.FC<WellcheckLandingProps> = ({ onLogin }) =
   if (showLogin) {
     return (
       <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
-        <div className="w-full max-w-[480px] relative">
-          <button
-            onClick={() => setShowLogin(false)}
-            className="absolute -top-4 -right-4 w-9 h-9 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-gray-100 transition-colors"
-          >
-            <X size={18} className="text-gray-600" />
-          </button>
+        <div className="w-full max-w-[480px]">
           <LoginScreen onLogin={onLogin} onClose={() => setShowLogin(false)} />
         </div>
       </div>
