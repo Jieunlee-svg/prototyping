@@ -101,7 +101,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin, onClose }) =>
         {/* Developer Note (Prototype Instruction) */}
         <div className="mt-8 p-6 bg-blue-50 border border-blue-100 rounded-xl">
           <p className="text-sm text-gray-700 leading-relaxed font-medium">
-            이 팝업은 자체 개발 하지 않습니다.<br />
+            이 화면은 자체개발 하지 않습니다.<br />
             <a 
               href="https://mims-account.mcircle.co.kr/login" 
               target="_blank" 

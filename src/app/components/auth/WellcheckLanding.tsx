@@ -126,16 +126,10 @@ export const WellcheckLanding: React.FC<WellcheckLandingProps> = ({ onLogin }) =
         </div>
       </div>
 
-      {/* ── Login Modal ── */}
+      {/* ── Login Full Screen ── */}
       {showLogin && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-          {/* backdrop */}
-          <div
-            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-            onClick={() => setShowLogin(false)}
-          />
-          {/* modal content */}
-          <div className="relative z-10 w-full max-w-[480px]">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-100">
+          <div className="relative w-full max-w-[480px] mx-4">
             {/* close button */}
             <button
               onClick={() => setShowLogin(false)}
