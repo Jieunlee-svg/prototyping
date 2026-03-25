@@ -106,8 +106,26 @@ export const PatientDetail17: React.FC<PatientDetailProps> = ({ onBack, patientI
   // Consultation & Workflow
   const [workflowPrescription, setWorkflowPrescription] = useState<Prescription | null>(null);
   const [selectedConsultation, setSelectedConsultation] = useState<ConsultationData | null>(null);
-  const [sentIds, setSentIds] = useState<Set<string>>(new Set());
-  const [sentConsultations, setSentConsultations] = useState<Record<string, ConsultationData>>({});
+  const [sentIds, setSentIds] = useState<Set<string>>(new Set(['RX-17-003']));
+  const [sentConsultations, setSentConsultations] = useState<Record<string, ConsultationData>>({
+    'RX-17-003': {
+      id: 'RX-17-003',
+      patientName: '십칠스프린트',
+      birthDate: '1987-03-12',
+      gender: '여성',
+      phone: '010-1234-5678',
+      sendMethod: '알림톡',
+      sentAt: '2026-03-16 16:45',
+      frequency: 2,
+      times: ['08:00', '20:00'],
+      relation: '식후 30분',
+      duration: 14,
+      messageContent: '안녕하세요, 십칠스프린트 고객님!\n\n처방전이 접수되었습니다.\n\n💊 복약 안내\n• 복용 횟수: 하루 2회\n• 복용 시점: 식후 30분\n• 복용 시간: 08:00, 20:00\n• 복약 기간: 14일\n\n궁금한 사항은 약국으로 문의해 주세요.',
+      reminderEnabled: true,
+      refillAlertEnabled: true,
+      adherenceRate: 85,
+    },
+  });
   const [openStatusDropdown, setOpenStatusDropdown] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(null);
 
