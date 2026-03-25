@@ -46,7 +46,19 @@ function App() {
   };
 
   if (!isLoggedIn) {
-    return <WellcheckLanding onLogin={() => setIsLoggedIn(true)} />;
+    return (
+      <WellcheckLanding
+        onLogin={(isFirstTime) => {
+          setIsLoggedIn(true);
+          if (isFirstTime) {
+            setSettingsInitialTab('basic');
+            setView('settings');
+          } else {
+            setView('list');
+          }
+        }}
+      />
+    );
   }
 
   return (

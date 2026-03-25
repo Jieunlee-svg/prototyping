@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 
 interface LoginScreenProps {
-  onLogin: () => void;
+  onLogin: (isFirstTime: boolean) => void;
   onClose?: () => void;
 }
 
@@ -10,10 +10,11 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin, onClose }) =>
   const [showPassword, setShowPassword] = useState(false);
   const [id, setId] = useState('');
   const [password, setPassword] = useState('');
+  const [isFirstTime, setIsFirstTime] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onLogin();
+    onLogin(isFirstTime);
   };
 
   return (
@@ -99,20 +100,53 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin, onClose }) =>
         </button>
 
         {/* Developer Note (Prototype Instruction) */}
-        <div className="mt-8 p-6 bg-blue-50 border border-blue-100 rounded-xl">
+        <div className="mt-8 p-6 bg-blue-50 border border-blue-100 rounded-xl space-y-4">
           <p className="text-sm text-gray-700 leading-relaxed font-medium">
             이 화면은 자체개발 하지 않습니다.<br />
-            <a 
-              href="https://mims-account.mcircle.co.kr/login" 
-              target="_blank" 
-              rel="noopener noreferrer" 
+            <a
+              href="https://mims-account.mcircle.co.kr/login"
+              target="_blank"
+              rel="noopener noreferrer"
               className="text-blue-600 hover:underline break-all block my-2"
             >
               https://mims-account.mcircle.co.kr/login
             </a>
             링크를 엽니다.<br />
-            로그인 버튼을 누르고 탐색을 계속 하세요.
+            아래에서 로그인 유형을 선택 후 로그인 버튼을 누르세요.
           </p>
+
+          {/* 프로토타입 분기 선택 */}
+          <div className="border-t border-blue-200 pt-4">
+            <p className="text-xs font-bold text-blue-700 mb-3 uppercase tracking-wider">프로토타입 분기 선택</p>
+            <div className="flex flex-col gap-2">
+              <label className={`flex items-center gap-3 p-3 rounded-lg border-2 cursor-pointer transition-all ${!isFirstTime ? 'border-blue-500 bg-white' : 'border-transparent bg-white/60 hover:bg-white'}`}>
+                <input
+                  type="radio"
+                  name="loginType"
+                  checked={!isFirstTime}
+                  onChange={() => setIsFirstTime(false)}
+                  className="w-4 h-4 text-blue-600"
+                />
+                <div>
+                  <p className="text-sm font-semibold text-gray-800">기존 회원</p>
+                  <p className="text-xs text-gray-500">단골 고객 현황 화면으로 이동</p>
+                </div>
+              </label>
+              <label className={`flex items-center gap-3 p-3 rounded-lg border-2 cursor-pointer transition-all ${isFirstTime ? 'border-blue-500 bg-white' : 'border-transparent bg-white/60 hover:bg-white'}`}>
+                <input
+                  type="radio"
+                  name="loginType"
+                  checked={isFirstTime}
+                  onChange={() => setIsFirstTime(true)}
+                  className="w-4 h-4 text-blue-600"
+                />
+                <div>
+                  <p className="text-sm font-semibold text-gray-800">최초 로그인</p>
+                  <p className="text-xs text-gray-500">약국 설정 &gt; 기본 정보 탭으로 이동</p>
+                </div>
+              </label>
+            </div>
+          </div>
         </div>
       </div>
     </div>

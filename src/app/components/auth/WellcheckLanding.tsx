@@ -3,7 +3,7 @@ import { ChevronDown } from 'lucide-react';
 import { LoginScreen } from './LoginScreen';
 
 interface WellcheckLandingProps {
-  onLogin: () => void;
+  onLogin: (isFirstTime: boolean) => void;
 }
 
 const FAMILY_SITES = [
