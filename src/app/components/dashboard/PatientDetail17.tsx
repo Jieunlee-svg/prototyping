@@ -249,7 +249,9 @@ export const PatientDetail17: React.FC<PatientDetailProps> = ({ onBack, patientI
                     <input type="text" placeholder="병원명 검색" className="w-44 pl-8 pr-3 py-1.5 text-[13px] border border-gray-200 rounded-full bg-gray-50 focus:bg-white focus:border-blue-400 focus:ring-2 focus:ring-blue-100 outline-none transition-all placeholder:text-gray-400" />
                     <Search className="absolute left-2.5 top-2 text-gray-400" size={14} />
                   </div>
+                </div>
               </div>
+            </div>
 
             <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-auto flex-1 custom-scrollbar">
               <table className="min-w-full divide-y divide-gray-200">
