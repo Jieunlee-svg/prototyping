@@ -15,6 +15,23 @@ export const WellcheckLanding: React.FC<WellcheckLandingProps> = ({ onLogin }) =
   const [showLogin, setShowLogin] = useState(false);
   const [showFamilySite, setShowFamilySite] = useState(false);
 
+  // 로그인 화면 — 랜딩 페이지를 완전히 대체
+  if (showLogin) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
+        <div className="w-full max-w-[480px] relative">
+          <button
+            onClick={() => setShowLogin(false)}
+            className="absolute -top-4 -right-4 w-9 h-9 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-gray-100 transition-colors"
+          >
+            <X size={18} className="text-gray-600" />
+          </button>
+          <LoginScreen onLogin={onLogin} onClose={() => setShowLogin(false)} />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="relative min-h-screen flex flex-col font-sans overflow-hidden">
       {/* ── Background Image ── */}
@@ -126,21 +143,6 @@ export const WellcheckLanding: React.FC<WellcheckLandingProps> = ({ onLogin }) =
         </div>
       </div>
 
-      {/* ── Login Full Screen ── */}
-      {showLogin && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-100">
-          <div className="relative w-full max-w-[480px] mx-4">
-            {/* close button */}
-            <button
-              onClick={() => setShowLogin(false)}
-              className="absolute -top-4 -right-4 w-9 h-9 bg-white rounded-full flex items-center justify-center shadow-lg hover:bg-gray-100 transition-colors z-20"
-            >
-              <X size={18} className="text-gray-600" />
-            </button>
-            <LoginScreen onLogin={onLogin} onClose={() => setShowLogin(false)} />
-          </div>
-        </div>
-      )}
     </div>
   );
 };
