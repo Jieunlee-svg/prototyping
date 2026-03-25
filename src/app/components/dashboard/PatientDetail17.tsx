@@ -529,7 +529,7 @@ const ChatChannel: React.FC<{ patientName: string }> = ({ patientName }) => {
       {/* Input Area — 서비스 준비 중 (비활성) */}
       <div className="p-4 bg-white border-t border-gray-100 flex-shrink-0">
         <div className="relative">
-          <div className="absolute left-3 bottom-2.5 flex items-center gap-1.5 text-gray-300">
+          <div className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center gap-1.5 text-gray-300">
             <button disabled className="cursor-not-allowed">
               <Paperclip size={18} />
             </button>
@@ -549,7 +549,7 @@ const ChatChannel: React.FC<{ patientName: string }> = ({ patientName }) => {
           />
           <button
             disabled
-            className="absolute right-2 bottom-1.5 w-9 h-9 rounded-full flex items-center justify-center bg-gray-100 text-gray-300 cursor-not-allowed"
+            className="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full flex items-center justify-center bg-gray-100 text-gray-300 cursor-not-allowed"
           >
             <Send size={16} fill="currentColor" />
           </button>
