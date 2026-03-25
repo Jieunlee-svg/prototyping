@@ -13,7 +13,14 @@ import {
   Search,
   ChevronDown,
   Check,
-  Send
+  Send,
+  Video,
+  Phone,
+  Paperclip,
+  MessageSquare,
+  Mic,
+  Smile,
+  Info
 } from 'lucide-react';
 import { 
   PrescriptionWorkflowModal 
@@ -146,9 +153,6 @@ export const PatientDetail17: React.FC<PatientDetailProps> = ({ onBack, patientI
               <div className="flex flex-col gap-2">
                 <div className="flex items-center gap-3">
                   <h1 className="text-2xl font-bold text-gray-900">{patientInfo.name}</h1>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-100">{patientInfo.disease}</span>
-                  </div>
                 </div>
                 <div className="flex items-center gap-2 text-sm font-medium text-gray-500">
                   <span>{patientInfo.birthDate}</span>
@@ -157,7 +161,7 @@ export const PatientDetail17: React.FC<PatientDetailProps> = ({ onBack, patientI
                   <span className="text-gray-300">·</span>
                   <span>{patientInfo.gender}</span>
                   <span className="text-gray-300">·</span>
-                  <span className="text-blue-600 font-semibold">{patientInfo.phone}</span>
+                  <span>{patientInfo.phone}</span>
                 </div>
               </div>
             </div>
@@ -175,25 +179,25 @@ export const PatientDetail17: React.FC<PatientDetailProps> = ({ onBack, patientI
       </header>
 
       {/* Main Content */}
-      <div className="flex-1 overflow-y-auto p-6 max-w-6xl mx-auto w-full">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          {/* Left Column: Pharmacist Memo (4 cols) */}
-          <section className="lg:col-span-4 space-y-4">
-            <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-              <FileText size={20} className="text-yellow-600" />
+      <div className="flex-1 overflow-hidden p-6 max-w-[1600px] mx-auto w-full h-full">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 h-full">
+          {/* Left Column: Pharmacist Memo (2 cols) */}
+          <section className="lg:col-span-2 flex flex-col min-h-0">
+            <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2 mb-3">
+              <FileText size={18} className="text-yellow-600" />
               약사 메모
             </h3>
-            <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-6 shadow-sm flex flex-col h-[450px]">
-              <div className="flex justify-between items-center mb-4">
-                <span className="text-sm font-bold text-yellow-800 flex items-center gap-2">
-                  <FileText size={18} />
+            <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4 shadow-sm flex flex-col flex-1 min-h-0 relative overflow-hidden">
+              <div className="flex justify-between items-center mb-3">
+                <span className="text-[11px] font-bold text-yellow-800 flex items-center gap-1.5">
+                  <FileText size={14} />
                 </span>
-                <span className={clsx("text-xs transition-colors", isSaving ? "text-blue-600 font-bold" : "text-yellow-600")}>
+                <span className={clsx("text-[10px] transition-colors", isSaving ? "text-blue-600 font-bold" : "text-yellow-600")}>
                   {isSaving ? "작성 중" : "자동 저장됨"}
                 </span>
               </div>
               <textarea
-                className="flex-1 bg-transparent resize-none text-base text-gray-800 placeholder-yellow-800/50 outline-none leading-relaxed custom-scrollbar"
+                className="flex-1 bg-transparent resize-none text-sm text-gray-800 placeholder-yellow-800/40 outline-none leading-relaxed custom-scrollbar"
                 value={memo}
                 onChange={handleMemoChange}
                 placeholder="환자에 대한 특이사항을 입력하세요..."
@@ -201,12 +205,17 @@ export const PatientDetail17: React.FC<PatientDetailProps> = ({ onBack, patientI
             </div>
           </section>
 
-          {/* Right Column: Prescription List Section (8 cols) */}
-          <section className="lg:col-span-8 space-y-4">
+          {/* Center Column: Chat UI (4 cols) */}
+          <section className="lg:col-span-4 flex flex-col min-h-0">
+            <ChatChannel patientName={patientInfo.name} />
+          </section>
+
+          {/* Right Column: Prescription List Section (6 cols) */}
+          <section className="lg:col-span-6 flex flex-col min-h-0 space-y-4">
             <div className="flex flex-col gap-3">
               <div className="flex items-center justify-between">
-                <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
-                  <FileText size={20} className="text-blue-600" />
+                <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2">
+                  <FileText size={18} className="text-blue-600" />
                   보낸 처방전 목록
                 </h3>
               </div>
@@ -249,7 +258,7 @@ export const PatientDetail17: React.FC<PatientDetailProps> = ({ onBack, patientI
               </p>
             </div>
 
-            <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+            <div className="bg-white border border-gray-200 rounded-xl shadow-sm overflow-auto flex-1 custom-scrollbar">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
@@ -263,13 +272,13 @@ export const PatientDetail17: React.FC<PatientDetailProps> = ({ onBack, patientI
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-100">
-                  {filteredPrescriptions.map((rx) => {
+                  {filteredPrescriptions.map((rx: Prescription, index: number) => {
                     const isCancelled = rx.status === 'cancelled';
                     const isSent = sentIds.has(rx.id);
                     const { label, color, bgColor } = STATUS_LABEL[rx.status];
 
                     return (
-                      <tr key={rx.id} className="hover:bg-blue-50/30 transition-colors">
+                      <tr key={rx.id} className="hover:bg-blue-50/30 transition-colors group">
                         <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-500">
                           {rx.receivedAt}
                         </td>
@@ -310,7 +319,10 @@ export const PatientDetail17: React.FC<PatientDetailProps> = ({ onBack, patientI
                           {openStatusDropdown === rx.id && (
                             <div
                               ref={statusDropdownRef}
-                              className="absolute left-0 top-full mt-1 z-[150] bg-white border border-gray-200 rounded-xl shadow-xl w-44 py-3"
+                              className={clsx(
+                                "absolute right-0 z-[150] bg-white border border-gray-200 rounded-xl shadow-xl w-44 py-3",
+                                index >= filteredPrescriptions.length - 2 ? "bottom-full mb-1" : "top-full mt-1"
+                              )}
                             >
                               <p className="px-4 pb-2 text-xs font-bold text-gray-700 border-b border-gray-100 mb-2">상태 변경</p>
                               {(
@@ -451,6 +463,112 @@ const Modals: React.FC<{
     )}
   </>
 );
+
+/* ── Sub-Components ── */
+
+const ChatChannel: React.FC<{ patientName: string }> = ({ patientName }) => {
+  const [inputText, setInputText] = useState('');
+  
+  return (
+    <div className="flex flex-col h-full bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
+      {/* Chat Header */}
+      <div className="px-4 py-3 border-b border-gray-100 flex items-center justify-between flex-shrink-0 bg-white shadow-sm z-10">
+        <div className="flex items-center gap-2">
+          <div className="w-5 h-5 rounded-md bg-blue-50 flex items-center justify-center">
+            <MessageSquare size={13} className="text-blue-600" />
+          </div>
+          <span className="text-sm font-bold text-gray-800">통합 상담 채널</span>
+          <Info size={14} className="text-gray-300 cursor-pointer hover:text-gray-500" />
+        </div>
+        <div className="flex items-center gap-1.5">
+          <button className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors border border-gray-100">
+            <Video size={16} className="text-gray-500" />
+          </button>
+          <button className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors border border-gray-100">
+            <Mic size={16} className="text-gray-500" />
+          </button>
+        </div>
+      </div>
+
+      {/* Message Area */}
+      <div className="flex-1 overflow-y-auto bg-[#F9FAFB] p-4 flex flex-col gap-6 custom-scrollbar">
+        <div className="flex flex-col items-center gap-4 py-2">
+          <span className="px-3 py-1 bg-white/60 border border-gray-100 rounded-full text-[11px] text-gray-400 font-medium">2026년 2월 5일 목요일</span>
+          <div className="px-5 py-1.5 rounded-lg bg-gray-100/80 text-[11px] text-gray-500 font-medium border border-gray-200/50">
+            상담이 시작되었습니다.
+          </div>
+        </div>
+
+        {/* Pharmacy Message */}
+        <div className="flex flex-col items-end gap-1 max-w-[90%] self-end">
+          <div className="bg-blue-600 text-white p-3.5 rounded-2xl rounded-tr-sm text-[13px] leading-relaxed shadow-sm">
+            안녕하세요, {patientName}님 😊<br /><br />
+            웰체크와 함께해 주셔서 감사합니다.<br /><br />
+            건강한 삶은 작은 습관에서 시작됩니다. 웰체크는 {patientName}님의 복약 관리부터 건강 지표 모니터링까지 꾸준히 함께하겠습니다.<br /><br />
+            오늘도 활기차고 건강한 하루 보내세요! 💪<br /><br />
+            서울종로약국 드림
+          </div>
+          <span className="text-[10px] text-gray-400 font-medium mr-1.5 uppercase">09:02 AM</span>
+        </div>
+
+        {/* Prescription Info Message */}
+        <div className="flex flex-col items-end gap-1 max-w-[90%] self-end">
+          <div className="bg-blue-600 text-white p-3.5 rounded-2xl rounded-tr-sm text-[13px] leading-relaxed shadow-sm">
+            <p className="font-bold underline underline-offset-4 mb-3 text-white/90">[복약 상담 안내]</p>
+            안녕하세요, 서울종로약국입니다.<br />
+            처방받으신 약품 안내드립니다.<br /><br />
+            <span className="font-bold text-white/90">[처방 약품]</span><br />
+            1. 노바스크정 5mg (한국화이자제약)<br />
+            2. 타이레놀정 500mg (한국얀센)<br /><br />
+            <span className="font-bold text-white/90">[복약 방법]</span><br />
+            - 노바스크정: 1일 1회, 아침 식후 복용<br />
+            - 타이레놀정: 1일 3회, 식후 30분 복용<br /><br />
+            <span className="font-bold text-white/90">[주의사항]</span><br />
+            - 노바스크정: 임부 또는 임신 가능성 있는 경우 반드시 의사와 상담하세요.<br />
+            - 타이레놀정: 매일 3잔 이상 음주 시 의사와 상의하세요.<br /><br />
+            복용 중 이상 증상이 있으시면 언제든지 문의해 주세요.
+          </div>
+          <span className="text-[10px] text-gray-400 font-medium mr-1.5 uppercase">09:04 AM</span>
+        </div>
+
+        {/* Patient Message */}
+        <div className="flex flex-col items-start gap-1 max-w-[80%]">
+          <div className="bg-white border border-gray-200 text-gray-800 p-3 rounded-2xl rounded-tl-sm text-sm shadow-sm font-medium">
+            감사합니다.
+          </div>
+          <span className="text-[10px] text-gray-400 font-medium ml-1.5 uppercase">09:05 AM</span>
+        </div>
+      </div>
+
+      {/* Input Area */}
+      <div className="p-4 bg-white border-t border-gray-100 flex-shrink-0">
+        <div className="relative group">
+          <div className="absolute left-3 bottom-2.5 flex items-center gap-1.5 text-gray-400">
+            <button className="hover:text-gray-600 transition-colors">
+              <Paperclip size={18} />
+            </button>
+          </div>
+          <textarea
+            value={inputText}
+            onChange={e => setInputText(e.target.value)}
+            className="w-full bg-gray-50 border border-gray-200 rounded-2xl pl-10 pr-12 py-3 text-[13px] text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-400 transition-all resize-none min-h-[50px] max-h-[120px]"
+            placeholder="메시지를 입력하거나 콘텐츠를 드래그하세요..."
+            rows={1}
+          />
+          <button 
+            className={clsx(
+              "absolute right-2 bottom-1.5 w-9 h-9 rounded-full flex items-center justify-center transition-all",
+              inputText.trim() ? "bg-blue-600 text-white shadow-md hover:bg-blue-700 active:scale-95" : "bg-gray-100 text-gray-300 cursor-not-allowed"
+            )}
+            disabled={!inputText.trim()}
+          >
+            <Send size={16} fill="currentColor" />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 interface PatientDetailProps {
   onBack: () => void;

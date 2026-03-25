@@ -98,7 +98,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             { icon: Users, label: '단골 고객', active: isItemActive('단골 고객'), onClick: onDashboardClick },
             { icon: Stethoscope, label: '처방전', active: isItemActive('처방전'), onClick: onPrescriptionClick },
             // { icon: HeartPulse, label: '복약 상담 TBD', active: isConsultationActive, onClick: onConsultationCClick },
-            { icon: MessageSquare, label: '앱 설치 문자 발송 TBD', active: isSmsActive, onClick: onSmsClick },
+            { icon: MessageSquare, label: '앱 설치 문자 발송', active: isSmsActive, onClick: onSmsClick },
             // 공지사항 메뉴 숨김 (복원 시 아래 주석 해제)
             // { icon: Bell, label: '공지사항 TBD', active: isItemActive('공지사항 TBD'), onClick: onNoticeClick },
           ].map((item, idx) => (
@@ -245,58 +245,24 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </li>
           */}
 
-          {/* 앱 설치 문자 발송 with sub-menu */}
+          {/* 앱 설치 문자 발송 */}
           <li>
             <a
               href="#"
               onClick={(e) => {
                 e.preventDefault();
-                const willOpen = !smsOpen;
-                setSmsOpen(willOpen);
-                if (willOpen && onSmsClick) {
-                  onSmsClick();
-                }
+                if (onSmsClick) onSmsClick();
               }}
               className={clsx(
                 "flex items-center px-5 py-3 text-sm font-medium transition-colors",
                 isSmsActive
-                  ? "text-blue-600 bg-blue-50"
+                  ? "text-white bg-blue-600 shadow-md"
                   : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
               )}
             >
               <MessageSquare size={18} className="mr-3" />
-              앱 설치 문자 발송 TBD
-              <span className="ml-auto">
-                {smsOpen ? <ChevronDown size={14} /> : <ChevronRightIcon size={14} />}
-              </span>
+              앱 설치 문자 발송
             </a>
-            {smsOpen && (
-              <ul className="mt-1 space-y-0.5">
-                {[
-                  { icon: MessageSquare, label: '앱 설치 문자 발송 TBD', view: 'sms' as const, onClick: onSmsClick },
-                  { icon: ClipboardList, label: '앱 설치 문자 발송 내역', view: 'sms-history' as const, onClick: onSmsHistoryClick },
-                ].map((sub) => (
-                  <li key={sub.view}>
-                    <a
-                      href="#"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        sub.onClick?.();
-                      }}
-                      className={clsx(
-                        "flex items-center pl-11 pr-5 py-2.5 text-sm transition-colors",
-                        activeView === sub.view
-                          ? "text-white bg-blue-600 font-medium"
-                          : "text-gray-500 hover:bg-gray-50 hover:text-gray-900"
-                      )}
-                    >
-                      <sub.icon size={15} className="mr-2.5" />
-                      {sub.label}
-                    </a>
-                  </li>
-                ))}
-              </ul>
-            )}
           </li>
 
           {/* 공지사항 메뉴 숨김 (복원 시 아래 주석 블록 전체를 해제)

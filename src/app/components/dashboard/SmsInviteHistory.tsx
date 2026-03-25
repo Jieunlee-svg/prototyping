@@ -82,40 +82,6 @@ export const SmsInviteHistory: React.FC = () => {
 
     return (
         <div className="flex flex-col h-full bg-gray-50 relative">
-            {/* Header */}
-            <header className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
-                <div>
-                    {/* Breadcrumb */}
-                    <div className="flex items-center gap-1.5 mb-2 text-[13px] text-gray-400">
-                        <span>앱 설치 문자 발송</span>
-                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" /></svg>
-                        <span className="text-gray-700 font-medium">앱 설치 문자 발송 내역</span>
-                    </div>
-                    <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-                        <MessageSquare className="text-blue-600" />
-                        앱 설치 문자 발송 내역
-                    </h1>
-                    <p className="text-sm text-gray-500 mt-1">
-                        발송된 앱 설치 초대 문자와 웰체크 가입 현황을 확인합니다.
-                    </p>
-                </div>
-
-                {/* 요약 통계 */}
-                <div className="flex gap-4">
-                    <div className="bg-emerald-50 border border-emerald-200 rounded-lg px-4 py-2 text-center">
-                        <p className="text-[11px] text-emerald-600 font-medium">가입 완료</p>
-                        <p className="text-xl font-bold text-emerald-600">{joinedCount}<span className="text-sm font-normal ml-0.5">건</span></p>
-                    </div>
-                    <div className="bg-amber-50 border border-amber-200 rounded-lg px-4 py-2 text-center">
-                        <p className="text-[11px] text-amber-500 font-medium">미가입 대기</p>
-                        <p className="text-xl font-bold text-amber-500">{pendingCount}<span className="text-sm font-normal ml-0.5">건</span></p>
-                    </div>
-                    <div className="bg-blue-50 border border-blue-200 rounded-lg px-4 py-2 text-center">
-                        <p className="text-[11px] text-blue-600 font-medium">총 발송</p>
-                        <p className="text-xl font-bold text-blue-600">{MOCK_RECORDS.length}<span className="text-sm font-normal ml-0.5">건</span></p>
-                    </div>
-                </div>
-            </header>
 
             {/* Filter & Search Toolbar */}
             <div className="px-4 py-2.5 bg-white border-b border-gray-100 flex items-center justify-between gap-3">

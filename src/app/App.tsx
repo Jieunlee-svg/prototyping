@@ -4,8 +4,7 @@ import { TopBar } from './components/layout/TopBar';
 import { AppFooter } from './components/layout/AppFooter';
 import { PatientList } from './components/dashboard/PatientList';
 import { PatientDetail } from './components/dashboard/PatientDetail';
-import { SmsInvite } from './components/dashboard/SmsInvite';
-import { SmsInviteHistory } from './components/dashboard/SmsInviteHistory';
+import { SmsInviteLayout } from './components/dashboard/SmsInviteLayout';
 import { PrescriptionList } from './components/dashboard/PrescriptionList';
 import { PharmacySettings } from './components/dashboard/PharmacySettings';
 import { NoticeList } from './components/dashboard/NoticeList';
@@ -19,15 +18,21 @@ import chatIcon from '../assets/chat-icon.png';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [view, setView] = useState<'list' | 'detail' | 'sms' | 'sms-history' | 'prescription' | 'settings' | 'notice' | 'consultation-c' | 'consultation-history' | 'consultation-reminder' | 'my-info'>('list');
+  const [view, setView] = useState<'list' | 'detail' | 'sms' | 'prescription' | 'settings' | 'notice' | 'consultation-c' | 'consultation-history' | 'consultation-reminder' | 'my-info'>('list');
   const [selectedPatientId, setSelectedPatientId] = useState<string | null>(null);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [showChatIcon, setShowChatIcon] = useState(false);
   const [settingsInitialTab, setSettingsInitialTab] = useState<'basic' | 'hours' | 'reminder' | 'app'>('basic');
+  const [smsInitialTab, setSmsInitialTab] = useState<'invite' | 'history'>('invite');
 
   const openSettings = (tab: 'basic' | 'hours' | 'reminder' | 'app' = 'basic') => {
     setSettingsInitialTab(tab);
     setView('settings');
+  };
+
+  const openSms = (tab: 'invite' | 'history' = 'invite') => {
+    setSmsInitialTab(tab);
+    setView('sms');
   };
 
   const handlePatientClick = (id: string) => {
@@ -50,8 +55,8 @@ function App() {
         collapsed={sidebarCollapsed}
         onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
         activeView={view}
-        onSmsClick={() => setView('sms')}
-        onSmsHistoryClick={() => setView('sms-history')}
+        onSmsClick={() => openSms('invite')}
+        onSmsHistoryClick={() => openSms('history')}
         onDashboardClick={() => setView('list')}
         onPrescriptionClick={() => setView('prescription')}
         onConsultationCClick={() => setView('consultation-c')}
@@ -72,11 +77,7 @@ function App() {
             </div>
           ) : view === 'sms' ? (
             <div className="absolute inset-0 overflow-hidden">
-              <SmsInvite />
-            </div>
-          ) : view === 'sms-history' ? (
-            <div className="absolute inset-0 overflow-hidden">
-              <SmsInviteHistory />
+              <SmsInviteLayout key={smsInitialTab} initialTab={smsInitialTab} />
             </div>
           ) : view === 'prescription' ? (
             <div className="absolute inset-0 overflow-hidden">
@@ -96,7 +97,7 @@ function App() {
             </div>
           ) : view === 'settings' ? (
             <div className="absolute inset-0 overflow-hidden">
-              <PharmacySettings initialTab={settingsInitialTab} />
+              <PharmacySettings key={settingsInitialTab} initialTab={settingsInitialTab} />
             </div>
           ) : view === 'notice' ? (
             <div className="absolute inset-0 overflow-hidden">

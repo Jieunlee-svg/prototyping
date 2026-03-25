@@ -25,16 +25,6 @@ export const SmsInvite: React.FC<SmsInviteProps> = () => {
 
   return (
     <div className="flex flex-col h-full bg-gray-50 overflow-hidden">
-      {/* Header */}
-      <header className="bg-white border-b border-gray-200 px-6 py-4 flex-none">
-        <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-          <MessageSquare className="text-blue-600" />
-          앱 설치 문자 발송
-        </h1>
-        <p className="text-sm text-gray-500 mt-1">
-          고객에게 앱 설치 링크가 포함된 초대 문자를 발송합니다.
-        </p>
-      </header>
 
       {/* Main Content */}
       <div className="flex-1 overflow-hidden p-6">
