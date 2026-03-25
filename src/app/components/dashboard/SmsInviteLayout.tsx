@@ -12,7 +12,7 @@ export const SmsInviteLayout: React.FC<SmsInviteLayoutProps> = ({ initialTab = '
   const [activeTab, setActiveTab] = useState<'invite' | 'history'>(initialTab);
 
   const tabs = [
-    { id: 'invite', label: '앱 설치 문자 발송', icon: Send },
+    { id: 'invite', label: '문자 발송', icon: Send },
     { id: 'history', label: '문자 발송 내역', icon: ClipboardList },
   ];
 
@@ -47,9 +47,6 @@ export const SmsInviteLayout: React.FC<SmsInviteLayoutProps> = ({ initialTab = '
             >
               <tab.icon size={16} />
               {tab.label}
-              {activeTab === 'history' && tab.id === 'history' && (
-                  <span className="ml-1.5 px-1.5 py-0.5 text-[10px] bg-blue-100 text-blue-600 rounded-full font-bold">15</span>
-              )}
             </button>
           ))}
         </div>

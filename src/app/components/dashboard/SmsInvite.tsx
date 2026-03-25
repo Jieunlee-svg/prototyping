@@ -33,38 +33,7 @@ export const SmsInvite: React.FC<SmsInviteProps> = () => {
           {/* Left Column: Settings */}
           <div className="flex flex-col gap-6 overflow-y-auto pr-2 custom-scrollbar">
 
-            {/* 1. Send Type Selection */}
-            <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
-              <h3 className="font-bold text-gray-800 mb-4">발송 대상 선택</h3>
-              <div className="flex p-1 bg-gray-100 rounded-lg">
-                <button
-                  onClick={() => setSendType('individual')}
-                  className={clsx(
-                    "flex-1 flex items-center justify-center gap-2 py-2.5 text-sm font-medium rounded-md transition-all",
-                    sendType === 'individual'
-                      ? "bg-white text-blue-600 shadow-sm"
-                      : "text-gray-500 hover:text-gray-700"
-                  )}
-                >
-                  <User size={16} />
-                  개별 발송
-                </button>
-                <button
-                  onClick={() => setSendType('bulk')}
-                  className={clsx(
-                    "flex-1 flex items-center justify-center gap-2 py-2.5 text-sm font-medium rounded-md transition-all",
-                    sendType === 'bulk'
-                      ? "bg-white text-blue-600 shadow-sm"
-                      : "text-gray-500 hover:text-gray-700"
-                  )}
-                >
-                  <Users size={16} />
-                  일괄 발송
-                </button>
-              </div>
-            </div>
-
-            {/* 2. Input Fields */}
+            {/* 1. Input Fields */}
             <div className="bg-white p-5 rounded-xl border border-gray-200 shadow-sm flex-1">
               <h3 className="font-bold text-gray-800 mb-4">발송 정보 입력</h3>
 

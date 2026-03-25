@@ -37,48 +37,40 @@ const MOCK_RECORDS: SmsRecord[] = [
     { id: '15', sentAt: '2026-03-02 14:00', phone: '010-7878-9090', joined: 'expired', sendType: 'bulk' },
 ];
 
-function JoinedBadge({ status, joinedAt }: { status: SmsRecord['joined']; joinedAt?: string }) {
+function JoinedBadge({ status }: { status: SmsRecord['joined'] }) {
     if (status === 'joined') {
         return (
-            <div className="flex flex-col gap-0.5">
-                <span className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-600">
-                    <CheckCircle2 size={13} />
-                    가입 완료
-                </span>
-                {joinedAt && <span className="text-[11px] text-gray-400">{joinedAt}</span>}
-            </div>
+            <span className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-100">
+                <CheckCircle2 size={12} />
+                가입 완료
+            </span>
         );
     }
     if (status === 'pending') {
         return (
-            <span className="inline-flex items-center gap-1 text-xs font-medium text-amber-500">
-                <Clock size={13} />
-                미가입 (대기중)
+            <span className="inline-flex items-center gap-1 text-xs font-medium text-amber-500 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-100">
+                <Clock size={12} />
+                가입 대기 중
             </span>
         );
     }
     return (
-        <span className="inline-flex items-center gap-1 text-xs font-medium text-gray-400">
-            <XCircle size={13} />
-            미가입 (만료)
+        <span className="inline-flex items-center gap-1 text-xs font-medium text-gray-400 bg-gray-50 px-2 py-0.5 rounded-full border border-gray-100">
+            <XCircle size={12} />
+            초대 링크 만료
         </span>
     );
 }
 
 export const SmsInviteHistory: React.FC = () => {
     const [joinedFilter, setJoinedFilter] = useState<'all' | 'joined' | 'pending' | 'expired'>('all');
-    const [typeFilter, setTypeFilter] = useState<'all' | 'individual' | 'bulk'>('all');
     const [search, setSearch] = useState('');
 
     const filtered = MOCK_RECORDS.filter((r) => {
         if (joinedFilter !== 'all' && r.joined !== joinedFilter) return false;
-        if (typeFilter !== 'all' && r.sendType !== typeFilter) return false;
         if (search && !r.phone.includes(search)) return false;
         return true;
     });
-
-    const joinedCount = MOCK_RECORDS.filter((r) => r.joined === 'joined').length;
-    const pendingCount = MOCK_RECORDS.filter((r) => r.joined === 'pending').length;
 
     return (
         <div className="flex flex-col h-full bg-gray-50 relative">
@@ -90,8 +82,8 @@ export const SmsInviteHistory: React.FC = () => {
                     {([
                         { value: 'all', label: '전체 가입상태' },
                         { value: 'joined', label: '가입 완료' },
-                        { value: 'pending', label: '대기중' },
-                        { value: 'expired', label: '만료' },
+                        { value: 'pending', label: '가입 대기 중' },
+                        { value: 'expired', label: '초대 링크 만료' },
                     ] as const).map(({ value, label }) => (
                         <button
                             key={value}
@@ -99,25 +91,6 @@ export const SmsInviteHistory: React.FC = () => {
                             className={clsx(
                                 'px-3 py-1 rounded-full text-[13px] font-medium border transition-all',
                                 joinedFilter === value
-                                    ? 'border-blue-500 text-blue-600 bg-blue-50'
-                                    : 'border-gray-200 text-gray-500 bg-white hover:border-gray-400 hover:text-gray-700'
-                            )}
-                        >
-                            {label}
-                        </button>
-                    ))}
-                    <div className="w-px h-4 bg-gray-200 mx-1" />
-                    {([
-                        { value: 'all', label: '전체 유형' },
-                        { value: 'individual', label: '개별 발송' },
-                        { value: 'bulk', label: '일괄 발송' },
-                    ] as const).map(({ value, label }) => (
-                        <button
-                            key={value}
-                            onClick={() => setTypeFilter(value)}
-                            className={clsx(
-                                'px-3 py-1 rounded-full text-[13px] font-medium border transition-all',
-                                typeFilter === value
                                     ? 'border-blue-500 text-blue-600 bg-blue-50'
                                     : 'border-gray-200 text-gray-500 bg-white hover:border-gray-400 hover:text-gray-700'
                             )}
@@ -151,9 +124,6 @@ export const SmsInviteHistory: React.FC = () => {
                         <table className="w-full text-sm">
                             <thead className="bg-gray-50 border-b border-gray-200 sticky top-0 z-10">
                                 <tr>
-                                    <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide w-8">
-                                        #
-                                    </th>
                                     <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">
                                         <div className="flex items-center gap-1 cursor-pointer hover:text-gray-700">
                                             초대장 발송일시 <ChevronDown size={12} />
@@ -163,17 +133,17 @@ export const SmsInviteHistory: React.FC = () => {
                                         휴대전화 번호
                                     </th>
                                     <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                                        발송 유형
+                                        상태
                                     </th>
                                     <th className="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">
-                                        웰체크 가입
+                                        웰체크 가입일시
                                     </th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-100">
                                 {filtered.length === 0 ? (
                                     <tr>
-                                        <td colSpan={5} className="px-4 py-16 text-center text-gray-400 text-sm">
+                                        <td colSpan={4} className="px-4 py-16 text-center text-gray-400 text-sm">
                                             발송 내역이 없습니다.
                                         </td>
                                     </tr>
@@ -183,9 +153,6 @@ export const SmsInviteHistory: React.FC = () => {
                                             key={r.id}
                                             className="hover:bg-blue-50/40 transition-colors"
                                         >
-                                            <td className="px-4 py-3.5 text-xs text-gray-400">
-                                                {idx + 1}
-                                            </td>
                                             <td className="px-4 py-3.5 text-gray-700 font-medium">
                                                 {r.sentAt}
                                             </td>
@@ -193,17 +160,16 @@ export const SmsInviteHistory: React.FC = () => {
                                                 {r.phone}
                                             </td>
                                             <td className="px-4 py-3.5">
-                                                <span className={clsx(
-                                                    'inline-flex items-center px-2.5 py-0.5 rounded-full text-[11px] font-semibold',
-                                                    r.sendType === 'individual'
-                                                        ? 'bg-indigo-50 text-indigo-600 border border-indigo-200'
-                                                        : 'bg-purple-50 text-purple-600 border border-purple-200'
-                                                )}>
-                                                    {r.sendType === 'individual' ? '개별' : '일괄'}
-                                                </span>
+                                                <JoinedBadge status={r.joined} />
                                             </td>
-                                            <td className="px-4 py-3.5">
-                                                <JoinedBadge status={r.joined} joinedAt={r.joinedAt} />
+                                            <td className="px-4 py-3.5 text-sm text-gray-600">
+                                                {r.joined === 'joined' ? (
+                                                    r.joinedAt
+                                                ) : (
+                                                    <span className="text-gray-400">
+                                                        {r.joined === 'pending' ? '가입 대기 중' : '초대 링크 만료'}
+                                                    </span>
+                                                )}
                                             </td>
                                         </tr>
                                     ))
