@@ -537,20 +537,27 @@ const ChatChannel: React.FC<{ patientName: string }> = ({ patientName }) => {
 
         {/* Prescription Info Message */}
         <div className="flex flex-col items-end gap-1 max-w-[90%] self-end">
-          <div className="bg-blue-600 text-white p-3.5 rounded-2xl rounded-tr-sm text-[13px] leading-relaxed shadow-sm">
-            <p className="font-bold underline underline-offset-4 mb-3 text-white/90">[복약 상담 안내]</p>
-            안녕하세요, 서울종로약국입니다.<br />
-            처방받으신 약품 안내드립니다.<br /><br />
-            <span className="font-bold text-white/90">[처방 약품]</span><br />
-            1. 노바스크정 5mg (한국화이자제약)<br />
-            2. 타이레놀정 500mg (한국얀센)<br /><br />
-            <span className="font-bold text-white/90">[복약 방법]</span><br />
-            - 노바스크정: 1일 1회, 아침 식후 복용<br />
-            - 타이레놀정: 1일 3회, 식후 30분 복용<br /><br />
-            <span className="font-bold text-white/90">[주의사항]</span><br />
-            - 노바스크정: 임부 또는 임신 가능성 있는 경우 반드시 의사와 상담하세요.<br />
-            - 타이레놀정: 매일 3잔 이상 음주 시 의사와 상의하세요.<br /><br />
-            복용 중 이상 증상이 있으시면 언제든지 문의해 주세요.
+          <div className="bg-blue-600 text-white rounded-2xl rounded-tr-sm shadow-sm overflow-hidden">
+            <div className="p-3.5 text-[13px] leading-relaxed">
+              <p className="font-bold underline underline-offset-4 mb-3 text-white/90">[복약 상담 안내]</p>
+              안녕하세요, 서울종로약국입니다.<br />
+              처방받으신 약품 안내드립니다.<br /><br />
+              <span className="font-bold text-white/90">[처방 약품]</span><br />
+              1. 노바스크정 5mg (한국화이자제약)<br />
+              2. 타이레놀정 500mg (한국얀센)<br /><br />
+              <span className="font-bold text-white/90">[복약 방법]</span><br />
+              - 노바스크정: 1일 1회, 아침 식후 복용<br />
+              - 타이레놀정: 1일 3회, 식후 30분 복용<br /><br />
+              <span className="font-bold text-white/90">[주의사항]</span><br />
+              - 노바스크정: 임부 또는 임신 가능성 있는 경우 반드시 의사와 상담하세요.<br />
+              - 타이레놀정: 매일 3잔 이상 음주 시 의사와 상의하세요.<br /><br />
+              복용 중 이상 증상이 있으시면 언제든지 문의해 주세요.
+            </div>
+            <div className="border-t border-white/20">
+              <button className="w-full py-2.5 text-[13px] font-semibold text-white/90 hover:bg-white/10 transition-colors text-center">
+                복약 알림 보기
+              </button>
+            </div>
           </div>
           <span className="text-[10px] text-gray-400 font-medium mr-1.5 uppercase">09:04 AM</span>
         </div>
