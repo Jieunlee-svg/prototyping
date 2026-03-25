@@ -91,8 +91,12 @@ export const PrescriptionList: React.FC<{ onOpenSettings?: () => void; onPatient
 
   // ── 상태 변경 핸들러
   const handleStatusChange = (id: string, newStatus: PrescriptionStatus) => {
+    const target = prescriptions.find(p => p.id === id);
     setPrescriptions(prev => prev.map(p => p.id === id ? { ...p, status: newStatus } : p));
     setOpenStatusDropdown(null);
+    if (target) {
+      setToast(`'${target.patientName}' 님의 상태가 '${STATUS_LABEL[newStatus].label}'(으)로 변경되었습니다.`);
+    }
   };
 
   // ── 신규 처방전 트리거
