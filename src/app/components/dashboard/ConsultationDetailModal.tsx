@@ -1,5 +1,5 @@
 import React from 'react';
-import { HeartPulse, X, User, MessageSquare, Bell, CheckCircle, Clock, RefreshCw } from 'lucide-react';
+import { HeartPulse, X, User, MessageSquare, Bell, Clock, RefreshCw } from 'lucide-react';
 import { clsx } from 'clsx';
 
 export interface ConsultationData {
@@ -55,22 +55,10 @@ const Row: React.FC<{ label: string; value: React.ReactNode }> = ({ label, value
   </div>
 );
 
-// 재처방 예정일 계산 (sentAt + duration일)
-const calcRefillDate = (sentAt: string, duration: number): string => {
-  try {
-    const base = new Date(sentAt.replace(' ', 'T'));
-    base.setDate(base.getDate() + duration);
-    return base.toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' }).replace(/\. /g, '-').replace('.', '');
-  } catch {
-    return '—';
-  }
-};
 
 export const ConsultationDetailModal: React.FC<ConsultationDetailModalProps> = ({ data, onClose }) => {
-  const refillDate = calcRefillDate(data.sentAt, data.duration);
   const reminderEnabled = data.reminderEnabled ?? true;
   const refillAlertEnabled = data.refillAlertEnabled ?? true;
-  const adherenceRate = data.adherenceRate ?? 87;
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4" role="dialog" aria-modal="true">
@@ -120,7 +108,7 @@ export const ConsultationDetailModal: React.FC<ConsultationDetailModalProps> = (
 
                 {/* 복약 알림 카드 */}
                 <div className="bg-gray-50 rounded-xl p-3.5">
-                  <div className="flex items-center justify-between mb-2.5">
+                  <div className="flex items-center justify-between">
                     <div className="flex items-center gap-1.5">
                       <Clock size={12} className="text-purple-500" />
                       <span className="text-xs font-bold text-gray-600">복약 알림</span>
@@ -129,35 +117,14 @@ export const ConsultationDetailModal: React.FC<ConsultationDetailModalProps> = (
                       'text-[11px] font-bold px-2 py-0.5 rounded-full',
                       reminderEnabled ? 'bg-purple-100 text-purple-700' : 'bg-gray-200 text-gray-500'
                     )}>
-                      {reminderEnabled ? '활성' : '비활성'}
+                      {reminderEnabled ? '보냄' : '안보냄'}
                     </span>
-                  </div>
-                  <div className="space-y-1.5">
-                    <div className="flex justify-between text-xs">
-                      <span className="text-gray-400">알림 시간</span>
-                      <span className="font-medium text-gray-700 text-right">{data.times.join(', ')} ({data.relation})</span>
-                    </div>
-                    <div className="flex justify-between text-xs">
-                      <span className="text-gray-400">30일 복약 순응도</span>
-                      <span className={clsx(
-                        'font-bold',
-                        adherenceRate >= 80 ? 'text-emerald-600' : adherenceRate >= 50 ? 'text-orange-500' : 'text-red-500'
-                      )}>
-                        {adherenceRate}%
-                      </span>
-                    </div>
-                  </div>
-                  <div className="mt-2 h-1.5 bg-gray-200 rounded-full overflow-hidden">
-                    <div
-                      className={clsx('h-full rounded-full', adherenceRate >= 80 ? 'bg-emerald-500' : adherenceRate >= 50 ? 'bg-orange-400' : 'bg-red-400')}
-                      style={{ width: `${adherenceRate}%` }}
-                    />
                   </div>
                 </div>
 
                 {/* 재처방 알림 카드 */}
                 <div className="bg-gray-50 rounded-xl p-3.5">
-                  <div className="flex items-center justify-between mb-2.5">
+                  <div className="flex items-center justify-between">
                     <div className="flex items-center gap-1.5">
                       <RefreshCw size={12} className="text-purple-500" />
                       <span className="text-xs font-bold text-gray-600">재처방 알림</span>
@@ -166,22 +133,8 @@ export const ConsultationDetailModal: React.FC<ConsultationDetailModalProps> = (
                       'text-[11px] font-bold px-2 py-0.5 rounded-full',
                       refillAlertEnabled ? 'bg-purple-100 text-purple-700' : 'bg-gray-200 text-gray-500'
                     )}>
-                      {refillAlertEnabled ? '활성' : '비활성'}
+                      {refillAlertEnabled ? '보냄' : '안보냄'}
                     </span>
-                  </div>
-                  <div className="space-y-1.5">
-                    <div className="flex justify-between text-xs">
-                      <span className="text-gray-400">복약 종료 예정일</span>
-                      <span className="font-medium text-gray-700">{refillDate}</span>
-                    </div>
-                    <div className="flex justify-between text-xs">
-                      <span className="text-gray-400">알림 전송 예정</span>
-                      <span className="font-medium text-gray-700">종료 3일 전</span>
-                    </div>
-                    <div className="flex items-center gap-1 text-xs text-emerald-600 font-medium mt-1">
-                      <CheckCircle size={11} />
-                      알림 전송 예약 완료
-                    </div>
                   </div>
                 </div>
 
