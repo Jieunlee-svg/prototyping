@@ -61,6 +61,9 @@ export const PrescriptionList: React.FC<{ onOpenSettings?: () => void; onPatient
   const [sentConsultations, setSentConsultations] = useState<Record<string, ConsultationData>>({});
   const [selectedConsultation, setSelectedConsultation] = useState<ConsultationData | null>(null);
   const [openStatusDropdown, setOpenStatusDropdown] = useState<string | null>(null);
+  const [showStatusTooltip, setShowStatusTooltip] = useState(false);
+  const [tooltipPos, setTooltipPos] = useState({ top: 0, left: 0 });
+  const statusInfoRef = useRef<HTMLSpanElement>(null);
   const notifTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const statusDropdownRef = useRef<HTMLDivElement | null>(null);
 
@@ -183,12 +186,17 @@ export const PrescriptionList: React.FC<{ onOpenSettings?: () => void; onPatient
       <th className={th}>
         <div className="flex items-center gap-1">
           상태
-          <span className="relative group inline-flex">
-            <Info size={12} className="text-gray-400 cursor-help" />
-            <span className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-52 rounded-xl bg-gray-900 px-3 py-2 text-xs text-white shadow-2xl opacity-0 group-hover:opacity-100 transition-all duration-200 z-[200] normal-case font-normal text-center leading-relaxed invisible group-hover:visible border border-gray-700 whitespace-nowrap">
-              <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-gray-900 transform rotate-45 border-b border-r border-gray-700" />
-              이 상태는 고객 앱에 반영됩니다.
-            </span>
+          <span
+            ref={statusInfoRef}
+            className="inline-flex cursor-help"
+            onMouseEnter={() => {
+              const rect = statusInfoRef.current?.getBoundingClientRect();
+              if (rect) setTooltipPos({ top: rect.bottom + 8, left: rect.left + rect.width / 2 });
+              setShowStatusTooltip(true);
+            }}
+            onMouseLeave={() => setShowStatusTooltip(false)}
+          >
+            <Info size={12} className="text-gray-400" />
           </span>
         </div>
       </th>
@@ -311,6 +319,17 @@ export const PrescriptionList: React.FC<{ onOpenSettings?: () => void; onPatient
 
       {/* Toast */}
       {toast && <Toast message={toast} onDone={() => setToast(null)} />}
+
+      {/* 상태 컬럼 i 툴팁 — overflow 클리핑 회피를 위해 fixed 렌더링 */}
+      {showStatusTooltip && (
+        <div
+          style={{ position: 'fixed', top: tooltipPos.top, left: tooltipPos.left, transform: 'translateX(-50%)', zIndex: 9999 }}
+          className="pointer-events-none w-52 rounded-xl bg-gray-900 px-3 py-2 text-xs text-white shadow-2xl border border-gray-700 text-center whitespace-nowrap"
+        >
+          <div className="absolute -top-1.5 left-1/2 -translate-x-1/2 w-3 h-3 bg-gray-900 rotate-45 border-t border-l border-gray-700" />
+          이 상태는 고객 앱에 반영됩니다.
+        </div>
+      )}
 
       {/* 신규 알림 */}
       {showNotif && (
