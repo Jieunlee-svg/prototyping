@@ -57,8 +57,26 @@ export const PrescriptionList: React.FC<{ onOpenSettings?: () => void; onPatient
   const [showNotif, setShowNotif] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const [workflowPrescription, setWorkflowPrescription] = useState<Prescription | null>(null);
-  const [sentIds, setSentIds] = useState<Set<string>>(new Set());
-  const [sentConsultations, setSentConsultations] = useState<Record<string, ConsultationData>>({});
+  const [sentIds, setSentIds] = useState<Set<string>>(new Set(['RX-003']));
+  const [sentConsultations, setSentConsultations] = useState<Record<string, ConsultationData>>({
+    'RX-003': {
+      id: 'RX-003',
+      patientName: '정수정',
+      birthDate: '1998-07-07',
+      gender: '여성',
+      phone: '010-6666-2222',
+      sendMethod: '알림톡',
+      sentAt: '2026-03-12 10:10',
+      frequency: 3,
+      times: ['08:00', '13:00', '20:00'],
+      relation: '식후 30분',
+      duration: 30,
+      messageContent: '안녕하세요, 정수정 고객님!\n\n처방전이 접수되었습니다.\n\n💊 복약 안내\n• 복용 횟수: 하루 3회\n• 복용 시점: 식후 30분\n• 복용 시간: 08:00, 13:00, 20:00\n• 복약 기간: 30일\n\n궁금한 사항은 약국으로 문의해 주세요.',
+      reminderEnabled: true,
+      refillAlertEnabled: true,
+      adherenceRate: 92,
+    },
+  });
   const [selectedConsultation, setSelectedConsultation] = useState<ConsultationData | null>(null);
   const [openStatusDropdown, setOpenStatusDropdown] = useState<string | null>(null);
   const [showStatusTooltip, setShowStatusTooltip] = useState(false);
