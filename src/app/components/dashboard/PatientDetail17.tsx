@@ -473,15 +473,6 @@ const ChatChannel: React.FC<{ patientName: string }> = ({ patientName }) => {
             <MessageSquare size={13} className="text-blue-600" />
           </div>
           <span className="text-sm font-bold text-gray-800">통합 상담 채널</span>
-          <Info size={14} className="text-gray-300 cursor-pointer hover:text-gray-500" />
-        </div>
-        <div className="flex items-center gap-1.5">
-          <button className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors border border-gray-100">
-            <Video size={16} className="text-gray-500" />
-          </button>
-          <button className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors border border-gray-100">
-            <Mic size={16} className="text-gray-500" />
-          </button>
         </div>
       </div>
 
@@ -535,27 +526,30 @@ const ChatChannel: React.FC<{ patientName: string }> = ({ patientName }) => {
         </div>
       </div>
 
-      {/* Input Area */}
+      {/* Input Area — 서비스 준비 중 (비활성) */}
       <div className="p-4 bg-white border-t border-gray-100 flex-shrink-0">
-        <div className="relative group">
-          <div className="absolute left-3 bottom-2.5 flex items-center gap-1.5 text-gray-400">
-            <button className="hover:text-gray-600 transition-colors">
+        <div className="relative">
+          <div className="absolute left-3 bottom-2.5 flex items-center gap-1.5 text-gray-300">
+            <button disabled className="cursor-not-allowed">
               <Paperclip size={18} />
+            </button>
+            <button disabled className="cursor-not-allowed">
+              <Video size={16} />
+            </button>
+            <button disabled className="cursor-not-allowed">
+              <Mic size={16} />
             </button>
           </div>
           <textarea
-            value={inputText}
-            onChange={e => setInputText(e.target.value)}
-            className="w-full bg-gray-50 border border-gray-200 rounded-2xl pl-10 pr-12 py-3 text-[13px] text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-400 transition-all resize-none min-h-[50px] max-h-[120px]"
-            placeholder="메시지를 입력하거나 콘텐츠를 드래그하세요..."
+            value=""
+            disabled
+            className="w-full bg-gray-50 border border-gray-200 rounded-2xl pl-24 pr-12 py-3 text-[13px] text-gray-300 placeholder-gray-300 cursor-not-allowed resize-none min-h-[50px] max-h-[120px]"
+            placeholder="서비스 준비 중입니다."
             rows={1}
           />
-          <button 
-            className={clsx(
-              "absolute right-2 bottom-1.5 w-9 h-9 rounded-full flex items-center justify-center transition-all",
-              inputText.trim() ? "bg-blue-600 text-white shadow-md hover:bg-blue-700 active:scale-95" : "bg-gray-100 text-gray-300 cursor-not-allowed"
-            )}
-            disabled={!inputText.trim()}
+          <button
+            disabled
+            className="absolute right-2 bottom-1.5 w-9 h-9 rounded-full flex items-center justify-center bg-gray-100 text-gray-300 cursor-not-allowed"
           >
             <Send size={16} fill="currentColor" />
           </button>
