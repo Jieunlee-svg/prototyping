@@ -706,6 +706,7 @@ export const PharmacySettings: React.FC<PharmacySettingsProps> = ({ initialTab }
 
         </div>
       </div>
+
       {/* ── 주소 검색 모달 ── */}
       {showAddressModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
