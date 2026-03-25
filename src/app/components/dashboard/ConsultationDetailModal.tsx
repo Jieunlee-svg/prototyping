@@ -39,18 +39,18 @@ const getSendMethodBadge = (method: string) => {
   );
 };
 
-// 섹션 헤더 공통 컴포넌트
-const SectionHeader: React.FC<{ icon: React.ReactNode; title: string; color: string }> = ({ icon, title, color }) => (
-  <div className={clsx('flex items-center gap-2 px-5 py-3 border-b border-gray-100', color)}>
+// 컬럼 섹션 헤더
+const ColHeader: React.FC<{ icon: React.ReactNode; title: string; accent: string }> = ({ icon, title, accent }) => (
+  <div className={clsx('flex items-center gap-2 px-4 py-2.5 rounded-lg mb-3', accent)}>
     {icon}
-    <span className="text-sm font-bold text-gray-700">{title}</span>
+    <span className="text-xs font-bold text-gray-700 tracking-wide">{title}</span>
   </div>
 );
 
-// 라벨-값 행 공통 컴포넌트
+// 라벨-값 행
 const Row: React.FC<{ label: string; value: React.ReactNode }> = ({ label, value }) => (
-  <div className="flex items-center justify-between py-2.5 border-b border-gray-50 last:border-0">
-    <span className="text-xs text-gray-400 w-28 flex-shrink-0">{label}</span>
+  <div className="flex items-center justify-between py-2 border-b border-gray-50 last:border-0">
+    <span className="text-xs text-gray-400 w-24 flex-shrink-0">{label}</span>
     <span className="text-sm font-medium text-gray-800 text-right">{value}</span>
   </div>
 );
@@ -73,32 +73,35 @@ export const ConsultationDetailModal: React.FC<ConsultationDetailModalProps> = (
   const adherenceRate = data.adherenceRate ?? 87;
 
   return (
-    <div className="fixed inset-0 z-[100] overflow-y-auto" role="dialog" aria-modal="true">
-      <div className="flex items-center justify-center min-h-screen p-4">
-        <div className="fixed inset-0 bg-gray-900/75" onClick={onClose} />
-        <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-xl overflow-hidden">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4" role="dialog" aria-modal="true">
+      <div className="fixed inset-0 bg-gray-900/75" onClick={onClose} />
+      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-3xl overflow-hidden">
 
-          {/* ── 모달 헤더 ── */}
-          <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-            <h3 className="text-base font-bold text-gray-900 flex items-center gap-2">
-              <HeartPulse size={18} className="text-blue-600" />
-              복약 상담 상세
-            </h3>
-            <button onClick={onClose} className="p-1.5 hover:bg-gray-100 rounded-full transition-colors text-gray-400">
-              <X size={18} />
-            </button>
-          </div>
+        {/* ── 모달 헤더 ── */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+          <h3 className="text-base font-bold text-gray-900 flex items-center gap-2">
+            <HeartPulse size={18} className="text-blue-600" />
+            복약 상담 상세
+          </h3>
+          <button onClick={onClose} className="p-1.5 hover:bg-gray-100 rounded-full transition-colors text-gray-400">
+            <X size={18} />
+          </button>
+        </div>
 
-          <div className="overflow-y-auto max-h-[72vh]">
+        {/* ── 2열 본문 ── */}
+        <div className="grid grid-cols-2 divide-x divide-gray-100">
 
-            {/* ── Section 1: 고객 정보 ── */}
-            <div className="border-b border-gray-100">
-              <SectionHeader
-                icon={<User size={14} className="text-blue-600" />}
+          {/* ── 좌측: 고객 정보 + 복약 알림 ── */}
+          <div className="p-5 flex flex-col gap-5">
+
+            {/* Section 1: 고객 정보 */}
+            <div>
+              <ColHeader
+                icon={<User size={13} className="text-blue-600" />}
                 title="고객 정보"
-                color="bg-blue-50/60"
+                accent="bg-blue-50/70"
               />
-              <div className="px-5 py-1">
+              <div className="px-1">
                 <Row label="고객명" value={<span className="font-bold text-gray-900">{data.patientName}</span>} />
                 <Row label="생년월일" value={data.birthDate ?? '—'} />
                 <Row label="성별" value={data.gender ?? '—'} />
@@ -106,52 +109,20 @@ export const ConsultationDetailModal: React.FC<ConsultationDetailModalProps> = (
               </div>
             </div>
 
-            {/* ── Section 2: 복약 상담 메시지 ── */}
-            <div className="border-b border-gray-100">
-              <SectionHeader
-                icon={<MessageSquare size={14} className="text-emerald-600" />}
-                title="복약 상담 메시지"
-                color="bg-emerald-50/60"
-              />
-              <div className="px-5 py-1">
-                <Row label="전송 방법" value={getSendMethodBadge(data.sendMethod)} />
-                <Row label="전송 시각" value={data.sentAt} />
-                <Row
-                  label="복용 횟수"
-                  value={
-                    <span className="inline-flex px-2 py-0.5 rounded text-xs font-semibold bg-blue-50 text-blue-700">
-                      하루 {data.frequency}회
-                    </span>
-                  }
-                />
-                <Row label="복용 시점" value={data.relation} />
-                <Row label="복용 시간" value={data.times.join(', ')} />
-                <Row label="복약 일수" value={`${data.duration}일`} />
-              </div>
-
-              {/* 메시지 내용 */}
-              <div className="px-5 pb-4">
-                <p className="text-xs text-gray-400 mb-2">전송 내용</p>
-                <div className="bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-700 whitespace-pre-line leading-relaxed max-h-40 overflow-y-auto">
-                  {data.messageContent}
-                </div>
-              </div>
-            </div>
-
-            {/* ── Section 3: 복약 알림 및 재처방 알림 ── */}
+            {/* Section 3: 복약 알림 및 재처방 알림 */}
             <div>
-              <SectionHeader
-                icon={<Bell size={14} className="text-purple-600" />}
+              <ColHeader
+                icon={<Bell size={13} className="text-purple-600" />}
                 title="복약 알림 및 재처방 알림"
-                color="bg-purple-50/60"
+                accent="bg-purple-50/70"
               />
-              <div className="px-5 py-3 space-y-4">
+              <div className="space-y-3">
 
-                {/* 복약 알림 */}
-                <div className="bg-gray-50 rounded-xl p-4">
-                  <div className="flex items-center justify-between mb-3">
+                {/* 복약 알림 카드 */}
+                <div className="bg-gray-50 rounded-xl p-3.5">
+                  <div className="flex items-center justify-between mb-2.5">
                     <div className="flex items-center gap-1.5">
-                      <Clock size={13} className="text-purple-500" />
+                      <Clock size={12} className="text-purple-500" />
                       <span className="text-xs font-bold text-gray-600">복약 알림</span>
                     </div>
                     <span className={clsx(
@@ -164,7 +135,7 @@ export const ConsultationDetailModal: React.FC<ConsultationDetailModalProps> = (
                   <div className="space-y-1.5">
                     <div className="flex justify-between text-xs">
                       <span className="text-gray-400">알림 시간</span>
-                      <span className="font-medium text-gray-700">{data.times.join(', ')} ({data.relation})</span>
+                      <span className="font-medium text-gray-700 text-right">{data.times.join(', ')} ({data.relation})</span>
                     </div>
                     <div className="flex justify-between text-xs">
                       <span className="text-gray-400">30일 복약 순응도</span>
@@ -176,20 +147,19 @@ export const ConsultationDetailModal: React.FC<ConsultationDetailModalProps> = (
                       </span>
                     </div>
                   </div>
-                  {/* 순응도 바 */}
-                  <div className="mt-2.5 h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                  <div className="mt-2 h-1.5 bg-gray-200 rounded-full overflow-hidden">
                     <div
-                      className={clsx('h-full rounded-full transition-all', adherenceRate >= 80 ? 'bg-emerald-500' : adherenceRate >= 50 ? 'bg-orange-400' : 'bg-red-400')}
+                      className={clsx('h-full rounded-full', adherenceRate >= 80 ? 'bg-emerald-500' : adherenceRate >= 50 ? 'bg-orange-400' : 'bg-red-400')}
                       style={{ width: `${adherenceRate}%` }}
                     />
                   </div>
                 </div>
 
-                {/* 재처방 알림 */}
-                <div className="bg-gray-50 rounded-xl p-4">
-                  <div className="flex items-center justify-between mb-3">
+                {/* 재처방 알림 카드 */}
+                <div className="bg-gray-50 rounded-xl p-3.5">
+                  <div className="flex items-center justify-between mb-2.5">
                     <div className="flex items-center gap-1.5">
-                      <RefreshCw size={13} className="text-purple-500" />
+                      <RefreshCw size={12} className="text-purple-500" />
                       <span className="text-xs font-bold text-gray-600">재처방 알림</span>
                     </div>
                     <span className={clsx(
@@ -214,21 +184,53 @@ export const ConsultationDetailModal: React.FC<ConsultationDetailModalProps> = (
                     </div>
                   </div>
                 </div>
+
               </div>
             </div>
-
           </div>
 
-          {/* ── 푸터 ── */}
-          <div className="px-6 py-4 border-t border-gray-100 flex justify-end bg-gray-50">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg transition-colors shadow-sm"
-            >
-              확인
-            </button>
+          {/* ── 우측: 복약 상담 메시지 ── */}
+          <div className="p-5 flex flex-col">
+            <ColHeader
+              icon={<MessageSquare size={13} className="text-emerald-600" />}
+              title="복약 상담 메시지"
+              accent="bg-emerald-50/70"
+            />
+            <div className="px-1">
+              <Row label="전송 방법" value={getSendMethodBadge(data.sendMethod)} />
+              <Row label="전송 시각" value={data.sentAt} />
+              <Row
+                label="복용 횟수"
+                value={
+                  <span className="inline-flex px-2 py-0.5 rounded text-xs font-semibold bg-blue-50 text-blue-700">
+                    하루 {data.frequency}회
+                  </span>
+                }
+              />
+              <Row label="복용 시점" value={data.relation} />
+              <Row label="복용 시간" value={data.times.join(', ')} />
+              <Row label="복약 일수" value={`${data.duration}일`} />
+            </div>
+
+            {/* 전송 내용 */}
+            <div className="mt-4 flex-1 flex flex-col">
+              <p className="text-xs text-gray-400 mb-2">전송 내용</p>
+              <div className="flex-1 bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-700 whitespace-pre-line leading-relaxed overflow-y-auto" style={{ minHeight: '160px' }}>
+                {data.messageContent}
+              </div>
+            </div>
           </div>
+        </div>
+
+        {/* ── 푸터 ── */}
+        <div className="px-6 py-4 border-t border-gray-100 flex justify-end bg-gray-50">
+          <button
+            type="button"
+            onClick={onClose}
+            className="px-5 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg transition-colors shadow-sm"
+          >
+            확인
+          </button>
         </div>
       </div>
     </div>
