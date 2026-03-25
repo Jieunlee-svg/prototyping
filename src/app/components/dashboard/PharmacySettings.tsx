@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Settings,
   MapPin,
@@ -66,6 +66,8 @@ export const PharmacySettings: React.FC<PharmacySettingsProps> = ({ initialTab }
   const [allowAppPrescription, setAllowAppPrescription] = useState(true);
   const [hidePhone, setHidePhone] = useState(false);
   const [notifyPhone, setNotifyPhone] = useState('');
+  const [phoneError, setPhoneError] = useState('');
+  const notifyPhoneRef = useRef<HTMLInputElement>(null);
   const [showAddressModal, setShowAddressModal] = useState(false);
   const [addressSearch, setAddressSearch] = useState('');
   const [addressResults, setAddressResults] = useState<{ address: string; zipCode: string }[]>([]);
@@ -197,6 +199,33 @@ export const PharmacySettings: React.FC<PharmacySettingsProps> = ({ initialTab }
     }));
     toast.success('월요일 시간이 평일(화~금)에 적용되었습니다.');
   };
+
+  // 앱 처방전 탭: 토글 ON 시 전화번호 입력 필드 자동 포커스
+  useEffect(() => {
+    if (allowAppPrescription && activeTab === 'app') {
+      const timer = setTimeout(() => notifyPhoneRef.current?.focus(), 350);
+      return () => clearTimeout(timer);
+    }
+  }, [allowAppPrescription, activeTab]);
+
+  // 알림 수신 번호 자동 포맷 + 실시간 유효성 검사
+  const handleNotifyPhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const digits = e.target.value.replace(/\D/g, '').slice(0, 11);
+    let formatted = digits;
+    if (digits.length > 7) {
+      formatted = `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7)}`;
+    } else if (digits.length > 3) {
+      formatted = `${digits.slice(0, 3)}-${digits.slice(3)}`;
+    }
+    setNotifyPhone(formatted);
+    if (digits.length > 0 && digits.length < 11) {
+      setPhoneError('휴대전화 번호 11자리를 입력해주세요.');
+    } else {
+      setPhoneError('');
+    }
+  };
+
+  const isValidNotifyPhone = notifyPhone.replace(/\D/g, '').length === 11;
 
   const handleSave = () => {
     if (activeTab === 'basic' && !isFormValid) return;
@@ -555,7 +584,7 @@ export const PharmacySettings: React.FC<PharmacySettingsProps> = ({ initialTab }
           {activeTab === 'app' && (
             <section className="space-y-5 animate-in fade-in duration-300 px-6 py-5 overflow-y-auto">
               <div className="flex justify-end">
-                <SaveBtn />
+                <SaveBtn disabled={allowAppPrescription && !isValidNotifyPhone} />
               </div>
 
               <SectionCard icon={Smartphone} title="앱 처방전 접수 설정">
@@ -585,20 +614,31 @@ export const PharmacySettings: React.FC<PharmacySettingsProps> = ({ initialTab }
                   {allowAppPrescription && (
                     <div className="pt-6 border-t border-gray-100 animate-in fade-in slide-in-from-top-4 duration-500">
                       <label htmlFor="notifyPhone" className="block text-sm font-medium text-gray-700 mb-1.5">
-                        알림 수신 휴대전화 번호
+                        알림 수신 휴대전화 번호 <span className="text-red-500">*</span>
                       </label>
                       <input
+                        ref={notifyPhoneRef}
                         type="tel"
                         id="notifyPhone"
+                        inputMode="numeric"
                         value={notifyPhone}
-                        onChange={(e) => setNotifyPhone(e.target.value)}
-                        placeholder="010-0000-0000"
-                        className="w-full max-w-xs px-4 py-2.5 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all text-sm placeholder:text-gray-300"
+                        onChange={handleNotifyPhoneChange}
+                        placeholder="휴대전화 번호를 입력하세요 (예: 010-1234-5678)"
+                        className={clsx(
+                          'w-full max-w-sm px-4 py-2.5 bg-white border rounded-lg focus:ring-2 focus:border-transparent transition-all text-sm placeholder:text-gray-300',
+                          phoneError
+                            ? 'border-red-400 focus:ring-red-400'
+                            : 'border-gray-300 focus:ring-blue-500'
+                        )}
                       />
-                      <div className="mt-2 flex items-start gap-1.5 text-gray-400">
-                        <Info size={13} className="mt-0.5 flex-shrink-0" />
-                        <p className="text-xs leading-relaxed">고객이 앱에서 처방전을 전송했을 때 즉시 카카오 알림톡을 전송받을 번호입니다.</p>
-                      </div>
+                      {phoneError ? (
+                        <p className="mt-1.5 text-xs text-red-500">{phoneError}</p>
+                      ) : (
+                        <div className="mt-2 flex items-start gap-1.5 text-gray-400">
+                          <Info size={13} className="mt-0.5 flex-shrink-0" />
+                          <p className="text-xs leading-relaxed">고객이 앱에서 처방전을 전송했을 때 즉시 카카오 알림톡을 전송받을 번호입니다.</p>
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
