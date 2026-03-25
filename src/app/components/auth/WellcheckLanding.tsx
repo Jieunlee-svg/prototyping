@@ -18,7 +18,7 @@ export const WellcheckLanding: React.FC<WellcheckLandingProps> = ({ onLogin }) =
   // 로그인 화면 — 랜딩 페이지를 완전히 대체
   if (showLogin) {
     return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
+      <div className="min-h-screen bg-white flex items-center justify-center px-4">
         <div className="w-full max-w-[480px]">
           <LoginScreen onLogin={onLogin} onClose={() => setShowLogin(false)} />
         </div>

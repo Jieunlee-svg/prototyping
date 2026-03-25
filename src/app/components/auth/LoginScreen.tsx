@@ -18,7 +18,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin, onClose }) =>
   };
 
   return (
-    <div className="w-full bg-white rounded-xl shadow-2xl p-10 font-sans">
+    <div className="w-full bg-white p-10 font-sans">
       {/* Logo Area */}
       <div className="flex justify-center mb-8">
         <div className="text-3xl font-bold flex items-center tracking-tight">
