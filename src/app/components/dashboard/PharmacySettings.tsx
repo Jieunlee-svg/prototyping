@@ -72,6 +72,85 @@ const SectionCard = ({ icon: Icon, title, children, headerRight }: { icon: React
   </div>
 );
 
+// ── 커스텀 Time Picker ──
+const formatTimeDisplay = (val: string) => {
+  const [hStr, mStr] = val.split(':');
+  const h = parseInt(hStr, 10);
+  const m = mStr ?? '00';
+  const ampm = h < 12 ? 'AM' : 'PM';
+  const h12 = h === 0 ? 12 : h > 12 ? h - 12 : h;
+  return `${String(h12).padStart(2, '0')}:${m} ${ampm}`;
+};
+
+const TIME_SLOTS = Array.from({ length: 48 }, (_, i) => {
+  const h = Math.floor(i / 2);
+  const m = i % 2 === 0 ? '00' : '30';
+  return `${String(h).padStart(2, '0')}:${m}`;
+});
+
+const TimePicker = ({ value, onChange }: { value: string; onChange: (v: string) => void }) => {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const listRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false);
+    };
+    if (open) document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, [open]);
+
+  useEffect(() => {
+    if (open && listRef.current) {
+      const idx = TIME_SLOTS.indexOf(value);
+      if (idx !== -1) {
+        const item = listRef.current.children[idx] as HTMLElement;
+        if (item) item.scrollIntoView({ block: 'center' });
+      }
+    }
+  }, [open, value]);
+
+  return (
+    <div ref={ref} className="relative">
+      <button
+        type="button"
+        onClick={() => setOpen(o => !o)}
+        className={clsx(
+          'flex items-center gap-1.5 px-3 py-1.5 border rounded-lg text-[13px] font-medium w-[120px] justify-end transition-all',
+          open
+            ? 'border-blue-400 bg-white ring-2 ring-blue-100 text-blue-700'
+            : 'border-gray-200 bg-gray-50 text-gray-700 hover:border-blue-300'
+        )}
+      >
+        <Clock size={12} className={open ? 'text-blue-400' : 'text-gray-400'} />
+        {formatTimeDisplay(value)}
+      </button>
+      {open && (
+        <div className="absolute right-0 top-full mt-1 z-[200] bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden w-36">
+          <div ref={listRef} className="max-h-52 overflow-y-auto py-1">
+            {TIME_SLOTS.map(slot => (
+              <button
+                key={slot}
+                type="button"
+                onClick={() => { onChange(slot); setOpen(false); }}
+                className={clsx(
+                  'w-full px-4 py-1.5 text-left text-[13px] transition-colors',
+                  slot === value
+                    ? 'bg-blue-50 text-blue-600 font-semibold'
+                    : 'text-gray-700 hover:bg-gray-50'
+                )}
+              >
+                {formatTimeDisplay(slot)}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
 const SaveBtn = ({ disabled = false, loading, onClick }: { disabled?: boolean; loading: boolean; onClick: () => void }) => (
   <button
     onClick={onClick}
@@ -735,9 +814,7 @@ export const PharmacySettings: React.FC<PharmacySettingsProps> = ({ initialTab }
                   {timeMappings.map(mapping => (
                     <div key={mapping.label} className="flex items-center justify-between px-4 py-3 rounded-lg border border-gray-200 bg-white hover:border-blue-400 transition-colors">
                       <span className="text-sm font-medium text-gray-700">{mapping.label}</span>
-                      <input type="time" value={mapping.defaultTime} onChange={e => updateTimeMapping(mapping.label, e.target.value)}
-                        className="px-3 py-1.5 border border-gray-200 rounded-lg bg-gray-50 text-gray-700 focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none cursor-pointer w-[120px] text-right text-[13px] font-medium"
-                      />
+                      <TimePicker value={mapping.defaultTime} onChange={v => updateTimeMapping(mapping.label, v)} />
                     </div>
                   ))}
                 </div>
