@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { MessageSquare, ClipboardList, Send } from 'lucide-react';
 import { clsx } from 'clsx';
-import { SmsInvite } from './SmsInvite';
-import { SmsInviteHistory } from './SmsInviteHistory';
+import { SmsInvite } from '../../components/sms/SmsInvite';
+import { SmsInviteHistory } from '../../components/sms/SmsInviteHistory';
 
 interface SmsInviteLayoutProps {
   initialTab?: 'invite' | 'history';

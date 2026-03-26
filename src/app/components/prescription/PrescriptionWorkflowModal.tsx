@@ -6,9 +6,9 @@ import {
   Bell, RefreshCw, RotateCcw, Search, User
 } from 'lucide-react';
 import { clsx } from 'clsx';
-import { ImageWithFallback } from '../figma/ImageWithFallback';
+import { ImageWithFallback } from '../helpers/ImageWithFallback';
 import type { Prescription } from './PrescriptionDetailModal';
-import { ConsultationData } from './ConsultationDetailModal';
+import { ConsultationData } from '../consultation/ConsultationDetailModal';
 
 // ── Types ──────────────────────────────────────────────────────────────
 

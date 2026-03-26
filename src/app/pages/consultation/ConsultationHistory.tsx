@@ -15,7 +15,7 @@ import {
   ArrowDown,
 } from 'lucide-react';
 import { clsx } from 'clsx';
-import { ConsultationDetailModal, ConsultationData as Consultation } from './ConsultationDetailModal';
+import { ConsultationDetailModal, ConsultationData as Consultation } from '../../components/consultation/ConsultationDetailModal';
 
 const DEFAULT_MESSAGE = `[복약 상담 안내]
 안녕하세요, 서울종로약국입니다.

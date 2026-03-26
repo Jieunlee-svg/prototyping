@@ -3,15 +3,15 @@ import {
   FileText, Camera, Printer, Search, CheckCircle2, X, Bell, Zap, Send, ChevronDown, Check, ArrowUpDown, Info
 } from 'lucide-react';
 import { clsx } from 'clsx';
-import { PrescriptionWorkflowModal } from './PrescriptionWorkflowModal';
-import { ConsultationDetailModal, ConsultationData } from './ConsultationDetailModal';
+import { PrescriptionWorkflowModal } from '../../components/prescription/PrescriptionWorkflowModal';
+import { ConsultationDetailModal, ConsultationData } from '../../components/consultation/ConsultationDetailModal';
 import {
   Prescription,
   PrescriptionStatus,
   PrescriptionSource,
   STATUS_LABEL,
   getSourceLabel,
-} from './PrescriptionDetailModal';
+} from '../../components/prescription/PrescriptionDetailModal';
 
 // ── Mock Data ──────────────────────────────────────────────────────────
 const prescriptionImage = 'https://placehold.co/400x560/e2e8f0/64748b?text=처방전';

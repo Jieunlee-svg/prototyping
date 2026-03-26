@@ -8,7 +8,7 @@ import {
   ChevronUp,
 } from 'lucide-react';
 import { clsx } from 'clsx';
-import { ImageWithFallback } from '../figma/ImageWithFallback';
+import { ImageWithFallback } from '../helpers/ImageWithFallback';
 
 // ── Types ──────────────────────────────────────────────────────────────
 export type PrescriptionStatus = 'received' | 'completed' | 'cancelled';

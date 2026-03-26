@@ -53,7 +53,7 @@ import {
   Area
 } from 'recharts';
 import { clsx } from 'clsx';
-import { ImageWithFallback } from '../figma/ImageWithFallback';
+import { ImageWithFallback } from '../../components/helpers/ImageWithFallback';
 
 const hidocLogo = 'https://placehold.co/120x40/e2e8f0/64748b?text=HiDoc';
 

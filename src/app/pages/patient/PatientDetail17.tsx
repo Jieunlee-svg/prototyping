@@ -22,13 +22,13 @@ import {
   Smile,
   Info
 } from 'lucide-react';
-import { 
-  PrescriptionWorkflowModal 
-} from './PrescriptionWorkflowModal';
-import { 
-  ConsultationDetailModal, 
-  ConsultationData 
-} from './ConsultationDetailModal';
+import {
+  PrescriptionWorkflowModal
+} from '../../components/prescription/PrescriptionWorkflowModal';
+import {
+  ConsultationDetailModal,
+  ConsultationData
+} from '../../components/consultation/ConsultationDetailModal';
 import { clsx } from 'clsx';
 import {
   Prescription,
@@ -36,8 +36,8 @@ import {
   StatusText,
   PrescriptionStatus,
   PrescriptionSource
-} from './PrescriptionDetailModal';
-import { PatientEditModal } from './PatientEditModal';
+} from '../../components/prescription/PrescriptionDetailModal';
+import { PatientEditModal } from '../../components/patient/PatientEditModal';
 
 const StatusToast: React.FC<{ message: string; onDone: () => void }> = ({ message, onDone }) => {
   React.useEffect(() => { const t = setTimeout(onDone, 3000); return () => clearTimeout(t); }, [onDone]);

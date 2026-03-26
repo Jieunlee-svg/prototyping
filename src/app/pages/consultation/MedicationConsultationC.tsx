@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Search, X, Plus, Phone, Send, User, ChevronRight, Trash2, Bell, Clock, Info, CheckCircle, AlertCircle, Smartphone, Users, Calendar as CalendarIcon, Pill, FileText, Minus, Check } from 'lucide-react';
 import { clsx } from 'clsx';
-import { ImageWithFallback } from '../figma/ImageWithFallback';
-import { Calendar } from '../ui/calendar';
-import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
+import { ImageWithFallback } from '../../components/helpers/ImageWithFallback';
+import { Calendar } from '../../components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '../../components/ui/popover';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
 
