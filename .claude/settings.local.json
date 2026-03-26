@@ -6,7 +6,9 @@
       "Bash(node_modules/.bin/tsc --noEmit)",
       "Bash(while read:*)",
       "Bash(do sed:*)",
-      "Bash(done)"
+      "Bash(done)",
+      "Bash(awk 'NR>=257 && NR<=302' src/app/components/dashboard/PharmacySettings.tsx)",
+      "Bash(awk 'NR>=299 && NR<=310' src/app/components/dashboard/PharmacySettings.tsx)"
     ]
   }
 }

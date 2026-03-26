@@ -618,7 +618,8 @@ export const PrescriptionWorkflowModal: React.FC<PrescriptionWorkflowModalProps>
                       <Bell className="w-4 h-4 text-blue-500" />
                       복약 알림
                     </h3>
-                    <p className="text-xs text-gray-400 mt-1">약을 복용하는 시점에 웰체크 앱에서 알림을 보냅니다</p>
+                    <p className="text-xs text-gray-400 mt-1">약을 복용하는 시점에 웰체크 앱에서 알림을 보냅니다</p> 
+
                   </div>
 
                   <div className="space-y-2">
@@ -686,7 +687,8 @@ export const PrescriptionWorkflowModal: React.FC<PrescriptionWorkflowModalProps>
                         <RefreshCw className="w-4 h-4 text-blue-500" />
                         재처방 알림
                       </h3>
-                      <p className="text-xs text-gray-400 mt-1">약이 떨어지기 3일 전에 내방을 권유하는 알림을 웰체크 앱에서 보냅니다.</p>
+                      <p className="text-xs text-gray-400 mt-1">약이 떨어지기 3일 전에 내방을 권유하는 알림을 웰체크 앱에서 보냅니다.</p> 
+
                     </div>
                     <button
                       role="switch"

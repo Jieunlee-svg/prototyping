@@ -29,7 +29,8 @@ type SelectedCustomer = { name: string; phone: string; isAppUser: boolean };
 export const SmsInvite: React.FC<SmsInviteProps> = () => {
   const [hospitalPhone, setHospitalPhone] = useState('02-123-4567');
   const [messageText, setMessageText] = useState(
-    `<광고> [약국과 더 가깝게 관리하세요]
+    `<광고> [약국과 더 가깝게 관리하세요] 
+
 
 안녕하세요, {약국명}입니다.
 고객님의 안전한 약 복용과 건강 관리를 돕기 위해 서비스(웰체크)를 도입하였습니다.
