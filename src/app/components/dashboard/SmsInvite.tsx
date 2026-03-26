@@ -29,7 +29,28 @@ type SelectedCustomer = { name: string; phone: string; isAppUser: boolean };
 export const SmsInvite: React.FC<SmsInviteProps> = () => {
   const [hospitalPhone, setHospitalPhone] = useState('02-123-4567');
   const [messageText, setMessageText] = useState(
-    `<광고> [약국과 더 가꺝게 '웰체크'로 관리하세요!]\n\n안녕하세요.\n웰체크 앱을 설치하고 복약 상담 내역을 누적 관리하세요.\n\n👉 설치하기:\nhttps://api.well-check.co.kr/download\n\n복약 상담 문의: \n02-123-4567\n\n웰체크 고객센터:\n1551-3633\n\n무료수신거부:\n080-870-0486`
+    `<광고> [약국과 더 가깝게 관리하세요]
+
+안녕하세요, {약국명}입니다.
+고객님의 안전한 약 복용과 건강 관리를 돕기 위해 서비스(웰체크)를 도입하였습니다.
+
+✅ 이 문자를 받으신 이유
+고객님이 저희 약국에서 처방받으신 약의 상세 정보와 복용 이력을 스마트폰으로 편하게 확인하실 수 있도록 안내해 드립니다.
+
+✅ 앱 설치 시 좋아지는 점
+- 복약 알림: 잊기 쉬운 약 먹는 시간을 제때 알려드려요.
+- 상담 기록: 내가 먹는 약의 주의사항을 언제든 다시 볼 수 있어요.
+- 처방전 전송: 약국에 가기 전에 처방전을 미리 보낼 수 있어요.
+
+📱 지금 바로 시작하기
+링크를 눌러 앱을 설치하시면, 저희 약국과 연결되어 관리가 시작됩니다.
+👉 설치하기: https://api.well-check.co.kr/download
+
+약국 문의: ${hospitalPhone}
+
+서비스 문의: 1551-3633
+
+무료수신거부: 080-870-0486`
   );
 
   // ── 고객 검색 상태 ──────────────────────────────────────────
@@ -298,7 +319,28 @@ export const SmsInvite: React.FC<SmsInviteProps> = () => {
                       문자 내용 (편집 가능)
                     </label>
                     <button
-                      onClick={() => setMessageText(`<광고> [약국과 더 가꺝게 '웰체크'로 관리하세요!]\n\n안녕하세요.\n웰체크 앱을 설치하고 복약 상담 내역을 누적 관리하세요.\n\n👉 설치하기:\nhttps://api.well-check.co.kr/download\n\n복약 상담 문의: \n02-123-4567\n\n웰체크 고객센터:\n1551-3633\n\n무료수신거부:\n080-870-0486`)}
+                      onClick={() => setMessageText(`<광고> [약국과 더 가깝게 관리하세요]
+
+안녕하세요, {약국명}입니다.
+고객님의 안전한 약 복용과 건강 관리를 돕기 위해 서비스(웰체크)를 도입하였습니다.
+
+✅ 이 문자를 받으신 이유
+고객님이 저희 약국에서 처방받으신 약의 상세 정보와 복용 이력을 스마트폰으로 편하게 확인하실 수 있도록 안내해 드립니다.
+
+✅ 앱 설치 시 좋아지는 점
+- 복약 알림: 잊기 쉬운 약 먹는 시간을 제때 알려드려요.
+- 상담 기록: 내가 먹는 약의 주의사항을 언제든 다시 볼 수 있어요.
+- 처방전 전송: 약국에 가기 전에 처방전을 미리 보낼 수 있어요.
+
+📱 지금 바로 시작하기
+링크를 눌러 앱을 설치하시면, 저희 약국과 연결되어 관리가 시작됩니다.
+👉 설치하기: https://api.well-check.co.kr/download
+
+약국 문의: ${hospitalPhone}
+
+서비스 문의: 1551-3633
+
+무료수신거부: 080-870-0486`)}
                       className="text-xs text-gray-500 flex items-center gap-1 hover:text-blue-600"
                     >
                       <RefreshCw size={12} />
