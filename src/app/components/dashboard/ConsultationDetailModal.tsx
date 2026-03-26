@@ -1,5 +1,5 @@
 import React from 'react';
-import { HeartPulse, X, User, MessageSquare, Bell, Clock, RefreshCw } from 'lucide-react';
+import { HeartPulse, X, User, MessageSquare, Bell, Clock, RefreshCw, Printer } from 'lucide-react';
 import { clsx } from 'clsx';
 
 export interface ConsultationData {
@@ -117,11 +117,8 @@ export const ConsultationDetailModal: React.FC<ConsultationDetailModalProps> = (
                       <RefreshCw size={12} className="text-purple-500" />
                       <span className="text-xs font-bold text-gray-600">재처방 알림</span>
                     </div>
-                    <span className={clsx(
-                      'text-[11px] font-bold px-2 py-0.5 rounded-full',
-                      refillAlertEnabled ? 'bg-purple-100 text-purple-700' : 'bg-gray-200 text-gray-500'
-                    )}>
-                      {refillAlertEnabled ? '보냄' : '안보냄'}
+                    <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-gray-200 text-gray-500">
+                      안보냄
                     </span>
                   </div>
                 </div>
@@ -163,7 +160,15 @@ export const ConsultationDetailModal: React.FC<ConsultationDetailModalProps> = (
         </div>
 
         {/* ── 푸터 ── */}
-        <div className="px-6 py-4 border-t border-gray-100 flex justify-end bg-gray-50">
+        <div className="px-6 py-4 border-t border-gray-100 flex justify-between items-center bg-gray-50">
+          <button
+            type="button"
+            onClick={() => window.print()}
+            className="flex items-center gap-2 px-4 py-2 border border-gray-300 hover:bg-gray-100 text-gray-600 text-sm font-medium rounded-lg transition-colors"
+          >
+            <Printer size={15} />
+            PDF 인쇄
+          </button>
           <button
             type="button"
             onClick={onClose}
