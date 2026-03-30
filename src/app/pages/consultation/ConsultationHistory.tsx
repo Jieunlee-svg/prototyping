@@ -36,6 +36,8 @@ const MOCK_CONSULTATIONS: Consultation[] = [
   {
     id: 'CS-20240205-01',
     patientName: '김철수',
+    age: 45,
+    isRegular: true,
     phone: '010-1234-5678',
     sendMethod: '알림톡',
     sentAt: '2024-02-05 14:30',
@@ -49,6 +51,8 @@ const MOCK_CONSULTATIONS: Consultation[] = [
   {
     id: 'CS-20240205-02',
     patientName: '이영희',
+    age: 34,
+    isRegular: false,
     phone: '010-2345-6789',
     sendMethod: '웰체크 앱',
     sentAt: '2024-02-05 14:15',
@@ -62,10 +66,12 @@ const MOCK_CONSULTATIONS: Consultation[] = [
   {
     id: 'CS-20240205-03',
     patientName: '박지민',
+    age: 12,
+    isRegular: true,
     phone: '010-3456-7890',
     sendMethod: '문자',
     sentAt: '2024-02-05 13:45',
-    summary: '하루 3회 (아침, 점심, 저녁) · 식전 · 5일',
+    summary: '하루 3회 (아침, 점심, 저녁) · 식점 · 5일',
     frequency: 3,
     times: ['아침', '점심', '저녁'],
     relation: '식후 30분',
@@ -75,6 +81,8 @@ const MOCK_CONSULTATIONS: Consultation[] = [
   {
     id: 'CS-20240205-04',
     patientName: '최민수',
+    age: 52,
+    isRegular: false,
     phone: '010-4567-8901',
     sendMethod: '알림톡',
     sentAt: '2024-02-05 11:20',
@@ -88,6 +96,9 @@ const MOCK_CONSULTATIONS: Consultation[] = [
   {
     id: 'CS-20240205-05',
     patientName: '정수정',
+    birthDate: '1998-07-07',
+    age: 28,
+    isRegular: false,
     phone: '010-5678-9012',
     sendMethod: '웰체크 앱',
     sentAt: '2024-02-05 10:10',
