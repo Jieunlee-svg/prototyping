@@ -142,7 +142,7 @@ export const PatientList: React.FC<PatientListProps> = ({ onPatientClick }) => {
                 <tr>
                   <th className="px-4 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider w-[14%] cursor-pointer group" onClick={() => handleSort('registeredAt')}>
                     <div className="flex items-center gap-1">
-                      단골 등록 일시
+                      단골 등록일시
                       <ArrowUpDown size={14} className={clsx("transition-colors", sortKey === 'registeredAt' ? "text-blue-500" : "text-gray-300 group-hover:text-gray-400")} />
                     </div>
                   </th>

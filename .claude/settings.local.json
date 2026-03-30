@@ -8,7 +8,13 @@
       "Bash(do sed:*)",
       "Bash(done)",
       "Bash(awk 'NR>=257 && NR<=302' src/app/components/dashboard/PharmacySettings.tsx)",
-      "Bash(awk 'NR>=299 && NR<=310' src/app/components/dashboard/PharmacySettings.tsx)"
+      "Bash(awk 'NR>=299 && NR<=310' src/app/components/dashboard/PharmacySettings.tsx)",
+      "mcp__48f91661-40ab-45f5-be07-7a5a23c87abe__accounts_list",
+      "mcp__48f91661-40ab-45f5-be07-7a5a23c87abe__set_active_account",
+      "Bash(npx wrangler:*)",
+      "Bash(curl -s -X GET \"https://api.cloudflare.com/client/v4/accounts/0a4a0de649c9fcd82f02f633ec5d9f38/pages/projects\" -H \"Authorization: Bearer $CLOUDFLARE_API_TOKEN\" -H \"Content-Type: application/json\")",
+      "mcp__48f91661-40ab-45f5-be07-7a5a23c87abe__migrate_pages_to_workers_guide",
+      "mcp__Claude_Preview__preview_start"
     ]
   }
 }

@@ -31,17 +31,16 @@ export const SmsInvite: React.FC<SmsInviteProps> = () => {
   const [messageText, setMessageText] = useState(
     `<광고> [약국과 더 가깝게 관리하세요] 
 
-
 안녕하세요, {약국명}입니다.
-고객님의 안전한 약 복용과 건강 관리를 돕기 위해 서비스(웰체크)를 도입하였습니다.
 
-✅ 이 문자를 받으신 이유
-고객님이 저희 약국에서 처방받으신 약의 상세 정보와 복용 이력을 스마트폰으로 편하게 확인하실 수 있도록 안내해 드립니다.
+고객님의 안전한 약 복용과 건강 관리를 돕기 위한 서비스 "웰체크"를 도입해 운영하고 있습니다.
+
+고객님이 저희 약국에서 처방받으신 약의 상세 정보와 복용 이력을 스마트폰으로 편하게 확인하실 수 있습니다.
 
 ✅ 앱 설치 시 좋아지는 점
-- 복약 알림: 잊기 쉬운 약 먹는 시간을 제때 알려드려요.
-- 상담 기록: 내가 먹는 약의 주의사항을 언제든 다시 볼 수 있어요.
-- 처방전 전송: 약국에 가기 전에 처방전을 미리 보낼 수 있어요.
+- 복약 알림 자동 설정 
+- 상담 기록 보관
+- 처방전 전송
 
 📱 지금 바로 시작하기
 링크를 눌러 앱을 설치하시면, 저희 약국과 연결되어 관리가 시작됩니다.
@@ -125,8 +124,8 @@ export const SmsInvite: React.FC<SmsInviteProps> = () => {
     setShowCustomerDrop(true);
   };
 
-  // 발송 가능 여부: 수신자가 선택됐고 이미 앱 가입자가 아닐 때
-  const canSend = !!selectedCustomer && !selectedCustomer.isAppUser;
+  // 발송 가능 여부: 필수 항목이 모두 채워져 있고 이미 앱 가입자가 아닐 때
+  const canSend = !!selectedCustomer && !selectedCustomer.isAppUser && !!hospitalPhone.trim() && !!messageText.trim();
   const isAlreadyMember = !!selectedCustomer && selectedCustomer.isAppUser;
 
   // ── 발송 확인 / 완료 모달 상태 ──
@@ -166,8 +165,9 @@ export const SmsInvite: React.FC<SmsInviteProps> = () => {
 
                 {/* 고객 휴대전화 번호 */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5 flex items-center gap-1">
                     고객 휴대전화 번호
+                    <span className="text-red-500 font-bold">*</span>
                   </label>
 
                   <div ref={phoneDropRef} className="relative">
@@ -301,8 +301,9 @@ export const SmsInvite: React.FC<SmsInviteProps> = () => {
 
                 {/* 약국 번호 */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-1">
                     약국 번호
+                    <span className="text-red-500 font-bold">*</span>
                   </label>
                   <input
                     type="text"
@@ -316,22 +317,23 @@ export const SmsInvite: React.FC<SmsInviteProps> = () => {
                 {/* 문자 내용 */}
                 <div className="pt-2">
                   <div className="flex justify-between items-center mb-1">
-                    <label className="block text-sm font-medium text-gray-700">
+                    <label className="block text-sm font-medium text-gray-700 flex items-center gap-1">
                       문자 내용 (편집 가능)
+                      <span className="text-red-500 font-bold">*</span>
                     </label>
                     <button
-                      onClick={() => setMessageText(`<광고> [약국과 더 가깝게 관리하세요]
+                      onClick={() => setMessageText(`<광고> [약국과 더 가깝게 관리하세요] 
 
 안녕하세요, {약국명}입니다.
-고객님의 안전한 약 복용과 건강 관리를 돕기 위해 서비스(웰체크)를 도입하였습니다.
 
-✅ 이 문자를 받으신 이유
-고객님이 저희 약국에서 처방받으신 약의 상세 정보와 복용 이력을 스마트폰으로 편하게 확인하실 수 있도록 안내해 드립니다.
+고객님의 안전한 약 복용과 건강 관리를 돕기 위한 서비스 "웰체크"를 도입해 운영하고 있습니다.
+
+고객님이 저희 약국에서 처방받으신 약의 상세 정보와 복용 이력을 스마트폰으로 편하게 확인하실 수 있습니다.
 
 ✅ 앱 설치 시 좋아지는 점
-- 복약 알림: 잊기 쉬운 약 먹는 시간을 제때 알려드려요.
-- 상담 기록: 내가 먹는 약의 주의사항을 언제든 다시 볼 수 있어요.
-- 처방전 전송: 약국에 가기 전에 처방전을 미리 보낼 수 있어요.
+- 복약 알림 자동 설정 
+- 상담 기록 보관
+- 처방전 전송
 
 📱 지금 바로 시작하기
 링크를 눌러 앱을 설치하시면, 저희 약국과 연결되어 관리가 시작됩니다.

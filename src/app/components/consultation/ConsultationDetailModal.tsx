@@ -1,8 +1,10 @@
 import React from 'react';
 import { HeartPulse, X, User, MessageSquare, Bell, Clock, RefreshCw, Printer } from 'lucide-react';
 import { clsx } from 'clsx';
+import { MedicationGuide } from './MedicationGuide';
 
 export interface ConsultationData {
+// ... existing interface ...
   id: string;
   patientName: string;
   birthDate?: string;
@@ -46,13 +48,17 @@ const Row: React.FC<{ label: string; value: React.ReactNode }> = ({ label, value
 
 export const ConsultationDetailModal: React.FC<ConsultationDetailModalProps> = ({ data, onClose }) => {
   const reminderEnabled = data.reminderEnabled ?? true;
-  const refillAlertEnabled = data.refillAlertEnabled ?? true;
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4" role="dialog" aria-modal="true">
-      <div className="fixed inset-0 bg-gray-900/75" onClick={onClose} />
-      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-3xl overflow-hidden">
+      <div className="fixed inset-0 bg-gray-900/75 print:hidden" onClick={onClose} />
+      
+      {/* ── Print Content (Hidden on screen) ── */}
+      <div className="hidden print:block fixed inset-0 bg-white z-[200]">
+        <MedicationGuide data={data} />
+      </div>
 
+      <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-3xl overflow-hidden print:hidden animate-in zoom-in-95 fade-in duration-200">
         {/* ── 모달 헤더 ── */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
           <h3 className="text-base font-bold text-gray-900 flex items-center gap-2">

@@ -52,7 +52,7 @@ function JoinedBadge({ status }: { status: SmsRecord['joined'] }) {
         return (
             <span className="inline-flex items-center gap-1 text-xs font-medium text-amber-500 bg-amber-50 px-2 py-0.5 rounded-full border border-amber-100">
                 <Clock size={12} />
-                초대 전송됨
+                초대 전송
             </span>
         );
     }
@@ -112,7 +112,7 @@ export const SmsInviteHistory: React.FC = () => {
                     {([
                         { value: 'all', label: '전체 가입상태' },
                         { value: 'joined', label: '가입 완료' },
-                        { value: 'pending', label: '초대 전송됨' },
+                        { value: 'pending', label: '초대 전송' },
                         { value: 'expired', label: '초대 만료' },
                     ] as const).map(({ value, label }) => (
                         <button
@@ -205,7 +205,7 @@ export const SmsInviteHistory: React.FC = () => {
                                                     r.joinedAt
                                                 ) : (
                                                     <span className="text-gray-400">
-                                                        {r.joined === 'pending' ? '초대 전송됨' : '초대 만료'}
+                                                        {r.joined === 'pending' ? '초대 전송' : '초대 만료'}
                                                     </span>
                                                 )}
                                             </td>
