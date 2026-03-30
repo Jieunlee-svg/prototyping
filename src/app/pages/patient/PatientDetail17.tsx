@@ -120,7 +120,7 @@ export const PatientDetail17: React.FC<PatientDetailProps> = ({ onBack, patientI
       times: ['08:00', '20:00'],
       relation: '식후 30분',
       duration: 14,
-      messageContent: '안녕하세요, 십칠스프린트 고객님!\n\n처방전이 접수되었습니다.\n\n💊 복약 안내\n• 복용 횟수: 하루 2회\n• 복용 시점: 식후 30분\n• 복용 시간: 08:00, 20:00\n• 복약 기간: 14일\n\n궁금한 사항은 약국으로 문의해 주세요.',
+      messageContent: '[복약 상담 안내]\n안녕하세요, 웰체크약국입니다.\n처방받으신 약품을 안내드립니다.\n\n[처방 약품]\n1. 메트포르민 500mg (혈당강하제)\n2. 글리메피리드 2mg (인슐린 분비 촉진제)\n3. 로수바스타틴 10mg (고지혈증약)\n4. 오메프라졸 20mg (위장보호제)\n\n[복약 방법]\n하루 3번, 아침, 점심, 저녁 식후 30분에 복약하세요.\n\n문의사항은 약국으로 연락주세요.',
       reminderEnabled: true,
       refillAlertEnabled: true,
       adherenceRate: 85,
