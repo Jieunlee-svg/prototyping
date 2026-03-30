@@ -59,10 +59,12 @@ export const PrescriptionList: React.FC<{ onOpenSettings?: () => void; onPatient
   const [workflowPrescription, setWorkflowPrescription] = useState<Prescription | null>(null);
   const [sentIds, setSentIds] = useState<Set<string>>(new Set(['RX-003']));
   const [sentConsultations, setSentConsultations] = useState<Record<string, ConsultationData>>({
-    'RX-003': {
+      'RX-003': {
       id: 'RX-003',
       patientName: '정수정',
       birthDate: '1998-07-07',
+      age: 28,
+      isRegular: false,
       gender: '여성',
       phone: '010-6666-2222',
       sendMethod: '알림톡',
