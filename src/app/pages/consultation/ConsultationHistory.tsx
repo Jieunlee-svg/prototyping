@@ -18,17 +18,17 @@ import { clsx } from 'clsx';
 import { ConsultationDetailModal, ConsultationData as Consultation } from '../../components/consultation/ConsultationDetailModal';
 
 const DEFAULT_MESSAGE = `[복약 상담 안내]
-안녕하세요, 서울종로약국입니다.
-처방받으신 약품 안내드립니다.
+안녕하세요, 웰체크약국입니다.
+처방받으신 약품을 안내드립니다.
 
 [처방 약품]
-1. 타이레놀정 500mg ((주)한국얀센)
+1. 메트포르민 500mg (혈당강하제)
+2. 글리메피리드 2mg (인슐린 분비 촉진제)
+3. 로수바스타틴 10mg (고지혈증약)
+4. 오메프라졸 20mg (위장보호제)
 
-[복약 알림 설정]
+[복약 방법]
 하루 3번, 아침, 점심, 저녁 식후 30분에 복약하세요.
-
-[주의사항]
-- 타이레놀정 500mg: 매일 3잔 이상 술을 마시는 경우 의사와 상의
 
 문의사항은 약국으로 연락주세요.`;
 
@@ -43,7 +43,7 @@ const MOCK_CONSULTATIONS: Consultation[] = [
     frequency: 3,
     times: ['아침', '점심', '저녁'],
     relation: '식후 30분',
-    duration: 7,
+    duration: 14,
     messageContent: DEFAULT_MESSAGE,
   },
   {
@@ -53,9 +53,9 @@ const MOCK_CONSULTATIONS: Consultation[] = [
     sendMethod: '웰체크 앱',
     sentAt: '2024-02-05 14:15',
     summary: '하루 2회 (아침, 저녁) · 식후 · 14일',
-    frequency: 2,
-    times: ['아침', '저녁'],
-    relation: '식후',
+    frequency: 3,
+    times: ['아침', '점심', '저녁'],
+    relation: '식후 30분',
     duration: 14,
     messageContent: DEFAULT_MESSAGE,
   },
@@ -68,8 +68,8 @@ const MOCK_CONSULTATIONS: Consultation[] = [
     summary: '하루 3회 (아침, 점심, 저녁) · 식전 · 5일',
     frequency: 3,
     times: ['아침', '점심', '저녁'],
-    relation: '식전',
-    duration: 5,
+    relation: '식후 30분',
+    duration: 14,
     messageContent: DEFAULT_MESSAGE,
   },
   {
@@ -79,10 +79,10 @@ const MOCK_CONSULTATIONS: Consultation[] = [
     sendMethod: '알림톡',
     sentAt: '2024-02-05 11:20',
     summary: '하루 1회 (아침) · 식후 30분 · 30일',
-    frequency: 1,
-    times: ['아침'],
+    frequency: 3,
+    times: ['아침', '점심', '저녁'],
     relation: '식후 30분',
-    duration: 30,
+    duration: 14,
     messageContent: DEFAULT_MESSAGE,
   },
   {
@@ -92,10 +92,10 @@ const MOCK_CONSULTATIONS: Consultation[] = [
     sendMethod: '웰체크 앱',
     sentAt: '2024-02-05 10:10',
     summary: '하루 2회 (아침, 저녁) · 식후 · 7일',
-    frequency: 2,
-    times: ['아침', '저녁'],
-    relation: '식후',
-    duration: 7,
+    frequency: 3,
+    times: ['아침', '점심', '저녁'],
+    relation: '식후 30분',
+    duration: 14,
     messageContent: DEFAULT_MESSAGE,
   },
 ];
