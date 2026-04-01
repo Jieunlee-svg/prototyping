@@ -19,6 +19,17 @@ import {
   BellRing
 } from 'lucide-react';
 import { clsx } from 'clsx';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '../ui/alert-dialog';
+
 
 interface SidebarProps {
   className?: string;
@@ -61,6 +72,17 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const [consultationOpen, setConsultationOpen] = useState(isConsultationActive);
   const isSmsActive = activeView === 'sms' || activeView === 'sms-history';
   const [smsOpen, setSmsOpen] = useState(isSmsActive);
+  const [showLogoutAlert, setShowLogoutAlert] = useState(false);
+
+  const handleLogoutClick = () => {
+    setShowLogoutAlert(true);
+  };
+
+  const confirmLogout = () => {
+    setShowLogoutAlert(false);
+    if (onLogout) onLogout();
+  };
+
 
   const handleMenuClick = (e: React.MouseEvent, label: string) => {
     e.preventDefault();
@@ -141,7 +163,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             <Settings size={20} />
           </button>
           <button 
-            onClick={onLogout}
+            onClick={handleLogoutClick}
             className="p-2 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 transition-colors"
           >
             <LogOut size={20} />
@@ -353,7 +375,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               계정 정보
             </button>
             <button
-              onClick={onLogout}
+              onClick={handleLogoutClick}
               className="flex-1 px-2 py-1 text-xs border border-gray-300 rounded hover:bg-gray-50 text-red-600 hover:bg-red-50 hover:border-red-200"
             >
               로그아웃
@@ -364,6 +386,22 @@ export const Sidebar: React.FC<SidebarProps> = ({
         {/* Banner area */}
 
       </div>
+
+      {/* Logout Confirmation Dialog */}
+      <AlertDialog open={showLogoutAlert} onOpenChange={setShowLogoutAlert}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>로그아웃</AlertDialogTitle>
+            <AlertDialogDescription>
+              정말 로그아웃 하시겠습니까?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>아니오</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmLogout} className="bg-red-600 hover:bg-red-700">예</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };
