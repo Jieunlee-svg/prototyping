@@ -159,6 +159,10 @@ export const ConsultationHistory = ({ onBack }: { onBack?: () => void }) => {
   const sortedConsultations = [...MOCK_CONSULTATIONS].sort((a, b) => {
     const valA = a[sortKey];
     const valB = b[sortKey];
+    if (sortKey === 'patientName') {
+      const cmp = valA.localeCompare(valB, 'ko');
+      return sortDir === 'asc' ? cmp : -cmp;
+    }
     const cmp = valA < valB ? -1 : valA > valB ? 1 : 0;
     return sortDir === 'asc' ? cmp : -cmp;
   });

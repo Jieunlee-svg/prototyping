@@ -94,11 +94,11 @@ export const PrescriptionList: React.FC<{ onOpenSettings?: () => void; onPatient
   });
 
   const handleSort = (key: keyof Prescription) => {
-    let direction: 'asc' | 'desc' = 'asc';
-    if (sortConfig.key === key && sortConfig.direction === 'asc') {
-      direction = 'desc';
+    if (sortConfig.key === key) {
+      setSortConfig({ key, direction: sortConfig.direction === 'asc' ? 'desc' : 'asc' });
+    } else {
+      setSortConfig({ key, direction: key === 'patientName' ? 'asc' : 'desc' });
     }
-    setSortConfig({ key, direction });
   };
 
   // ── 상태 드롭다운 click-outside
@@ -153,6 +153,10 @@ export const PrescriptionList: React.FC<{ onOpenSettings?: () => void; onPatient
     const key = sortConfig.key || 'receivedAt';
     const aVal = a[key] ?? '';
     const bVal = b[key] ?? '';
+    if (key === 'patientName' && typeof aVal === 'string' && typeof bVal === 'string') {
+      const cmp = aVal.localeCompare(bVal, 'ko');
+      return sortConfig.direction === 'asc' ? cmp : -cmp;
+    }
     if (aVal < bVal) return sortConfig.direction === 'asc' ? -1 : 1;
     if (aVal > bVal) return sortConfig.direction === 'asc' ? 1 : -1;
     return 0;

@@ -91,13 +91,19 @@ export const PatientList: React.FC<PatientListProps> = ({ onPatientClick }) => {
       setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
     } else {
       setSortKey(key);
-      setSortOrder('desc');
+      setSortOrder(key === 'name' ? 'asc' : 'desc');
     }
   };
 
   const sortedPatients = [...MOCK_DATA].sort((a, b) => {
     const aVal = a[sortKey];
     const bVal = b[sortKey];
+    if (aVal == null) return 1;
+    if (bVal == null) return -1;
+    if (sortKey === 'name' && typeof aVal === 'string' && typeof bVal === 'string') {
+      const cmp = aVal.localeCompare(bVal, 'ko');
+      return sortOrder === 'asc' ? cmp : -cmp;
+    }
     if (aVal < bVal) return sortOrder === 'asc' ? -1 : 1;
     if (aVal > bVal) return sortOrder === 'asc' ? 1 : -1;
     return 0;
@@ -166,11 +172,10 @@ export const PatientList: React.FC<PatientListProps> = ({ onPatientClick }) => {
                       <ArrowUpDown size={14} className={clsx("transition-colors", sortKey === 'prescriptionCount' ? "text-blue-500" : "text-gray-300 group-hover:text-gray-400")} />
                     </div>
                   </th>
-                  <th className="px-4 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider w-[22%] cursor-pointer group" onClick={() => handleSort('medicationStatus')}>
+                  <th className="px-4 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider w-[22%]">
                     <div className="flex items-center gap-1">
                       관리 질환
                       <DiseaseTooltip />
-                      <ArrowUpDown size={14} className={clsx("transition-colors", sortKey === 'medicationStatus' ? "text-blue-500" : "text-gray-300 group-hover:text-gray-400")} />
                     </div>
                   </th>
                   <th className="px-4 py-4 text-center text-xs font-bold text-gray-500 uppercase tracking-wider w-[14%] cursor-pointer group" onClick={() => handleSort('adherenceRate')}>
