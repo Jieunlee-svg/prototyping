@@ -83,7 +83,7 @@ export const WellcheckLanding: React.FC<WellcheckLandingProps> = ({ onLogin }) =
             회원가입
           </button>
           <p className="text-white/70 text-sm mt-2">
-            wellcheck은 로그인 후 이용 가능합니다.
+            웰체크는 로그인 후 이용 가능합니다.
           </p>
         </div>
       </div>
