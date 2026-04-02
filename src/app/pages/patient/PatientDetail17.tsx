@@ -323,7 +323,16 @@ export const PatientDetail17: React.FC<PatientDetailProps> = ({ onBack, patientI
                             )}>
                               {getSourceIcon(rx.source)}
                             </span>
-                            <span className="text-xs font-medium text-gray-600">{getSourceLabel(rx.source)}</span>
+                            {rx.source === 'fax_telemed' ? (
+                              <button
+                                onClick={() => setSelectedPrescription(rx)}
+                                className="text-xs font-semibold text-purple-600 hover:underline focus:outline-none"
+                              >
+                                {getSourceLabel(rx.source)}
+                              </button>
+                            ) : (
+                              <span className="text-xs font-medium text-gray-600">{getSourceLabel(rx.source)}</span>
+                            )}
                           </div>
                         </td>
                         <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-600">
