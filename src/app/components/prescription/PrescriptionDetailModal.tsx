@@ -6,9 +6,11 @@ import {
   ZoomOut,
   ChevronDown,
   ChevronUp,
+  ExternalLink,
 } from 'lucide-react';
 import { clsx } from 'clsx';
 import { ImageWithFallback } from '../helpers/ImageWithFallback';
+import { TelemedPrescriptionDetail } from './TelemedPrescriptionDetail';
 
 // ── Types ──────────────────────────────────────────────────────────────
 export type PrescriptionStatus = 'received' | 'completed' | 'cancelled';
@@ -83,6 +85,7 @@ export const PrescriptionDetailModal: React.FC<PrescriptionDetailModalProps> = (
   const [rejectReason, setRejectReason] = useState('');
   const [isChangingStatus, setIsChangingStatus] = useState(false);
   const [tempStatus, setTempStatus] = useState<PrescriptionStatus>(prescription.status);
+  const [showTelemedDetail, setShowTelemedDetail] = useState(false);
 
   const handleUpdateStatus = (newStatus: PrescriptionStatus) => {
     onUpdateStatus?.(newStatus);
@@ -95,6 +98,7 @@ export const PrescriptionDetailModal: React.FC<PrescriptionDetailModalProps> = (
   };
 
   return (
+    <>
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
       <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-4xl flex overflow-hidden max-h-[90vh] animate-in zoom-in-95 fade-in duration-200">
@@ -186,9 +190,19 @@ export const PrescriptionDetailModal: React.FC<PrescriptionDetailModalProps> = (
                 </div>
                 <div>
                   <p className="text-xs text-gray-400 mb-1">접수 경로</p>
-                  <span className="inline-flex px-2 py-1 bg-blue-50 text-blue-600 text-[11px] font-bold rounded">
-                    {getSourceLabel(prescription.source)}
-                  </span>
+                  {prescription.source === 'fax_telemed' ? (
+                    <button
+                      onClick={() => setShowTelemedDetail(true)}
+                      className="inline-flex items-center gap-1 px-2 py-1 bg-purple-50 text-purple-600 text-[11px] font-bold rounded hover:bg-purple-100 transition-colors group"
+                    >
+                      {getSourceLabel(prescription.source)}
+                      <ExternalLink size={10} className="opacity-60 group-hover:opacity-100 transition-opacity" />
+                    </button>
+                  ) : (
+                    <span className="inline-flex px-2 py-1 bg-blue-50 text-blue-600 text-[11px] font-bold rounded">
+                      {getSourceLabel(prescription.source)}
+                    </span>
+                  )}
                 </div>
               </div>
             </div>
@@ -264,5 +278,13 @@ export const PrescriptionDetailModal: React.FC<PrescriptionDetailModalProps> = (
         </div>
       </div>
     </div>
-  );
+
+    {/* ── 비대면 진료 상세 오버레이 ── */}
+    {showTelemedDetail && (
+      <TelemedPrescriptionDetail
+        prescription={prescription}
+        onClose={() => setShowTelemedDetail(false)}
+      />
+    )}
+  </>);
 };
