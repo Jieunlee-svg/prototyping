@@ -36,10 +36,10 @@ const FREQUENCY_DEFAULTS: Record<number, { times: string[]; relation: string }> 
 };
 
 const INITIAL_DRUGS: DrugItem[] = [
-  { id: '1', name: '메트포르민 500mg',   category: '혈당강하제',         dosageAmount: 1, frequencyCount: 3, days: 30 },
-  { id: '2', name: '글리메피리드 2mg',   category: '인슐린 분비 촉진제', dosageAmount: 1, frequencyCount: 1, days: 30 },
-  { id: '3', name: '로수바스타틴 10mg',  category: '고지혈증약',         dosageAmount: 1, frequencyCount: 1, days: 30 },
-  { id: '4', name: '오메프라졸 20mg',    category: '위장보호제',         dosageAmount: 1, frequencyCount: 1, days: 30 },
+  { id: '1', name: '메트포르민 500mg',   category: '', dosageAmount: 1, frequencyCount: 3, days: 30 },
+  { id: '2', name: '글리메피리드 2mg',   category: '', dosageAmount: 1, frequencyCount: 1, days: 30 },
+  { id: '3', name: '로수바스타틴 10mg',  category: '', dosageAmount: 1, frequencyCount: 1, days: 30 },
+  { id: '4', name: '오메프라졸 20mg',    category: '', dosageAmount: 1, frequencyCount: 1, days: 30 },
 ];
 
 const OCR_SMART_TAGS: string[] = [
@@ -228,7 +228,7 @@ export const PrescriptionWorkflowModal: React.FC<PrescriptionWorkflowModalProps>
       ? `\n\n[주의사항]\n${selectedTags.map(t => `· ${t}`).join('\n')}`
       : '';
     const drugSection = drugs.length > 0
-      ? `\n\n[처방 약품]\n${drugs.map((d, i) => `${i + 1}. ${d.name} (${d.category})`).join('\n')}`
+      ? `\n\n[처방 약품]\n${drugs.map((d, i) => `${i + 1}. ${d.name}`).join('\n')}`
       : '';
 
     return `[복약 상담 안내]\n안녕하세요, ${pharmacyName}입니다.\n처방받으신 약품을 안내드립니다.${drugSection}\n\n[복약 방법]\n${usage}${tagLines}\n\n문의사항은 약국으로 연락주세요.`;
@@ -453,14 +453,10 @@ export const PrescriptionWorkflowModal: React.FC<PrescriptionWorkflowModalProps>
                         {editingId === drug.id && editingDraft ? (
                           /* 편집 모드 */
                           <div className="p-3 bg-blue-50 space-y-3">
-                            <div className="grid grid-cols-2 gap-2">
+                            <div className="grid grid-cols-1 gap-2">
                               <div>
                                 <label className="text-[10px] text-gray-500 font-semibold mb-1 block">약품명</label>
                                 <input autoFocus value={editingDraft.name} onChange={e => setEditingDraft({ ...editingDraft, name: e.target.value })} className="w-full text-xs px-2 py-1.5 border border-blue-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-300 bg-white" placeholder="약품명" />
-                              </div>
-                              <div>
-                                <label className="text-[10px] text-gray-500 font-semibold mb-1 block">분류</label>
-                                <input value={editingDraft.category} onChange={e => setEditingDraft({ ...editingDraft, category: e.target.value })} className="w-full text-xs px-2 py-1.5 border border-blue-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-300 bg-white" placeholder="약품 분류" />
                               </div>
                             </div>
                             <div className="flex items-center gap-4">
@@ -499,7 +495,7 @@ export const PrescriptionWorkflowModal: React.FC<PrescriptionWorkflowModalProps>
                             <div className="flex-1 min-w-0">
                               <div className="text-[13px] font-semibold text-gray-900 truncate">{drug.name || '(약품명 없음)'}</div>
                               <div className="text-[11px] text-gray-400 mt-0.5">
-                                {drug.category} · 1회 {drug.dosageAmount}정, 하루 {drug.frequencyCount}회
+                                1회 {drug.dosageAmount}정, 하루 {drug.frequencyCount}회
                               </div>
                             </div>
                             <span className="bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full text-[11px] font-bold flex-shrink-0">{drug.days}일분</span>
