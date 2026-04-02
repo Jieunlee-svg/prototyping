@@ -16,11 +16,11 @@ import type { Prescription } from './PrescriptionDetailModal';
 const DELIVERY_OPTIONS = [
   { id: 'visit_self',     label: '본인 수령' },
   { id: 'visit_family',  label: '대리인 수령' },
-  { id: 'wellcheck',     label: '웰체크 픽(재택 수령)' },
-  { id: 'kakao',         label: '카카오 택배(재택 수령)' },
-  { id: 'self_delivery', label: '자력 배송(국가 비용)' },
-  { id: 'wellcheck2',    label: '웰체크 픽(국내약국 입점)' },
-  { id: 'kakao2',        label: '웰체크 픽(국내약국 입점)' },
+  { id: 'wellcheck',     label: '웰체크 퀵(재택 수령)' },
+  { id: 'kakao',         label: '웰체크 택배(재택 수령)' },
+  { id: 'self_delivery', label: '착불 배송(약국자체 배송)' },
+  { id: 'wellcheck2',    label: '웰체크 퀵(약국 요청)' },
+  { id: 'kakao2',        label: '웰체크 택배(약국 요청)' },
 ] as const;
 
 type DeliveryId = typeof DELIVERY_OPTIONS[number]['id'];
