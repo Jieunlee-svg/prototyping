@@ -269,8 +269,8 @@ export const SmsInvite: React.FC<SmsInviteProps> = () => {
                                       <div className={clsx('text-[14px] font-semibold', isFocused ? 'text-blue-900' : 'text-gray-900')}>{c.name}</div>
                                       <div className={clsx('text-xs mt-0.5', isFocused ? 'text-blue-700' : 'text-gray-500')}>{c.phone}</div>
                                     </div>
-                                    <span className="text-[10px] font-bold text-emerald-600 bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded-full flex-shrink-0">
-                                      앱 가입됨
+                                    <span className="text-[10px] font-bold text-blue-600 bg-blue-50 border border-blue-100 px-2 py-0.5 rounded-full flex-shrink-0">
+                                      단골 등록됨
                                     </span>
                                   </button>
                                 );
