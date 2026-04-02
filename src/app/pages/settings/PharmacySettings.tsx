@@ -358,7 +358,7 @@ export const PharmacySettings: React.FC<PharmacySettingsProps> = ({ initialTab }
     }
   };
 
-  const isValidNotifyPhone = notifyPhone.replace(/\D/g, '').length === 11;
+  const isValidNotifyPhone = notifyPhone === '' || notifyPhone.replace(/\D/g, '').length === 11;
 
   const handleSave = () => {
     if (activeTab === 'basic' && !isFormValid) return;
@@ -713,7 +713,7 @@ export const PharmacySettings: React.FC<PharmacySettingsProps> = ({ initialTab }
                   {allowAppPrescription && (
                     <div className="pt-6 border-t border-gray-100 animate-in fade-in slide-in-from-top-4 duration-500">
                       <label htmlFor="notifyPhone" className="block text-sm font-medium text-gray-700 mb-1.5">
-                        알림 수신 휴대전화 번호 <span className="text-red-500">*</span>
+                        알림 수신 휴대전화 번호
                       </label>
                       <input
                         ref={notifyPhoneRef}
