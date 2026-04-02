@@ -12,6 +12,7 @@ import {
   STATUS_LABEL,
   getSourceLabel,
 } from '../../components/prescription/PrescriptionDetailModal';
+import { TelemedPrescriptionDetail } from '../../components/prescription/TelemedPrescriptionDetail';
 
 // ── Mock Data ──────────────────────────────────────────────────────────
 const prescriptionImage = 'https://placehold.co/400x560/e2e8f0/64748b?text=처방전';
@@ -57,6 +58,7 @@ export const PrescriptionList: React.FC<{ onOpenSettings?: () => void; onPatient
   const [showNotif, setShowNotif] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const [workflowPrescription, setWorkflowPrescription] = useState<Prescription | null>(null);
+  const [telemedPrescription, setTelemedPrescription] = useState<Prescription | null>(null);
   const [sentIds, setSentIds] = useState<Set<string>>(new Set(['RX-003']));
   const [sentConsultations, setSentConsultations] = useState<Record<string, ConsultationData>>({
       'RX-003': {
@@ -280,7 +282,16 @@ export const PrescriptionList: React.FC<{ onOpenSettings?: () => void; onPatient
             <span className={clsx('h-6 w-6 rounded-full flex items-center justify-center flex-shrink-0',
               p.source === 'app_camera' ? 'bg-blue-100' : 'bg-purple-100'
             )}>{getSourceIcon(p.source)}</span>
-            <span className="text-xs font-medium text-gray-700">{getSourceLabel(p.source)}</span>
+            {p.source === 'fax_telemed' ? (
+              <button
+                onClick={() => setTelemedPrescription(p)}
+                className="text-xs font-semibold text-purple-600 hover:underline focus:outline-none"
+              >
+                {getSourceLabel(p.source)}
+              </button>
+            ) : (
+              <span className="text-xs font-medium text-gray-700">{getSourceLabel(p.source)}</span>
+            )}
           </div>
         </td>
         <td className={thC}>
@@ -469,6 +480,13 @@ export const PrescriptionList: React.FC<{ onOpenSettings?: () => void; onPatient
         <ConsultationDetailModal
           data={selectedConsultation}
           onClose={() => setSelectedConsultation(null)}
+        />
+      )}
+
+      {telemedPrescription && (
+        <TelemedPrescriptionDetail
+          prescription={telemedPrescription}
+          onClose={() => setTelemedPrescription(null)}
         />
       )}
     </div>

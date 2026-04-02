@@ -38,6 +38,7 @@ import {
   PrescriptionSource
 } from '../../components/prescription/PrescriptionDetailModal';
 import { PatientEditModal } from '../../components/patient/PatientEditModal';
+import { TelemedPrescriptionDetail } from '../../components/prescription/TelemedPrescriptionDetail';
 
 const StatusToast: React.FC<{ message: string; onDone: () => void }> = ({ message, onDone }) => {
   React.useEffect(() => { const t = setTimeout(onDone, 3000); return () => clearTimeout(t); }, [onDone]);
@@ -97,6 +98,7 @@ export const PatientDetail17: React.FC<PatientDetailProps> = ({ onBack, patientI
 
   const [prescriptions, setPrescriptions] = useState<Prescription[]>(MOCK_PRESCRIPTIONS);
   const [selectedPrescription, setSelectedPrescription] = useState<Prescription | null>(null);
+  const [telemedPrescription, setTelemedPrescription] = useState<Prescription | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   // Filters
@@ -325,7 +327,7 @@ export const PatientDetail17: React.FC<PatientDetailProps> = ({ onBack, patientI
                             </span>
                             {rx.source === 'fax_telemed' ? (
                               <button
-                                onClick={() => setSelectedPrescription(rx)}
+                                onClick={() => setTelemedPrescription(rx)}
                                 className="text-xs font-semibold text-purple-600 hover:underline focus:outline-none"
                               >
                                 {getSourceLabel(rx.source)}
@@ -425,6 +427,8 @@ export const PatientDetail17: React.FC<PatientDetailProps> = ({ onBack, patientI
       <Modals
         selectedPrescription={selectedPrescription}
         setSelectedPrescription={setSelectedPrescription}
+        telemedPrescription={telemedPrescription}
+        setTelemedPrescription={setTelemedPrescription}
         updateStatus={updateStatus}
         workflowPrescription={workflowPrescription}
         setWorkflowPrescription={setWorkflowPrescription}
@@ -453,6 +457,8 @@ export const PatientDetail17: React.FC<PatientDetailProps> = ({ onBack, patientI
 const Modals: React.FC<{
   selectedPrescription: Prescription | null;
   setSelectedPrescription: (p: Prescription | null) => void;
+  telemedPrescription: Prescription | null;
+  setTelemedPrescription: (p: Prescription | null) => void;
   updateStatus: (s: PrescriptionStatus) => void;
   workflowPrescription: Prescription | null;
   setWorkflowPrescription: (p: Prescription | null) => void;
@@ -464,19 +470,27 @@ const Modals: React.FC<{
   patientInfo: any;
   setPatientInfo: (p: any) => void;
 }> = ({
-  selectedPrescription, setSelectedPrescription, updateStatus,
+  selectedPrescription, setSelectedPrescription, telemedPrescription, setTelemedPrescription, updateStatus,
   workflowPrescription, setWorkflowPrescription,
   selectedConsultation, setSelectedConsultation, onWorkflowComplete,
   isEditModalOpen, setIsEditModalOpen, patientInfo, setPatientInfo
 }) => (
   <>
-    {selectedPrescription && (
+    {/* {selectedPrescription && (
       <PrescriptionDetailModal
         prescription={selectedPrescription}
         onClose={() => setSelectedPrescription(null)}
         onUpdateStatus={updateStatus}
       />
+    )} */}
+
+    {telemedPrescription && (
+      <TelemedPrescriptionDetail
+        prescription={telemedPrescription}
+        onClose={() => setTelemedPrescription(null)}
+      />
     )}
+
 
     {workflowPrescription && (
       <PrescriptionWorkflowModal

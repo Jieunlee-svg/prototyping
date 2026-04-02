@@ -5,7 +5,6 @@ import {
   Printer,
   Upload,
   ChevronLeft,
-  Globe,
   Eye,
   EyeOff,
   Info,
@@ -120,14 +119,6 @@ export const TelemedPrescriptionDetail: React.FC<TelemedPrescriptionDetailProps>
 
         {/* 우측 액션 */}
         <div className="flex items-center gap-3">
-          <button className="flex items-center gap-1.5 text-sm text-gray-400 hover:text-gray-700 transition-colors">
-            <Globe size={15} />
-            한국어
-          </button>
-          <div className="w-px h-4 bg-gray-200" />
-          <span className="text-xs text-gray-400">
-            최근 저장일시:
-          </span>
           <button
             onClick={onClose}
             className="px-4 py-1.5 text-sm font-semibold border border-red-300 text-red-500 rounded-lg hover:bg-red-50 transition-colors"
