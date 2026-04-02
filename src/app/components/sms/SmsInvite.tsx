@@ -294,7 +294,7 @@ export const SmsInvite: React.FC<SmsInviteProps> = () => {
                   {isAlreadyMember && (
                     <div className="mt-2 flex items-start gap-2 px-3 py-2.5 bg-amber-50 border border-amber-200 rounded-lg text-sm text-amber-800">
                       <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0 text-amber-500" />
-                      <span>이미 웰체크 앱에 가입된 고객입니다. 초대 문자를 발송할 수 없습니다.</span>
+                      <span>이미 단골 고객입니다.</span>
                     </div>
                   )}
                 </div>
