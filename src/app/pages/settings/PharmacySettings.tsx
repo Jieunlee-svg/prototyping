@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+﻿import React, { useState, useEffect, useRef } from 'react';
 import {
   Settings,
   MapPin,
@@ -197,6 +197,13 @@ export const PharmacySettings: React.FC<PharmacySettingsProps> = ({ initialTab }
   const [loading, setLoading] = useState(false);
   const [showTemplates, setShowTemplates] = useState(false);
   const [allowAppPrescription, setAllowAppPrescription] = useState(true);
+  const [deliveryMethods, setDeliveryMethods] = useState({
+    self:   true,   // 본인 수령
+    family: true,   // 가족 수령
+    quick:  true,   // 퀵
+    parcel: true,   // 택배
+    cod:    false,  // 착불 배송
+  });
   const [hidePhone, setHidePhone] = useState(false);
   const [notifyPhone, setNotifyPhone] = useState('');
   const [phoneError, setPhoneError] = useState('');
@@ -674,6 +681,54 @@ export const PharmacySettings: React.FC<PharmacySettingsProps> = ({ initialTab }
                       </div>
                     </div>
                   ))}
+                </div>
+              </SectionCard>
+
+              {/* ── 약 전달 방법 선택 ── */}
+              <SectionCard icon={Store} title="약 전달 방법 선택">
+                <div className="space-y-4">
+                  <p className="text-sm text-gray-500">
+                    고객이 선택할 수 있는 수령 방법을 설정합니다. 선택한 방법만 앱에서 노출됩니다.
+                  </p>
+                  <div className="flex flex-wrap gap-3 pt-1">
+                    {(([
+                      { key: 'self',   label: '본인 수령' },
+                      { key: 'family', label: '가족 수령' },
+                      { key: 'quick',  label: '퀵' },
+                      { key: 'parcel', label: '택배' },
+                      { key: 'cod',    label: '착불 배송(약국 자체배송)' },
+                    ]) as { key: keyof typeof deliveryMethods; label: string }[]).map(({ key, label }) => (
+                      <label
+                        key={key}
+                        className={clsx(
+                          'flex items-center gap-2.5 px-4 py-2.5 rounded-xl border-2 cursor-pointer select-none transition-all duration-150',
+                          deliveryMethods[key]
+                            ? 'border-blue-500 bg-blue-50 text-blue-700'
+                            : 'border-gray-200 bg-white text-gray-500 hover:border-gray-300 hover:bg-gray-50'
+                        )}
+                      >
+                        <div
+                          className={clsx(
+                            'w-5 h-5 rounded flex items-center justify-center flex-shrink-0 transition-colors',
+                            deliveryMethods[key] ? 'bg-blue-500' : 'border-2 border-gray-300 bg-white'
+                          )}
+                        >
+                          {deliveryMethods[key] && (
+                            <Check size={12} strokeWidth={3} className="text-white" />
+                          )}
+                        </div>
+                        <input
+                          type="checkbox"
+                          className="sr-only"
+                          checked={deliveryMethods[key]}
+                          onChange={() =>
+                            setDeliveryMethods(prev => ({ ...prev, [key]: !prev[key] }))
+                          }
+                        />
+                        <span className="text-sm font-medium">{label}</span>
+                      </label>
+                    ))}
+                  </div>
                 </div>
               </SectionCard>
             </section>
