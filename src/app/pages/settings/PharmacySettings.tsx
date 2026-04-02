@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Settings,
   MapPin,
@@ -39,6 +39,22 @@ interface DaySchedule {
   lunchStart: string;
   lunchEnd: string;
 }
+
+interface DeliveryMethods {
+  self: boolean;
+  family: boolean;
+  quick: boolean;
+  parcel: boolean;
+  cod: boolean;
+}
+
+const DELIVERY_OPTIONS: { key: keyof DeliveryMethods; label: string }[] = [
+  { key: 'self', label: '본인 수령' },
+  { key: 'family', label: '가족 수령' },
+  { key: 'quick', label: '퀵' },
+  { key: 'parcel', label: '택배' },
+  { key: 'cod', label: '착불 배송(약국 자체배송)' },
+];
 
 // ── 복약 알림 상수 ──
 const TIME_OPTIONS = ['아침', '점심', '저녁', '취침전'] as const;
@@ -197,12 +213,12 @@ export const PharmacySettings: React.FC<PharmacySettingsProps> = ({ initialTab }
   const [loading, setLoading] = useState(false);
   const [showTemplates, setShowTemplates] = useState(false);
   const [allowAppPrescription, setAllowAppPrescription] = useState(true);
-  const [deliveryMethods, setDeliveryMethods] = useState({
-    self:   true,   // 본인 수령
-    family: true,   // 가족 수령
-    quick:  true,   // 퀵
-    parcel: true,   // 택배
-    cod:    false,  // 착불 배송
+  const [deliveryMethods, setDeliveryMethods] = useState<DeliveryMethods>({
+    self: true,
+    family: true,
+    quick: true,
+    parcel: true,
+    cod: false,
   });
   const [hidePhone, setHidePhone] = useState(false);
   const [notifyPhone, setNotifyPhone] = useState('');
@@ -691,13 +707,7 @@ export const PharmacySettings: React.FC<PharmacySettingsProps> = ({ initialTab }
                     고객이 선택할 수 있는 수령 방법을 설정합니다. 선택한 방법만 앱에서 노출됩니다.
                   </p>
                   <div className="flex flex-wrap gap-3 pt-1">
-                    {(([
-                      { key: 'self',   label: '본인 수령' },
-                      { key: 'family', label: '가족 수령' },
-                      { key: 'quick',  label: '퀵' },
-                      { key: 'parcel', label: '택배' },
-                      { key: 'cod',    label: '착불 배송(약국 자체배송)' },
-                    ]) as { key: keyof typeof deliveryMethods; label: string }[]).map(({ key, label }) => (
+                    {DELIVERY_OPTIONS.map(({ key, label }) => (
                       <label
                         key={key}
                         className={clsx(
