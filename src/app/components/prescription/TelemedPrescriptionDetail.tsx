@@ -448,21 +448,6 @@ export const TelemedPrescriptionDetail: React.FC<TelemedPrescriptionDetailProps>
         </div>
       </div>
 
-      {/* ── 하단 고정 액션 바 ── */}
-      <div className="bg-white border-t border-gray-200 px-6 py-4 flex items-center justify-end gap-3 flex-shrink-0">
-        <button
-          onClick={onClose}
-          className="px-5 py-2 text-sm font-semibold border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
-        >
-          닫기 취소
-        </button>
-        <button className="px-5 py-2 text-sm font-semibold border border-red-300 text-red-500 rounded-lg hover:bg-red-50 transition-colors">
-          조제 개시
-        </button>
-        <button className="px-6 py-2 text-sm font-semibold bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm">
-          조제 완료
-        </button>
-      </div>
     </div>
   );
 };
