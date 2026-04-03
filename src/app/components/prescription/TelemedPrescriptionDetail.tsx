@@ -11,6 +11,8 @@ import {
 } from 'lucide-react';
 import { clsx } from 'clsx';
 import type { Prescription } from './PrescriptionDetailModal';
+import { CancelReasonModal } from './CancelReasonModal';
+import { CompleteConfirmModal } from './CompleteConfirmModal';
 
 /* ─── 상수 ────────────────────────────────────────────────────────────── */
 const DELIVERY_OPTIONS = [
@@ -78,6 +80,8 @@ export const TelemedPrescriptionDetail: React.FC<TelemedPrescriptionDetailProps>
   const [showRrn, setShowRrn] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [showCompleteModal, setShowCompleteModal] = useState(false);
 
   /* 파일 첨부 */
   const handleFiles = (files: FileList | null) => {
@@ -123,12 +127,15 @@ export const TelemedPrescriptionDetail: React.FC<TelemedPrescriptionDetailProps>
             결제 완료
           </button>
           <button
-            onClick={onClose}
+            onClick={() => setShowCancelModal(true)}
             className="px-4 py-1.5 text-sm font-semibold border border-red-300 text-red-500 rounded-lg hover:bg-red-50 transition-colors"
           >
             접수 취소
           </button>
-          <button className="px-4 py-1.5 text-sm font-semibold bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm">
+          <button
+            onClick={() => setShowCompleteModal(true)}
+            className="px-4 py-1.5 text-sm font-semibold bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
+          >
             조제 완료
           </button>
         </div>
@@ -451,6 +458,19 @@ export const TelemedPrescriptionDetail: React.FC<TelemedPrescriptionDetailProps>
         </div>
       </div>
 
+      {showCancelModal && (
+        <CancelReasonModal
+          onConfirm={() => { setShowCancelModal(false); onClose(); }}
+          onClose={() => setShowCancelModal(false)}
+        />
+      )}
+
+      {showCompleteModal && (
+        <CompleteConfirmModal
+          onConfirm={() => { setShowCompleteModal(false); onClose(); }}
+          onClose={() => setShowCompleteModal(false)}
+        />
+      )}
     </div>
   );
 };
