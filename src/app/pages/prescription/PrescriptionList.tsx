@@ -14,6 +14,7 @@ import {
 } from '../../components/prescription/PrescriptionDetailModal';
 import { TelemedPrescriptionDetail } from '../../components/prescription/TelemedPrescriptionDetail';
 import { CancelReasonModal } from '../../components/prescription/CancelReasonModal';
+import { CompleteConfirmModal } from '../../components/prescription/CompleteConfirmModal';
 
 // ── Mock Data ──────────────────────────────────────────────────────────
 const prescriptionImage = 'https://placehold.co/400x560/e2e8f0/64748b?text=처방전';
@@ -61,6 +62,7 @@ export const PrescriptionList: React.FC<{ onOpenSettings?: () => void; onPatient
   const [workflowPrescription, setWorkflowPrescription] = useState<Prescription | null>(null);
   const [telemedPrescription, setTelemedPrescription] = useState<Prescription | null>(null);
   const [cancelTargetId, setCancelTargetId] = useState<string | null>(null);
+  const [completeTargetId, setCompleteTargetId] = useState<string | null>(null);
   const [sentIds, setSentIds] = useState<Set<string>>(new Set(['RX-003']));
   const [sentConsultations, setSentConsultations] = useState<Record<string, ConsultationData>>({
       'RX-003': {
@@ -123,6 +125,11 @@ export const PrescriptionList: React.FC<{ onOpenSettings?: () => void; onPatient
       setCancelTargetId(id);
       return;
     }
+    if (newStatus === 'completed') {
+      setOpenStatusDropdown(null);
+      setCompleteTargetId(id);
+      return;
+    }
     const target = prescriptions.find(p => p.id === id);
     setPrescriptions(prev => prev.map(p => p.id === id ? { ...p, status: newStatus } : p));
     setOpenStatusDropdown(null);
@@ -138,6 +145,16 @@ export const PrescriptionList: React.FC<{ onOpenSettings?: () => void; onPatient
     setCancelTargetId(null);
     if (target) {
       setToast(`'${target.patientName}' 님의 상태가 '취소됨'(으)로 변경되었습니다.`);
+    }
+  };
+
+  const confirmComplete = () => {
+    if (!completeTargetId) return;
+    const target = prescriptions.find(p => p.id === completeTargetId);
+    setPrescriptions(prev => prev.map(p => p.id === completeTargetId ? { ...p, status: 'completed' } : p));
+    setCompleteTargetId(null);
+    if (target) {
+      setToast(`'${target.patientName}' 님의 상태가 '조제 완료'(으)로 변경되었습니다.`);
     }
   };
 
@@ -511,6 +528,13 @@ export const PrescriptionList: React.FC<{ onOpenSettings?: () => void; onPatient
         <CancelReasonModal
           onConfirm={confirmCancel}
           onClose={() => setCancelTargetId(null)}
+        />
+      )}
+
+      {completeTargetId && (
+        <CompleteConfirmModal
+          onConfirm={confirmComplete}
+          onClose={() => setCompleteTargetId(null)}
         />
       )}
     </div>
