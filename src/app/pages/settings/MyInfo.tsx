@@ -229,6 +229,13 @@ export const MyInfo: React.FC = () => {
 
                 </div>
             </div>
+
+            {/* 회원 탈퇴 */}
+            <div className="mt-6 flex justify-end">
+                <button className="text-xs text-gray-400 hover:text-red-500 underline underline-offset-2 transition-colors">
+                    회원 탈퇴
+                </button>
+            </div>
         </div>
     );
 };
