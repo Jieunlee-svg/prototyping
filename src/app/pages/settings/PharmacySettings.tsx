@@ -461,7 +461,7 @@ export const PharmacySettings: React.FC<PharmacySettingsProps> = ({ initialTab }
             { id: 'basic', label: '기본 정보', icon: Store },
             { id: 'reminder', label: '복약 알림 기본 설정', icon: Bell },
             { id: 'app', label: '앱 처방전 설정', icon: Smartphone },
-            { id: 'pharmacist', label: '약사 정보', icon: Users },
+            { id: 'pharmacist', label: '약사 목록', icon: Users },
           ].map((tab) => (
             <button
               key={tab.id}
@@ -880,7 +880,7 @@ export const PharmacySettings: React.FC<PharmacySettingsProps> = ({ initialTab }
                 <div className="px-6 py-4 border-b border-gray-100 bg-gray-50/50 flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <Users size={16} className="text-blue-600" />
-                    <span className="text-sm font-semibold text-gray-800">약국 약사 계정 목록</span>
+                    <span className="text-sm font-semibold text-gray-800">약사 계정 목록</span>
                   </div>
                   <span className="text-xs text-gray-400">총 {pharmacists.length}명</span>
                 </div>
@@ -921,9 +921,6 @@ export const PharmacySettings: React.FC<PharmacySettingsProps> = ({ initialTab }
                           </div>
                         </div>
 
-                        {p.role === 'head' && (
-                          <span className="text-xs text-amber-500 font-medium">대표 약사</span>
-                        )}
                       </div>
                     </div>
                   ))}
