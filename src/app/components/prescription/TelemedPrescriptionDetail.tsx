@@ -119,6 +119,9 @@ export const TelemedPrescriptionDetail: React.FC<TelemedPrescriptionDetailProps>
 
         {/* 우측 액션 */}
         <div className="flex items-center gap-3">
+          <button className="px-4 py-1.5 text-sm font-semibold border border-emerald-400 text-emerald-600 rounded-lg hover:bg-emerald-50 transition-colors">
+            결제 완료
+          </button>
           <button
             onClick={onClose}
             className="px-4 py-1.5 text-sm font-semibold border border-red-300 text-red-500 rounded-lg hover:bg-red-50 transition-colors"
