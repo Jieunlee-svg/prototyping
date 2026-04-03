@@ -921,18 +921,6 @@ export const PharmacySettings: React.FC<PharmacySettingsProps> = ({ initialTab }
                           </div>
                         </div>
 
-                        {/* 대표 약사 지정 토글 */}
-                        {p.role !== 'head' && (
-                          <button
-                            type="button"
-                            onClick={() => setPharmacists(prev =>
-                              prev.map(ph => ({ ...ph, role: ph.id === p.id ? 'head' : 'staff' }))
-                            )}
-                            className="text-xs text-gray-400 hover:text-amber-600 border border-gray-200 hover:border-amber-300 px-2.5 py-1 rounded-lg transition-colors"
-                          >
-                            대표 약사로 지정
-                          </button>
-                        )}
                         {p.role === 'head' && (
                           <span className="text-xs text-amber-500 font-medium">대표 약사</span>
                         )}
@@ -941,13 +929,6 @@ export const PharmacySettings: React.FC<PharmacySettingsProps> = ({ initialTab }
                   ))}
                 </div>
 
-                {/* 안내 문구 */}
-                <div className="px-6 py-4 border-t border-gray-100 bg-gray-50/30">
-                  <div className="flex items-start gap-1.5 text-gray-400">
-                    <Info size={13} className="mt-0.5 flex-shrink-0" />
-                    <p className="text-xs leading-relaxed">대표 약사는 1명만 지정 가능합니다. 다른 약사를 대표 약사로 지정하면 기존 대표 약사는 일반 약사로 변경됩니다.</p>
-                  </div>
-                </div>
               </div>
             </section>
           )}
