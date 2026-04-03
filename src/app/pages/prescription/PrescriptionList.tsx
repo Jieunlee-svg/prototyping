@@ -13,6 +13,7 @@ import {
   getSourceLabel,
 } from '../../components/prescription/PrescriptionDetailModal';
 import { TelemedPrescriptionDetail } from '../../components/prescription/TelemedPrescriptionDetail';
+import { CancelReasonModal } from '../../components/prescription/CancelReasonModal';
 
 // ── Mock Data ──────────────────────────────────────────────────────────
 const prescriptionImage = 'https://placehold.co/400x560/e2e8f0/64748b?text=처방전';
@@ -59,6 +60,7 @@ export const PrescriptionList: React.FC<{ onOpenSettings?: () => void; onPatient
   const [toast, setToast] = useState<string | null>(null);
   const [workflowPrescription, setWorkflowPrescription] = useState<Prescription | null>(null);
   const [telemedPrescription, setTelemedPrescription] = useState<Prescription | null>(null);
+  const [cancelTargetId, setCancelTargetId] = useState<string | null>(null);
   const [sentIds, setSentIds] = useState<Set<string>>(new Set(['RX-003']));
   const [sentConsultations, setSentConsultations] = useState<Record<string, ConsultationData>>({
       'RX-003': {
@@ -116,11 +118,26 @@ export const PrescriptionList: React.FC<{ onOpenSettings?: () => void; onPatient
 
   // ── 상태 변경 핸들러
   const handleStatusChange = (id: string, newStatus: PrescriptionStatus) => {
+    if (newStatus === 'cancelled') {
+      setOpenStatusDropdown(null);
+      setCancelTargetId(id);
+      return;
+    }
     const target = prescriptions.find(p => p.id === id);
     setPrescriptions(prev => prev.map(p => p.id === id ? { ...p, status: newStatus } : p));
     setOpenStatusDropdown(null);
     if (target) {
       setToast(`'${target.patientName}' 님의 상태가 '${STATUS_LABEL[newStatus].label}'(으)로 변경되었습니다.`);
+    }
+  };
+
+  const confirmCancel = () => {
+    if (!cancelTargetId) return;
+    const target = prescriptions.find(p => p.id === cancelTargetId);
+    setPrescriptions(prev => prev.map(p => p.id === cancelTargetId ? { ...p, status: 'cancelled' } : p));
+    setCancelTargetId(null);
+    if (target) {
+      setToast(`'${target.patientName}' 님의 상태가 '취소됨'(으)로 변경되었습니다.`);
     }
   };
 
@@ -487,6 +504,13 @@ export const PrescriptionList: React.FC<{ onOpenSettings?: () => void; onPatient
         <TelemedPrescriptionDetail
           prescription={telemedPrescription}
           onClose={() => setTelemedPrescription(null)}
+        />
+      )}
+
+      {cancelTargetId && (
+        <CancelReasonModal
+          onConfirm={confirmCancel}
+          onClose={() => setCancelTargetId(null)}
         />
       )}
     </div>

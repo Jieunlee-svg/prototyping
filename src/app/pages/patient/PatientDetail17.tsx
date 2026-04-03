@@ -39,6 +39,7 @@ import {
 } from '../../components/prescription/PrescriptionDetailModal';
 import { PatientEditModal } from '../../components/patient/PatientEditModal';
 import { TelemedPrescriptionDetail } from '../../components/prescription/TelemedPrescriptionDetail';
+import { CancelReasonModal } from '../../components/prescription/CancelReasonModal';
 
 const StatusToast: React.FC<{ message: string; onDone: () => void }> = ({ message, onDone }) => {
   React.useEffect(() => { const t = setTimeout(onDone, 3000); return () => clearTimeout(t); }, [onDone]);
@@ -108,6 +109,7 @@ export const PatientDetail17: React.FC<PatientDetailProps> = ({ onBack, patientI
   // Consultation & Workflow
   const [workflowPrescription, setWorkflowPrescription] = useState<Prescription | null>(null);
   const [selectedConsultation, setSelectedConsultation] = useState<ConsultationData | null>(null);
+  const [cancelTargetId, setCancelTargetId] = useState<string | null>(null);
   const [sentIds, setSentIds] = useState<Set<string>>(new Set(['RX-17-003']));
   const [sentConsultations, setSentConsultations] = useState<Record<string, ConsultationData>>({
     'RX-17-003': {
@@ -145,11 +147,26 @@ export const PatientDetail17: React.FC<PatientDetailProps> = ({ onBack, patientI
   }, [openStatusDropdown]);
 
   const handleStatusChange = (id: string, newStatus: PrescriptionStatus) => {
+    if (newStatus === 'cancelled') {
+      setOpenStatusDropdown(null);
+      setCancelTargetId(id);
+      return;
+    }
     const target = prescriptions.find(p => p.id === id);
     setPrescriptions(prev => prev.map(p => p.id === id ? { ...p, status: newStatus } : p));
     setOpenStatusDropdown(null);
     if (target) {
       setToast(`'${target.patientName}' 님의 상태가 '${STATUS_LABEL[newStatus].label}'(으)로 변경되었습니다.`);
+    }
+  };
+
+  const confirmCancel = () => {
+    if (!cancelTargetId) return;
+    const target = prescriptions.find(p => p.id === cancelTargetId);
+    setPrescriptions(prev => prev.map(p => p.id === cancelTargetId ? { ...p, status: 'cancelled' } : p));
+    setCancelTargetId(null);
+    if (target) {
+      setToast(`'${target.patientName}' 님의 상태가 '취소됨'(으)로 변경되었습니다.`);
     }
   };
 
@@ -449,6 +466,13 @@ export const PatientDetail17: React.FC<PatientDetailProps> = ({ onBack, patientI
         patientInfo={patientInfo}
         setPatientInfo={setPatientInfo}
       />
+
+      {cancelTargetId && (
+        <CancelReasonModal
+          onConfirm={confirmCancel}
+          onClose={() => setCancelTargetId(null)}
+        />
+      )}
     </div>
   );
 };
