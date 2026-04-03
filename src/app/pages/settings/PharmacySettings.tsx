@@ -16,6 +16,10 @@ import {
   RotateCcw,
   X,
   Printer,
+  Users,
+  Plus,
+  Trash2,
+  Crown,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { clsx } from 'clsx';
@@ -207,8 +211,23 @@ const SaveBtn = ({ disabled = false, loading, onClick }: { disabled?: boolean; l
 );
 
 interface PharmacySettingsProps {
-  initialTab?: 'basic' | 'reminder' | 'app';
+  initialTab?: 'basic' | 'reminder' | 'app' | 'pharmacist';
 }
+
+interface Pharmacist {
+  id: string;
+  name: string;
+  email: string;
+  role: 'head' | 'staff';
+  avatarUrl?: string;
+}
+
+const MOCK_PHARMACISTS: Pharmacist[] = [
+  { id: 'p1', name: '김약사', email: 'kim@wellcheck.co.kr',   role: 'head' },
+  { id: 'p2', name: '이약사', email: 'lee@wellcheck.co.kr',   role: 'staff' },
+  { id: 'p3', name: '박약사', email: 'park@wellcheck.co.kr',  role: 'staff' },
+  { id: 'p4', name: '최약사', email: 'choi@wellcheck.co.kr',  role: 'staff' },
+];
 
 export const PharmacySettings: React.FC<PharmacySettingsProps> = ({ initialTab }) => {
   const [loading, setLoading] = useState(false);
@@ -222,9 +241,10 @@ export const PharmacySettings: React.FC<PharmacySettingsProps> = ({ initialTab }
     cod: false,
   });
   const [hidePhone, setHidePhone] = useState(false);
-  const [notifyPhone, setNotifyPhone] = useState('');
-  const [phoneError, setPhoneError] = useState('');
+  const [notifyPhones, setNotifyPhones] = useState<string[]>(['']);
+  const [phoneErrors, setPhoneErrors] = useState<string[]>(['']);
   const notifyPhoneRef = useRef<HTMLInputElement>(null);
+  const [pharmacists, setPharmacists] = useState<Pharmacist[]>(MOCK_PHARMACISTS);
   const [showAddressModal, setShowAddressModal] = useState(false);
   const [addressSearch, setAddressSearch] = useState('');
   const [addressResults, setAddressResults] = useState<{ address: string; zipCode: string }[]>([]);
@@ -247,7 +267,7 @@ export const PharmacySettings: React.FC<PharmacySettingsProps> = ({ initialTab }
     } as Record<DayKey, DaySchedule>
   });
 
-  const [activeTab, setActiveTab] = useState<'basic' | 'app' | 'reminder'>(initialTab ?? 'basic');
+  const [activeTab, setActiveTab] = useState<'basic' | 'app' | 'reminder' | 'pharmacist'>(initialTab ?? 'basic');
 
   // ── 복약 알림 기본 설정 state ──
   const [freqSettings, setFreqSettings] = useState<typeof INITIAL_FREQ>(() => JSON.parse(JSON.stringify(INITIAL_FREQ)));
@@ -365,24 +385,36 @@ export const PharmacySettings: React.FC<PharmacySettingsProps> = ({ initialTab }
     }
   }, [allowAppPrescription, activeTab]);
 
-  // 알림 수신 번호 자동 포맷 + 실시간 유효성 검사
-  const handleNotifyPhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const digits = e.target.value.replace(/\D/g, '').slice(0, 11);
-    let formatted = digits;
-    if (digits.length > 7) {
-      formatted = `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7)}`;
-    } else if (digits.length > 3) {
-      formatted = `${digits.slice(0, 3)}-${digits.slice(3)}`;
-    }
-    setNotifyPhone(formatted);
-    if (digits.length > 0 && digits.length < 11) {
-      setPhoneError('휴대전화 번호 11자리를 입력해주세요.');
-    } else {
-      setPhoneError('');
-    }
+  // 알림 수신 번호 자동 포맷 + 실시간 유효성 검사 (배열 방식)
+  const formatPhone = (raw: string) => {
+    const digits = raw.replace(/\D/g, '').slice(0, 11);
+    if (digits.length > 7) return `${digits.slice(0, 3)}-${digits.slice(3, 7)}-${digits.slice(7)}`;
+    if (digits.length > 3) return `${digits.slice(0, 3)}-${digits.slice(3)}`;
+    return digits;
   };
 
-  const isValidNotifyPhone = notifyPhone === '' || notifyPhone.replace(/\D/g, '').length === 11;
+  const handleNotifyPhoneChange = (index: number, value: string) => {
+    const formatted = formatPhone(value);
+    const digits = formatted.replace(/\D/g, '');
+    setNotifyPhones(prev => prev.map((v, i) => i === index ? formatted : v));
+    setPhoneErrors(prev => prev.map((e, i) => i === index
+      ? (digits.length > 0 && digits.length < 11 ? '휴대전화 번호 11자리를 입력해주세요.' : '')
+      : e
+    ));
+  };
+
+  const addNotifyPhone = () => {
+    if (notifyPhones.length >= 10) return;
+    setNotifyPhones(prev => [...prev, '']);
+    setPhoneErrors(prev => [...prev, '']);
+  };
+
+  const removeNotifyPhone = (index: number) => {
+    setNotifyPhones(prev => prev.filter((_, i) => i !== index));
+    setPhoneErrors(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const isValidNotifyPhone = notifyPhones.every(p => p === '' || p.replace(/\D/g, '').length === 11);
 
   const handleSave = () => {
     if (activeTab === 'basic' && !isFormValid) return;
@@ -429,6 +461,7 @@ export const PharmacySettings: React.FC<PharmacySettingsProps> = ({ initialTab }
             { id: 'basic', label: '기본 정보', icon: Store },
             { id: 'reminder', label: '복약 알림 기본 설정', icon: Bell },
             { id: 'app', label: '앱 처방전 설정', icon: Smartphone },
+            { id: 'pharmacist', label: '약사 정보', icon: Users },
           ].map((tab) => (
             <button
               key={tab.id}
@@ -778,36 +811,144 @@ export const PharmacySettings: React.FC<PharmacySettingsProps> = ({ initialTab }
 
                   {allowAppPrescription && (
                     <div className="pt-6 border-t border-gray-100 animate-in fade-in slide-in-from-top-4 duration-500">
-                      <label htmlFor="notifyPhone" className="block text-sm font-medium text-gray-700 mb-1.5">
-                        알림 수신 휴대전화 번호
-                      </label>
-                      <input
-                        ref={notifyPhoneRef}
-                        type="tel"
-                        id="notifyPhone"
-                        inputMode="numeric"
-                        value={notifyPhone}
-                        onChange={handleNotifyPhoneChange}
-                        placeholder="휴대전화 번호를 입력하세요 (예: 010-1234-5678)"
-                        className={clsx(
-                          'w-full max-w-sm px-4 py-2.5 bg-white border rounded-lg focus:ring-2 focus:border-transparent transition-all text-sm placeholder:text-gray-300',
-                          phoneError
-                            ? 'border-red-400 focus:ring-red-400'
-                            : 'border-gray-300 focus:ring-blue-500'
+                      <div className="flex items-center justify-between mb-2">
+                        <label className="block text-sm font-medium text-gray-700">
+                          알림 수신 휴대전화 번호
+                          <span className="ml-1.5 text-xs font-normal text-gray-400">({notifyPhones.length}/10)</span>
+                        </label>
+                        {notifyPhones.length < 10 && (
+                          <button
+                            type="button"
+                            onClick={addNotifyPhone}
+                            className="flex items-center gap-1 text-xs font-medium text-blue-600 hover:text-blue-700 transition-colors"
+                          >
+                            <Plus size={13} />
+                            번호 추가
+                          </button>
                         )}
-                      />
-                      {phoneError ? (
-                        <p className="mt-1.5 text-xs text-red-500">{phoneError}</p>
-                      ) : (
-                        <div className="mt-2 flex items-start gap-1.5 text-gray-400">
-                          <Info size={13} className="mt-0.5 flex-shrink-0" />
-                          <p className="text-xs leading-relaxed">고객이 앱에서 처방전을 전송했을 때 즉시 카카오 알림톡을 전송받을 번호입니다.</p>
-                        </div>
-                      )}
+                      </div>
+                      <div className="space-y-2">
+                        {notifyPhones.map((phone, index) => (
+                          <div key={index}>
+                            <div className="flex items-center gap-2">
+                              <input
+                                ref={index === 0 ? notifyPhoneRef : undefined}
+                                type="tel"
+                                inputMode="numeric"
+                                value={phone}
+                                onChange={e => handleNotifyPhoneChange(index, e.target.value)}
+                                placeholder="010-0000-0000"
+                                className={clsx(
+                                  'w-full max-w-sm px-4 py-2.5 bg-white border rounded-lg focus:ring-2 focus:border-transparent transition-all text-sm placeholder:text-gray-300',
+                                  phoneErrors[index]
+                                    ? 'border-red-400 focus:ring-red-400'
+                                    : 'border-gray-300 focus:ring-blue-500'
+                                )}
+                              />
+                              {notifyPhones.length > 1 && (
+                                <button
+                                  type="button"
+                                  onClick={() => removeNotifyPhone(index)}
+                                  className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors flex-shrink-0"
+                                >
+                                  <Trash2 size={15} />
+                                </button>
+                              )}
+                            </div>
+                            {phoneErrors[index] && (
+                              <p className="mt-1 text-xs text-red-500">{phoneErrors[index]}</p>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                      <div className="mt-2 flex items-start gap-1.5 text-gray-400">
+                        <Info size={13} className="mt-0.5 flex-shrink-0" />
+                        <p className="text-xs leading-relaxed">고객이 앱에서 처방전을 전송했을 때 즉시 카카오 알림톡을 전송받을 번호입니다. 최대 10개까지 등록 가능합니다.</p>
+                      </div>
                     </div>
                   )}
                 </div>
               </SectionCard>
+            </section>
+          )}
+
+          {/* ── 약사 정보 탭 ── */}
+          {activeTab === 'pharmacist' && (
+            <section className="animate-in fade-in duration-300 px-6 py-5 overflow-y-auto">
+              <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                {/* 헤더 */}
+                <div className="px-6 py-4 border-b border-gray-100 bg-gray-50/50 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Users size={16} className="text-blue-600" />
+                    <span className="text-sm font-semibold text-gray-800">약국 약사 계정 목록</span>
+                  </div>
+                  <span className="text-xs text-gray-400">총 {pharmacists.length}명</span>
+                </div>
+
+                {/* 테이블 헤더 */}
+                <div className="grid grid-cols-[160px_1fr] border-b border-gray-100 px-6 py-2.5 bg-gray-50">
+                  <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">담당 역할</span>
+                  <span className="text-xs font-semibold text-gray-500 uppercase tracking-wide">계정 상세</span>
+                </div>
+
+                {/* 약사 목록 */}
+                <div className="divide-y divide-gray-50">
+                  {pharmacists.map((p) => (
+                    <div key={p.id} className="grid grid-cols-[160px_1fr] items-center px-6 py-4 hover:bg-gray-50/50 transition-colors">
+                      {/* 역할 */}
+                      <div>
+                        {p.role === 'head' ? (
+                          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-600 border border-amber-200">
+                            <Crown size={11} />
+                            대표 약사
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-600 border border-blue-100">
+                            약사
+                          </span>
+                        )}
+                      </div>
+
+                      {/* 계정 상세 */}
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="w-9 h-9 rounded-full bg-gray-200 flex items-center justify-center flex-shrink-0 overflow-hidden">
+                            <Users size={16} className="text-gray-400" />
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium text-gray-800">{p.name}</p>
+                            <p className="text-xs text-gray-400 mt-0.5">{p.email}</p>
+                          </div>
+                        </div>
+
+                        {/* 대표 약사 지정 토글 */}
+                        {p.role !== 'head' && (
+                          <button
+                            type="button"
+                            onClick={() => setPharmacists(prev =>
+                              prev.map(ph => ({ ...ph, role: ph.id === p.id ? 'head' : 'staff' }))
+                            )}
+                            className="text-xs text-gray-400 hover:text-amber-600 border border-gray-200 hover:border-amber-300 px-2.5 py-1 rounded-lg transition-colors"
+                          >
+                            대표 약사로 지정
+                          </button>
+                        )}
+                        {p.role === 'head' && (
+                          <span className="text-xs text-amber-500 font-medium">대표 약사</span>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* 안내 문구 */}
+                <div className="px-6 py-4 border-t border-gray-100 bg-gray-50/30">
+                  <div className="flex items-start gap-1.5 text-gray-400">
+                    <Info size={13} className="mt-0.5 flex-shrink-0" />
+                    <p className="text-xs leading-relaxed">대표 약사는 1명만 지정 가능합니다. 다른 약사를 대표 약사로 지정하면 기존 대표 약사는 일반 약사로 변경됩니다.</p>
+                  </div>
+                </div>
+              </div>
             </section>
           )}
 
