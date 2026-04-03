@@ -280,24 +280,6 @@ export const TelemedPrescriptionDetail: React.FC<TelemedPrescriptionDetailProps>
                   </div>
                 </div>
 
-                {/* 복약 지도 */}
-                <div>
-                  <p className="text-xs text-gray-500 font-medium mb-1 flex items-center gap-1">
-                    복약 지도
-                    <Info size={12} className="text-gray-400" />
-                    <span className="text-gray-400 font-normal">
-                      작성해주신 메모는 웰체크 앱 복약 안내 화면에 전달됩니다. 발송 이후 수정이 불가합니다.
-                    </span>
-                  </p>
-                  <textarea
-                    value={memo}
-                    onChange={e => setMemo(e.target.value)}
-                    rows={4}
-                    placeholder="메모를 입력하세요"
-                    className="w-full px-3 py-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all resize-none placeholder:text-gray-300"
-                  />
-                </div>
-
                 {/* 이미지 첨부 */}
                 <div>
                   <p className="text-xs text-gray-500 font-medium mb-1.5">
