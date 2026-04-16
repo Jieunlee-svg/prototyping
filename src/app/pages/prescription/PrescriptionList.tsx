@@ -272,6 +272,7 @@ export const PrescriptionList: React.FC<{ onOpenSettings?: () => void; onPatient
 
     const isCancelled = p.status === 'cancelled';
     const isSent = sentIds.has(p.id);
+    const isWithdrawn = p.patientId === '11';
 
     const { label, color, bgColor } = STATUS_LABEL[p.status];
 
@@ -289,7 +290,11 @@ export const PrescriptionList: React.FC<{ onOpenSettings?: () => void; onPatient
         ) : (
           <button
             onClick={() => setWorkflowPrescription(p)}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-md bg-blue-600 text-white hover:bg-blue-700 transition-colors shadow-sm"
+            disabled={isWithdrawn}
+            className={clsx(
+              "inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold rounded-md transition-colors shadow-sm",
+              isWithdrawn ? "bg-gray-200 text-gray-400 cursor-not-allowed" : "bg-blue-600 text-white hover:bg-blue-700"
+            )}
           >
             <Send size={12} />전송하기
           </button>
@@ -298,7 +303,7 @@ export const PrescriptionList: React.FC<{ onOpenSettings?: () => void; onPatient
     );
 
     return (
-      <tr key={p.id} className={rowCls}>
+      <tr key={p.id} className={clsx(rowCls, isWithdrawn && 'bg-gray-50 text-gray-400')}>
         <td className={td}>
           <span className="text-xs">{p.receivedAt}</span>
           {p.isNew && <span className="ml-1 inline-flex px-1.5 py-0.5 rounded text-[10px] font-bold bg-red-100 text-red-600">NEW</span>}
@@ -306,7 +311,10 @@ export const PrescriptionList: React.FC<{ onOpenSettings?: () => void; onPatient
         <td className={tdB}>
           <button
             onClick={() => onPatientClick?.(p.patientId || p.id)}
-            className="text-blue-600 hover:underline font-medium focus:outline-none"
+            className={clsx(
+              "font-medium focus:outline-none",
+              isWithdrawn ? "text-gray-400 cursor-pointer hover:underline" : "text-blue-600 hover:underline"
+            )}
           >
             {p.patientName}
           </button>
@@ -347,14 +355,15 @@ export const PrescriptionList: React.FC<{ onOpenSettings?: () => void; onPatient
         <td className={clsx(td, 'relative')}>
           {/* 상태 변경 드롭다운 트리거 */}
           <button
-            onClick={() => setOpenStatusDropdown(openStatusDropdown === p.id ? null : p.id)}
+            onClick={() => !isWithdrawn && setOpenStatusDropdown(openStatusDropdown === p.id ? null : p.id)}
+            disabled={isWithdrawn}
             className={clsx(
-              'inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium transition-opacity hover:opacity-80',
-              bgColor, color
+              'inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium transition-opacity',
+              isWithdrawn ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : clsx('hover:opacity-80', bgColor, color)
             )}
           >
             {label}
-            <ChevronDown size={11} className="flex-shrink-0" />
+            {!isWithdrawn && <ChevronDown size={11} className="flex-shrink-0" />}
           </button>
 
           {/* 드롭다운 패널 */}
