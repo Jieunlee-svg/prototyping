@@ -339,10 +339,11 @@ export const PrescriptionWorkflowModal: React.FC<PrescriptionWorkflowModalProps>
   // ── Drug edit handlers
   const startEdit = (drug: DrugItem) => {
     setEditingId(drug.id);
-    setEditingDraft({ ...drug });
+    // 이름을 비워서 바로 검색 입력 모드로 진입
+    setEditingDraft({ ...drug, name: '', category: '', imageUrl: undefined });
     setDrugSearchQuery('');
     setDrugSearchResults([]);
-    setShowDrugSearch(false);
+    setShowDrugSearch(true);
     setTimeout(() => drugSearchRef.current?.focus(), 100);
   };
   const cancelEdit = () => {
@@ -561,147 +562,125 @@ export const PrescriptionWorkflowModal: React.FC<PrescriptionWorkflowModalProps>
                         {editingId === drug.id && editingDraft ? (
                           /* 편집 모드 */
                           <div className="p-3 bg-blue-50 space-y-3" ref={drugSearchDropRef}>
-                            <div className="grid grid-cols-1 gap-2">
-                              <div>
-                                <label className="text-[10px] text-gray-500 font-semibold mb-1 block">약품 검색</label>
-                                {/* 선택된 약이 있으면 선택 정보 표시 */}
-                                {editingDraft.name ? (
-                                  <div className="flex items-center gap-2.5 px-2.5 py-2 bg-white border border-blue-200 rounded-md">
-                                    {editingDraft.imageUrl && (
-                                      <img
-                                        src={editingDraft.imageUrl}
-                                        alt={editingDraft.name}
-                                        className="w-9 h-9 rounded-md object-cover border border-gray-100 flex-shrink-0"
-                                        onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }}
-                                      />
-                                    )}
-                                    <div className="flex-1 min-w-0">
-                                      <div className="text-xs font-semibold text-gray-900 truncate">{editingDraft.name}</div>
-                                      {editingDraft.category && (
-                                        <div className="text-[10px] text-gray-400">{editingDraft.category}</div>
-                                      )}
-                                    </div>
-                                    <button
-                                      onClick={() => {
-                                        setEditingDraft({ ...editingDraft, name: '', category: '', imageUrl: undefined });
-                                        setShowDrugSearch(true);
-                                        setTimeout(() => drugSearchRef.current?.focus(), 50);
-                                      }}
-                                      className="p-1 rounded hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors focus:outline-none"
-                                      aria-label="약품 변경"
-                                    >
-                                      <Pencil className="w-3 h-3" />
-                                    </button>
+                            {/* 약품 검색 영역 */}
+                            <div>
+                              <label className="text-[10px] text-gray-500 font-semibold mb-1 block">약품 검색</label>
+                              {editingDraft.name ? (
+                                <div className="flex items-center gap-2.5 px-2.5 py-2 bg-white border border-blue-200 rounded-md">
+                                  {editingDraft.imageUrl && (
+                                    <img
+                                      src={editingDraft.imageUrl}
+                                      alt={editingDraft.name}
+                                      className="w-9 h-9 rounded-md object-cover border border-gray-100 flex-shrink-0"
+                                      onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                                    />
+                                  )}
+                                  <div className="flex-1 min-w-0">
+                                    <div className="text-xs font-semibold text-gray-900 truncate">{editingDraft.name}</div>
                                   </div>
-                                ) : (
-                                  /* 검색 입력 영역 */
-                                  <div>
-                                    <div className="relative">
-                                      <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
-                                      <input
-                                        ref={drugSearchRef}
-                                        autoFocus
-                                        value={drugSearchQuery}
-                                        onChange={e => {
-                                          setDrugSearchQuery(e.target.value);
-                                          setShowDrugSearch(true);
-                                        }}
-                                        onFocus={() => { if (drugSearchQuery.trim()) setShowDrugSearch(true); }}
-                                        className="w-full text-xs pl-8 pr-3 py-2 border border-blue-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-300 bg-white"
-                                        placeholder="약품명을 검색하세요"
-                                      />
-                                    </div>
-
-                                    {/* 검색 결과 목록 (인라인) */}
-                                    {drugSearchQuery.trim() && (
-                                      <div className="mt-2 bg-white border border-gray-200 rounded-xl overflow-hidden">
-                                        {/* 검색 결과 건수 헤더 */}
-                                        <div className="px-3 py-2 border-b border-gray-100 bg-gray-50">
-                                          <span className="text-[11px] text-gray-500 font-medium">
-                                            검색 결과 총 <span className="font-bold text-blue-600">{drugSearchResults.length}</span>건
-                                          </span>
-                                        </div>
-
-                                        {drugSearchResults.length === 0 ? (
-                                          <div className="px-4 py-6 text-center">
-                                            <Pill className="w-6 h-6 text-gray-300 mx-auto mb-2" />
-                                            <p className="text-xs text-gray-400">검색 결과가 없습니다.</p>
-                                          </div>
-                                        ) : (
-                                          <div className="max-h-[220px] overflow-y-auto">
-                                            {drugSearchResults.map((result, rIdx) => (
-                                              <button
-                                                key={rIdx}
-                                                onClick={() => selectDrugFromSearch(result)}
-                                                className="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-blue-50 transition-colors text-left border-b border-gray-100 last:border-b-0 focus:outline-none focus:bg-blue-50 active:scale-[0.98]"
-                                              >
-                                                <div className="w-11 h-11 rounded-lg border border-gray-100 flex-shrink-0 bg-gray-50 overflow-hidden flex items-center justify-center">
-                                                  <img
-                                                    src={result.imageUrl}
-                                                    alt={result.name}
-                                                    className="w-full h-full object-cover"
-                                                    onError={e => {
-                                                      const img = e.target as HTMLImageElement;
-                                                      img.style.display = 'none';
-                                                      (img.parentElement as HTMLElement).innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="text-gray-300"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>';
-                                                    }}
-                                                  />
-                                                </div>
-                                                <div className="flex-1 min-w-0">
-                                                  <div className="text-xs font-semibold text-gray-900 truncate">{result.name}</div>
-                                                </div>
-                                                <ChevronRight className="w-3.5 h-3.5 text-gray-300 flex-shrink-0" />
-                                              </button>
-                                            ))}
-                                          </div>
-                                        )}
-                                      </div>
-                                    )}
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-
-                            {/* 용량/횟수/일수 — 약품이 선택된 후에만 표시 */}
-                            {editingDraft.name && (
-                              <>
-                                <div className="flex items-center gap-4">
-                                  {/* 용량: 1회 N정 — N만 수정 */}
-                                  <div className="flex items-center gap-1.5">
-                                    <label className="text-[10px] text-gray-500 font-semibold whitespace-nowrap">용량</label>
-                                    <span className="text-xs text-gray-500">1회</span>
-                                    <NumberInput value={editingDraft.dosageAmount} onChange={v => setEditingDraft({ ...editingDraft, dosageAmount: v })} />
-                                    <span className="text-xs text-gray-500">정</span>
-                                  </div>
-                                  {/* 횟수: 하루 N회 — N만 수정 */}
-                                  <div className="flex items-center gap-1.5">
-                                    <label className="text-[10px] text-gray-500 font-semibold whitespace-nowrap">횟수</label>
-                                    <span className="text-xs text-gray-500">하루</span>
-                                    <NumberInput value={editingDraft.frequencyCount} onChange={v => setEditingDraft({ ...editingDraft, frequencyCount: v })} />
-                                    <span className="text-xs text-gray-500">회</span>
-                                  </div>
-                                  {/* 조제일수 */}
-                                  <div className="flex items-center gap-1.5 ml-auto">
-                                    <label className="text-[10px] text-gray-500 font-semibold whitespace-nowrap">일수</label>
-                                    <NumberInput value={editingDraft.days} onChange={v => setEditingDraft({ ...editingDraft, days: v })} min={1} max={365} className="w-12" />
-                                    <span className="text-xs text-gray-500">일</span>
-                                  </div>
-                                </div>
-                                <div className="flex justify-end gap-1.5">
-                                  <button onClick={cancelEdit} className="px-3 py-1.5 text-xs border border-gray-200 rounded-md hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300">취소</button>
-                                  <button onClick={saveEdit} className="px-3 py-1.5 text-xs bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors flex items-center gap-1 focus:outline-none focus:ring-2 focus:ring-blue-300">
-                                    <Check className="w-3 h-3" />저장
+                                  <button
+                                    onClick={() => {
+                                      setEditingDraft({ ...editingDraft, name: '', category: '', imageUrl: undefined });
+                                      setShowDrugSearch(true);
+                                      setTimeout(() => drugSearchRef.current?.focus(), 50);
+                                    }}
+                                    className="p-1 rounded hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors focus:outline-none"
+                                    aria-label="약품 변경"
+                                  >
+                                    <Pencil className="w-3 h-3" />
                                   </button>
                                 </div>
-                              </>
-                            )}
+                              ) : (
+                                <div>
+                                  <div className="relative">
+                                    <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
+                                    <input
+                                      ref={drugSearchRef}
+                                      autoFocus
+                                      value={drugSearchQuery}
+                                      onChange={e => {
+                                        setDrugSearchQuery(e.target.value);
+                                        setShowDrugSearch(true);
+                                      }}
+                                      onFocus={() => { if (drugSearchQuery.trim()) setShowDrugSearch(true); }}
+                                      className="w-full text-xs pl-8 pr-3 py-2 border border-blue-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-300 bg-white"
+                                      placeholder="약품명을 검색하세요"
+                                    />
+                                  </div>
 
-                            {/* 약품 미선택 시 취소 버튼만 */}
-                            {!editingDraft.name && (
-                              <div className="flex justify-end">
-                                <button onClick={cancelEdit} className="px-3 py-1.5 text-xs border border-gray-200 rounded-md hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300">취소</button>
+                                  {/* 검색 결과 목록 (인라인) */}
+                                  {drugSearchQuery.trim() && (
+                                    <div className="mt-2 bg-white border border-gray-200 rounded-xl overflow-hidden">
+                                      <div className="px-3 py-2 border-b border-gray-100 bg-gray-50">
+                                        <span className="text-[11px] text-gray-500 font-medium">
+                                          검색 결과 총 <span className="font-bold text-blue-600">{drugSearchResults.length}</span>건
+                                        </span>
+                                      </div>
+
+                                      {drugSearchResults.length === 0 ? (
+                                        <div className="px-4 py-6 text-center">
+                                          <Pill className="w-6 h-6 text-gray-300 mx-auto mb-2" />
+                                          <p className="text-xs text-gray-400">검색 결과가 없습니다.</p>
+                                        </div>
+                                      ) : (
+                                        <div className="max-h-[220px] overflow-y-auto">
+                                          {drugSearchResults.map((result, rIdx) => (
+                                            <button
+                                              key={rIdx}
+                                              onClick={() => selectDrugFromSearch(result)}
+                                              className="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-blue-50 transition-colors text-left border-b border-gray-100 last:border-b-0 focus:outline-none focus:bg-blue-50 active:scale-[0.98]"
+                                            >
+                                              <div className="w-11 h-11 rounded-lg border border-gray-100 flex-shrink-0 bg-gray-50 overflow-hidden flex items-center justify-center">
+                                                <img
+                                                  src={result.imageUrl}
+                                                  alt={result.name}
+                                                  className="w-full h-full object-cover"
+                                                  onError={e => {
+                                                    const img = e.target as HTMLImageElement;
+                                                    img.style.display = 'none';
+                                                    (img.parentElement as HTMLElement).innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="text-gray-300"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>';
+                                                  }}
+                                                />
+                                              </div>
+                                              <div className="flex-1 min-w-0">
+                                                <div className="text-xs font-semibold text-gray-900 truncate">{result.name}</div>
+                                              </div>
+                                            </button>
+                                          ))}
+                                        </div>
+                                      )}
+                                    </div>
+                                  )}
+                                </div>
+                              )}
+                            </div>
+
+                            {/* 용량/횟수/일수 — 항상 표시 */}
+                            <div className="flex items-center gap-4">
+                              <div className="flex items-center gap-1.5">
+                                <label className="text-[10px] text-gray-500 font-semibold whitespace-nowrap">용량</label>
+                                <span className="text-xs text-gray-500">1회</span>
+                                <NumberInput value={editingDraft.dosageAmount} onChange={v => setEditingDraft({ ...editingDraft, dosageAmount: v })} />
+                                <span className="text-xs text-gray-500">정</span>
                               </div>
-                            )}
+                              <div className="flex items-center gap-1.5">
+                                <label className="text-[10px] text-gray-500 font-semibold whitespace-nowrap">횟수</label>
+                                <span className="text-xs text-gray-500">하루</span>
+                                <NumberInput value={editingDraft.frequencyCount} onChange={v => setEditingDraft({ ...editingDraft, frequencyCount: v })} />
+                                <span className="text-xs text-gray-500">회</span>
+                              </div>
+                              <div className="flex items-center gap-1.5 ml-auto">
+                                <label className="text-[10px] text-gray-500 font-semibold whitespace-nowrap">일수</label>
+                                <NumberInput value={editingDraft.days} onChange={v => setEditingDraft({ ...editingDraft, days: v })} min={1} max={365} className="w-12" />
+                                <span className="text-xs text-gray-500">일</span>
+                              </div>
+                            </div>
+                            <div className="flex justify-end gap-1.5">
+                              <button onClick={cancelEdit} className="px-3 py-1.5 text-xs border border-gray-200 rounded-md hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300">취소</button>
+                              <button onClick={saveEdit} disabled={!editingDraft.name} className={`px-3 py-1.5 text-xs rounded-md flex items-center gap-1 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-300 ${editingDraft.name ? 'bg-blue-600 text-white hover:bg-blue-700' : 'bg-gray-200 text-gray-400 cursor-not-allowed'}`}>
+                                <Check className="w-3 h-3" />저장
+                              </button>
+                            </div>
                           </div>
                         ) : (
                           /* 읽기 모드 */
