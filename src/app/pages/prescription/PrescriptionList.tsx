@@ -540,13 +540,7 @@ export const PrescriptionList: React.FC<{ onOpenSettings?: () => void; onPatient
 
       {imagePrescription && (
         <PrescriptionImageModal
-          imageUrl={imagePrescription.imageUrl}
-          patientName={imagePrescription.patientName}
-          receivedAt={imagePrescription.receivedAt}
-          hospitalName={imagePrescription.hospitalName}
-          status={imagePrescription.status}
-          statusLabel={STATUS_LABEL[imagePrescription.status].label}
-          source={imagePrescription.source}
+          prescription={imagePrescription}
           onClose={() => setImagePrescription(null)}
         />
       )}

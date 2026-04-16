@@ -1,166 +1,230 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
-  X,
-  Calendar,
-  User,
-  Building2,
-  FileText,
+  ChevronLeft,
   Download,
-  ZoomIn,
-  ZoomOut,
-  ImageOff
+  Printer,
+  Eye,
+  EyeOff,
+  ImageOff,
 } from 'lucide-react';
-import { clsx } from 'clsx';
+import type { Prescription } from './PrescriptionDetailModal';
 
+/* ─── 섹션 타이틀 ──────────────────────────────────────────────────────── */
+const SectionTitle: React.FC<{ children: React.ReactNode }> = ({ children }) => (
+  <h2 className="text-base font-bold text-gray-900 mb-5 flex items-center gap-2">
+    <span className="inline-block w-1 h-5 bg-blue-500 rounded-full" />
+    {children}
+  </h2>
+);
+
+/* ─── Props ────────────────────────────────────────────────────────────── */
 interface PrescriptionImageModalProps {
-  imageUrl?: string;
-  patientName: string;
-  receivedAt: string;
-  hospitalName: string;
-  status: string;
-  statusLabel: string;
-  source: string;
+  prescription: Prescription;
   onClose: () => void;
 }
 
+/* ─── 메인 컴포넌트 ────────────────────────────────────────────────────── */
 export const PrescriptionImageModal: React.FC<PrescriptionImageModalProps> = ({
-  imageUrl,
-  patientName,
-  receivedAt,
-  hospitalName,
-  status,
-  statusLabel,
-  source,
+  prescription,
   onClose,
 }) => {
-  const [zoom, setZoom] = React.useState(1);
-  const [imageError, setImageError] = React.useState(false);
+  const [showRrn, setShowRrn] = useState(false);
+  const [imageError, setImageError] = useState(false);
 
-  const handleZoomIn = () => setZoom(prev => Math.min(prev + 0.25, 3));
-  const handleZoomOut = () => setZoom(prev => Math.max(prev - 0.25, 0.5));
-  const handleResetZoom = () => setZoom(1);
+  const maskedRrn = prescription.birthDate
+    ? `${prescription.birthDate.replace(/-/g, '').slice(2)}-*******`
+    : '------*******';
 
-  const statusStyle = (() => {
-    switch (status) {
-      case 'received': return 'bg-blue-50 text-blue-600 border-blue-200';
-      case 'completed': return 'bg-emerald-50 text-emerald-600 border-emerald-200';
-      case 'cancelled': return 'bg-gray-100 text-gray-500 border-gray-200';
-      default: return 'bg-gray-100 text-gray-500 border-gray-200';
+  const age = prescription.birthDate
+    ? new Date().getFullYear() - new Date(prescription.birthDate).getFullYear()
+    : '-';
+
+  const handleDownload = () => {
+    if (!prescription.imageUrl) return;
+    const link = document.createElement('a');
+    link.href = prescription.imageUrl;
+    link.download = `처방전_${prescription.patientName}_${prescription.receivedAt.replace(/\s/g, '_')}.jpg`;
+    link.target = '_blank';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const handlePrint = () => {
+    if (!prescription.imageUrl) return;
+    const win = window.open('', '_blank');
+    if (win) {
+      win.document.write(`
+        <html>
+          <head><title>처방전 프린트</title></head>
+          <body style="margin:0;display:flex;justify-content:center;align-items:center;min-height:100vh;background:#fff;">
+            <img src="${prescription.imageUrl}" style="max-width:100%;max-height:100vh;" onload="window.print();window.close();" />
+          </body>
+        </html>
+      `);
+      win.document.close();
     }
-  })();
-
-  const sourceLabel = source === 'app_camera' ? '고객 앱 촬영' : source === 'kiosk' ? '키오스크 스캔' : '비대면 진료';
+  };
 
   return (
-    <div
-      className="fixed inset-0 z-[200] flex items-center justify-center"
-      onClick={onClose}
-    >
-      {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
+    /* ── 전체 화면 오버레이 (TelemedPrescriptionDetail과 동일) ── */
+    <div className="fixed inset-0 z-[200] bg-white flex flex-col overflow-hidden animate-in fade-in duration-200">
 
-      {/* Modal */}
-      <div
-        className="relative z-10 bg-white rounded-2xl shadow-2xl border border-gray-200 w-full max-w-2xl max-h-[90vh] flex flex-col overflow-hidden"
-        onClick={e => e.stopPropagation()}
-      >
-        {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 flex-shrink-0">
-          <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center">
-              <FileText size={18} className="text-blue-600" />
-            </div>
-            <div>
-              <h2 className="text-base font-bold text-gray-900">처방전 원본 보기</h2>
-              <p className="text-xs text-gray-400 mt-0.5">접수된 처방전 이미지를 확인합니다.</p>
-            </div>
-          </div>
-          <button
-            onClick={onClose}
-            className="p-2 rounded-lg hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors focus:outline-none"
-          >
-            <X size={18} />
-          </button>
-        </div>
+      {/* ── 상단 글로벌 헤더 ── */}
+      <div className="flex items-center justify-between px-6 py-3 bg-white border-b border-gray-200 sticky top-0 z-10">
+        {/* 뒤로가기 */}
+        <button
+          onClick={onClose}
+          className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-900 transition-colors"
+        >
+          <ChevronLeft size={18} />
+          <span className="font-medium">처방전 목록으로</span>
+        </button>
 
-        {/* Info Bar */}
-        <div className="px-6 py-3 bg-gray-50 border-b border-gray-100 flex items-center gap-4 flex-wrap text-xs text-gray-600 flex-shrink-0">
-          <div className="flex items-center gap-1.5">
-            <User size={13} className="text-gray-400" />
-            <span className="font-semibold text-gray-800">{patientName}</span>
-          </div>
-          <div className="w-px h-3.5 bg-gray-200" />
-          <div className="flex items-center gap-1.5">
-            <Calendar size={13} className="text-gray-400" />
-            <span>{receivedAt}</span>
-          </div>
-          <div className="w-px h-3.5 bg-gray-200" />
-          <div className="flex items-center gap-1.5">
-            <Building2 size={13} className="text-gray-400" />
-            <span>{hospitalName}</span>
-          </div>
-          <div className="w-px h-3.5 bg-gray-200" />
-          <span className={clsx('px-2 py-0.5 rounded-full text-[11px] font-medium border', statusStyle)}>
-            {statusLabel}
-          </span>
-          <div className="w-px h-3.5 bg-gray-200" />
-          <span className="text-gray-400">{sourceLabel}</span>
-        </div>
+        <h1 className="text-lg font-bold text-gray-900 absolute left-1/2 -translate-x-1/2">
+          처방전 상세 조회
+        </h1>
 
-        {/* Image Area */}
-        <div className="flex-1 overflow-auto bg-gray-100 relative min-h-[300px]">
-          {imageUrl && !imageError ? (
-            <div className="flex items-center justify-center p-6 min-h-[400px]">
-              <img
-                src={imageUrl}
-                alt="처방전 원본 이미지"
-                className="rounded-lg shadow-lg transition-transform duration-200 ease-out"
-                style={{ transform: `scale(${zoom})`, transformOrigin: 'center center' }}
-                onError={() => setImageError(true)}
-                draggable={false}
-              />
-            </div>
-          ) : (
-            <div className="flex flex-col items-center justify-center h-full min-h-[400px] text-gray-400">
-              <ImageOff size={48} className="mb-4 text-gray-300" />
-              <p className="text-sm font-medium">처방전 이미지를 불러올 수 없습니다.</p>
-              <p className="text-xs text-gray-300 mt-1">이미지가 삭제되었거나 접근할 수 없습니다.</p>
-            </div>
-          )}
-        </div>
+        {/* 우측 — 빈 공간 (비대면 진료와 달리 결제/취소/완료 버튼 없음) */}
+        <div className="w-32" />
+      </div>
 
-        {/* Footer Toolbar */}
-        <div className="px-6 py-3 border-t border-gray-100 bg-white flex items-center justify-between flex-shrink-0">
-          <div className="flex items-center gap-2">
-            <button
-              onClick={handleZoomOut}
-              disabled={zoom <= 0.5}
-              className="p-2 rounded-lg border border-gray-200 hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors focus:outline-none"
-              aria-label="축소"
-            >
-              <ZoomOut size={16} className="text-gray-600" />
-            </button>
-            <button
-              onClick={handleResetZoom}
-              className="px-3 py-1.5 rounded-lg border border-gray-200 hover:bg-gray-50 text-xs font-medium text-gray-600 transition-colors focus:outline-none tabular-nums"
-            >
-              {Math.round(zoom * 100)}%
-            </button>
-            <button
-              onClick={handleZoomIn}
-              disabled={zoom >= 3}
-              className="p-2 rounded-lg border border-gray-200 hover:bg-gray-50 disabled:opacity-30 disabled:cursor-not-allowed transition-colors focus:outline-none"
-              aria-label="확대"
-            >
-              <ZoomIn size={16} className="text-gray-600" />
-            </button>
-          </div>
-          <button
-            onClick={onClose}
-            className="px-4 py-2 text-sm font-medium text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors focus:outline-none"
-          >
-            닫기
-          </button>
+      {/* ── 스크롤 영역 ── */}
+      <div className="flex-1 overflow-y-auto bg-gray-50">
+        <div className="max-w-5xl mx-auto px-6 py-8 space-y-8">
+
+          {/* ── 1. 조제 신청 정보 ── */}
+          <section className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+            <SectionTitle>조제 신청 정보</SectionTitle>
+            <div className="grid grid-cols-5 gap-6">
+              {/* 조제 요청 일시 */}
+              <div>
+                <p className="text-xs text-gray-400 mb-1">조제 요청 일시</p>
+                <p className="text-sm font-medium text-gray-800">{prescription.receivedAt}</p>
+              </div>
+              {/* 이름 */}
+              <div>
+                <p className="text-xs text-gray-400 mb-1">이름</p>
+                <p className="text-sm font-bold text-gray-900">{prescription.patientName}</p>
+              </div>
+              {/* 성/나이 */}
+              <div>
+                <p className="text-xs text-gray-400 mb-1">성/나이</p>
+                <p className="text-sm font-medium text-gray-800">
+                  {prescription.gender === '남성' ? 'M' : 'F'} / {age}
+                </p>
+              </div>
+              {/* 주민등록번호 */}
+              <div>
+                <p className="text-xs text-gray-400 mb-1 flex items-center gap-1">
+                  주민등록번호
+                  <button
+                    onClick={() => setShowRrn(v => !v)}
+                    className="text-gray-400 hover:text-gray-600 transition-colors"
+                  >
+                    {showRrn ? <Eye size={12} /> : <EyeOff size={12} />}
+                  </button>
+                </p>
+                <p className="text-sm font-medium text-gray-800 font-mono">
+                  {showRrn ? maskedRrn.replace('*******', '1234567') : maskedRrn}
+                </p>
+              </div>
+              {/* 연락처 */}
+              <div>
+                <p className="text-xs text-gray-400 mb-1 flex items-center gap-1">
+                  연락처
+                  <Eye size={12} className="text-gray-300" />
+                </p>
+                <p className="text-sm font-medium text-gray-800">{prescription.phone}</p>
+              </div>
+            </div>
+          </section>
+
+          {/* ── 2. 처방전 정보 ── */}
+          <section className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
+            <SectionTitle>처방전 정보</SectionTitle>
+            <div className="flex gap-6">
+              {/* 처방전 이미지 */}
+              <div className="w-64 flex-shrink-0">
+                <div className="aspect-[3/4] bg-gray-900 rounded-xl flex items-center justify-center overflow-hidden border border-gray-200">
+                  {prescription.imageUrl && !imageError ? (
+                    <img
+                      src={prescription.imageUrl}
+                      alt="처방전 이미지"
+                      className="w-full h-full object-cover"
+                      onError={() => setImageError(true)}
+                    />
+                  ) : (
+                    <div className="flex flex-col items-center text-gray-500 text-sm text-center gap-2">
+                      <ImageOff size={32} className="text-gray-600" />
+                      <span>이미지 없음</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* 우측 입력 영역 */}
+              <div className="flex-1 space-y-6">
+                {/* 처방전 이미지 다운로드/프린트 */}
+                <div>
+                  <p className="text-xs text-gray-400 mb-2">처방전 이미지</p>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={handleDownload}
+                      disabled={!prescription.imageUrl || imageError}
+                      className="flex items-center gap-1.5 px-4 py-2 text-sm border border-gray-200 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                    >
+                      <Download size={14} /> 다운로드
+                    </button>
+                    <button
+                      onClick={handlePrint}
+                      disabled={!prescription.imageUrl || imageError}
+                      className="flex items-center gap-1.5 px-4 py-2 text-sm border border-gray-200 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                    >
+                      <Printer size={14} /> 프린트
+                    </button>
+                  </div>
+                </div>
+
+                {/* 접수 경로 */}
+                <div>
+                  <p className="text-xs text-gray-400 mb-1">접수 경로</p>
+                  <p className="text-sm font-medium text-gray-800">고객 앱 촬영</p>
+                </div>
+
+                {/* 대체조제 동의 */}
+                <div>
+                  <p className="text-xs text-gray-400 mb-1">대체조제 동의</p>
+                  <p className="text-sm font-medium text-gray-800">
+                    {prescription.isConsentSubstitute ? '동의' : '미동의'}
+                  </p>
+                </div>
+
+                {/* 수령 방법 */}
+                <div>
+                  <p className="text-xs text-gray-400 mb-1">수령 방법</p>
+                  <p className="text-sm font-medium text-gray-800">
+                    {prescription.deliveryMethod || <span className="text-gray-300">—</span>}
+                  </p>
+                </div>
+
+                {/* 발행 병원 */}
+                <div>
+                  <p className="text-xs text-gray-400 mb-1">발행 병원</p>
+                  <p className="text-sm font-medium text-gray-800">
+                    {prescription.hospitalName === '확인 안됨' ? (
+                      <span className="inline-flex px-2 py-0.5 rounded-full text-xs bg-gray-100 text-gray-400">확인 안됨</span>
+                    ) : (
+                      prescription.hospitalName
+                    )}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          {/* 하단 여백 */}
+          <div className="h-4" />
         </div>
       </div>
     </div>
