@@ -210,9 +210,6 @@ export const PatientList: React.FC<PatientListProps> = ({ onPatientClick }) => {
                         )}>
                           {patient.name}
                         </span>
-                        {isWithdrawn(patient) && (
-                          <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-red-100 text-red-500 border border-red-200 ml-1">탈퇴</span>
-                        )}
                       </button>
                     </td>
                     <td className={clsx("px-4 py-4 text-sm tabular-nums", isWithdrawn(patient) ? "text-gray-400" : "text-gray-600")}>{patient.birthDate}</td>
