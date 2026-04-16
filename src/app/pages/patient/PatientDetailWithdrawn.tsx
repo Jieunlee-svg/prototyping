@@ -340,6 +340,7 @@ export const PatientDetailWithdrawn: React.FC<PatientDetailProps> = ({ onBack, p
         <TelemedPrescriptionDetail
           prescription={telemedPrescription}
           onClose={() => setTelemedPrescription(null)}
+          readOnly
         />
       )}
 

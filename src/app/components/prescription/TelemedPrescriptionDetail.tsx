@@ -8,6 +8,8 @@ import {
   Eye,
   EyeOff,
   Info,
+  AlertTriangle,
+  Ban,
 } from 'lucide-react';
 import { clsx } from 'clsx';
 import type { Prescription } from './PrescriptionDetailModal';
@@ -64,12 +66,14 @@ const SectionTitle: React.FC<{ children: React.ReactNode }> = ({ children }) => 
 interface TelemedPrescriptionDetailProps {
   prescription: Prescription;
   onClose: () => void;
+  readOnly?: boolean;
 }
 
 /* ─── 메인 컴포넌트 ────────────────────────────────────────────────────── */
 export const TelemedPrescriptionDetail: React.FC<TelemedPrescriptionDetailProps> = ({
   prescription,
   onClose,
+  readOnly = false,
 }) => {
   /* 상태 */
   const [copay, setCopay] = useState('');
@@ -119,27 +123,42 @@ export const TelemedPrescriptionDetail: React.FC<TelemedPrescriptionDetailProps>
 
         <h1 className="text-lg font-bold text-gray-900 absolute left-1/2 -translate-x-1/2">
           처방전 상세 조회
+          {readOnly && <span className="ml-2 text-xs font-medium text-gray-400">(조회 전용)</span>}
         </h1>
 
         {/* 우측 액션 */}
         <div className="flex items-center gap-3">
-          <button className="px-4 py-1.5 text-sm font-semibold border border-emerald-400 text-emerald-600 rounded-lg hover:bg-emerald-50 transition-colors">
-            결제 완료
-          </button>
-          <button
-            onClick={() => setShowCancelModal(true)}
-            className="px-4 py-1.5 text-sm font-semibold border border-red-300 text-red-500 rounded-lg hover:bg-red-50 transition-colors"
-          >
-            접수 취소
-          </button>
-          <button
-            onClick={() => setShowCompleteModal(true)}
-            className="px-4 py-1.5 text-sm font-semibold bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
-          >
-            조제 완료
-          </button>
+          {!readOnly && (
+            <>
+              <button className="px-4 py-1.5 text-sm font-semibold border border-emerald-400 text-emerald-600 rounded-lg hover:bg-emerald-50 transition-colors">
+                결제 완료
+              </button>
+              <button
+                onClick={() => setShowCancelModal(true)}
+                className="px-4 py-1.5 text-sm font-semibold border border-red-300 text-red-500 rounded-lg hover:bg-red-50 transition-colors"
+              >
+                접수 취소
+              </button>
+              <button
+                onClick={() => setShowCompleteModal(true)}
+                className="px-4 py-1.5 text-sm font-semibold bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
+              >
+                조제 완료
+              </button>
+            </>
+          )}
         </div>
       </div>
+
+      {/* 조회 전용 경고 배너 */}
+      {readOnly && (
+        <div className="mx-6 mt-4 px-5 py-3 bg-amber-50 border border-amber-200 rounded-xl flex items-center gap-3">
+          <Ban size={16} className="text-amber-500 flex-shrink-0" />
+          <p className="text-xs text-amber-700 font-medium">
+            탈퇴한 회원의 처방전입니다. 조회만 가능하며, 수정·결제·상태 변경은 제한됩니다.
+          </p>
+        </div>
+      )}
 
       {/* ── 스크롤 영역 ── */}
       <div className="flex-1 overflow-y-auto bg-gray-50">
@@ -235,94 +254,108 @@ export const TelemedPrescriptionDetail: React.FC<TelemedPrescriptionDetailProps>
                 <div>
                   <label className="block text-xs text-gray-500 font-medium mb-1.5">
                     본인 부담금(조제, 복약지도 등)
-                    <a href="#" className="ml-1 text-blue-500 hover:underline">보기</a>
+                    {!readOnly && <a href="#" className="ml-1 text-blue-500 hover:underline">보기</a>}
                   </label>
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="text"
-                      inputMode="numeric"
-                      value={copay}
-                      onChange={e => setCopay(e.target.value.replace(/\D/g, ''))}
-                      className="w-48 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all text-right"
-                      placeholder="0"
-                    />
-                    <span className="text-sm text-gray-500">원</span>
-                  </div>
+                  {readOnly ? (
+                    <p className="text-sm font-medium text-gray-800">{copay || '—'} 원</p>
+                  ) : (
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="text"
+                        inputMode="numeric"
+                        value={copay}
+                        onChange={e => setCopay(e.target.value.replace(/\D/g, ''))}
+                        className="w-48 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all text-right"
+                        placeholder="0"
+                      />
+                      <span className="text-sm text-gray-500">원</span>
+                    </div>
+                  )}
                 </div>
 
                 {/* 대체조제 여부 */}
                 <div>
                   <p className="text-xs text-gray-500 font-medium mb-1.5">대체조제 여부</p>
-                  <p className="text-xs text-gray-400 mb-2">
-                    대체조제 진행 여부를 체크해주세요. 대체조제를 진행한 경우 조제 후 해당 사실을 환자에게 안내해야합니다.
-                  </p>
-                  <div className="flex items-center gap-6">
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <input
-                        type="radio"
-                        name="substitute"
-                        checked={substituteConsent === 'yes'}
-                        onChange={() => setSubstituteConsent('yes')}
-                        className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
-                      />
-                      <span className="text-sm text-gray-700">예 (대체 조제함)</span>
-                    </label>
-                    <label className="flex items-center gap-2 cursor-pointer">
-                      <input
-                        type="radio"
-                        name="substitute"
-                        checked={substituteConsent === 'no'}
-                        onChange={() => setSubstituteConsent('no')}
-                        className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
-                      />
-                      <span className="text-sm text-gray-700">아니요</span>
-                    </label>
-                  </div>
+                  {readOnly ? (
+                    <p className="text-sm font-medium text-gray-800">
+                      {substituteConsent === 'yes' ? '예 (대체 조제함)' : '아니요'}
+                    </p>
+                  ) : (
+                    <>
+                      <p className="text-xs text-gray-400 mb-2">
+                        대체조제 진행 여부를 체크해주세요. 대체조제를 진행한 경우 조제 후 해당 사실을 환자에게 안내해야합니다.
+                      </p>
+                      <div className="flex items-center gap-6">
+                        <label className="flex items-center gap-2 cursor-pointer">
+                          <input
+                            type="radio"
+                            name="substitute"
+                            checked={substituteConsent === 'yes'}
+                            onChange={() => setSubstituteConsent('yes')}
+                            className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                          />
+                          <span className="text-sm text-gray-700">예 (대체 조제함)</span>
+                        </label>
+                        <label className="flex items-center gap-2 cursor-pointer">
+                          <input
+                            type="radio"
+                            name="substitute"
+                            checked={substituteConsent === 'no'}
+                            onChange={() => setSubstituteConsent('no')}
+                            className="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500"
+                          />
+                          <span className="text-sm text-gray-700">아니요</span>
+                        </label>
+                      </div>
+                    </>
+                  )}
                 </div>
 
                 {/* 이미지 첨부 */}
-                <div>
-                  <p className="text-xs text-gray-500 font-medium mb-1.5">
-                    이미지 첨부
-                    <span className="ml-1 text-gray-400 font-normal">.jpg, .png, .pdf 등 / 이미지는 최대 10개까지 첨부 가능합니다.</span>
-                  </p>
-                  <div
-                    onDragEnter={() => setIsDragging(true)}
-                    onDragLeave={() => setIsDragging(false)}
-                    onDragOver={e => e.preventDefault()}
-                    onDrop={handleDrop}
-                    onClick={() => fileInputRef.current?.click()}
-                    className={clsx(
-                      'border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-colors',
-                      isDragging
-                        ? 'border-blue-400 bg-blue-50'
-                        : 'border-gray-200 hover:border-blue-300 hover:bg-gray-50'
-                    )}
-                  >
-                    <Upload size={20} className="mx-auto mb-2 text-blue-400" />
-                    <p className="text-sm text-blue-500 font-medium">이미지를 선택하거나, 파일을 여기로 끌어오세요</p>
-                    <input
-                      ref={fileInputRef}
-                      type="file"
-                      accept=".jpg,.jpeg,.png,.pdf"
-                      multiple
-                      className="hidden"
-                      onChange={e => handleFiles(e.target.files)}
-                    />
-                  </div>
-                  {attachedFiles.length > 0 && (
-                    <div className="mt-2 flex flex-wrap gap-2">
-                      {attachedFiles.map((f, i) => (
-                        <div key={i} className="flex items-center gap-1.5 px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-xs border border-blue-100">
-                          <span className="max-w-[120px] truncate">{f.name}</span>
-                          <button onClick={() => setAttachedFiles(prev => prev.filter((_, idx) => idx !== i))}>
-                            <X size={11} />
-                          </button>
-                        </div>
-                      ))}
+                {!readOnly && (
+                  <div>
+                    <p className="text-xs text-gray-500 font-medium mb-1.5">
+                      이미지 첨부
+                      <span className="ml-1 text-gray-400 font-normal">.jpg, .png, .pdf 등 / 이미지는 최대 10개까지 첨부 가능합니다.</span>
+                    </p>
+                    <div
+                      onDragEnter={() => setIsDragging(true)}
+                      onDragLeave={() => setIsDragging(false)}
+                      onDragOver={e => e.preventDefault()}
+                      onDrop={handleDrop}
+                      onClick={() => fileInputRef.current?.click()}
+                      className={clsx(
+                        'border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-colors',
+                        isDragging
+                          ? 'border-blue-400 bg-blue-50'
+                          : 'border-gray-200 hover:border-blue-300 hover:bg-gray-50'
+                      )}
+                    >
+                      <Upload size={20} className="mx-auto mb-2 text-blue-400" />
+                      <p className="text-sm text-blue-500 font-medium">이미지를 선택하거나, 파일을 여기로 끌어오세요</p>
+                      <input
+                        ref={fileInputRef}
+                        type="file"
+                        accept=".jpg,.jpeg,.png,.pdf"
+                        multiple
+                        className="hidden"
+                        onChange={e => handleFiles(e.target.files)}
+                      />
                     </div>
-                  )}
-                </div>
+                    {attachedFiles.length > 0 && (
+                      <div className="mt-2 flex flex-wrap gap-2">
+                        {attachedFiles.map((f, i) => (
+                          <div key={i} className="flex items-center gap-1.5 px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-xs border border-blue-100">
+                            <span className="max-w-[120px] truncate">{f.name}</span>
+                            <button onClick={() => setAttachedFiles(prev => prev.filter((_, idx) => idx !== i))}>
+                              <X size={11} />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
           </section>
@@ -330,8 +363,16 @@ export const TelemedPrescriptionDetail: React.FC<TelemedPrescriptionDetailProps>
           {/* ── 3. 수령 방법 ── */}
           <section className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
             <SectionTitle>수령 방법</SectionTitle>
-            <p className="text-xs text-gray-500 mb-4">배송 시 발생하는 비용은 환자가 부담합니다.</p>
-            <DeliveryRadios value={delivery} onChange={setDelivery} />
+            {readOnly ? (
+              <p className="text-sm font-medium text-gray-800">
+                {DELIVERY_OPTIONS.find(o => o.id === delivery)?.label ?? '—'}
+              </p>
+            ) : (
+              <>
+                <p className="text-xs text-gray-500 mb-4">배송 시 발생하는 비용은 환자가 부담합니다.</p>
+                <DeliveryRadios value={delivery} onChange={setDelivery} />
+              </>
+            )}
           </section>
 
           {/* ── 4. 재택 수령 허용 유형 ── */}
