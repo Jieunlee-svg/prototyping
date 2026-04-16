@@ -10,7 +10,7 @@ import { clsx } from 'clsx';
 interface Patient {
   id: string;
   name: string;
-  status: 'new' | 'risk' | 'normal';
+  status: 'new' | 'risk' | 'normal' | 'withdrawn';
   medicationStatus: string;
   birthDate: string;
   gender: '남성' | '여성';
@@ -38,6 +38,7 @@ const MOCK_DATA: Patient[] = [
   { id: '8', name: '임유미', status: 'normal', medicationStatus: '미실시', birthDate: '1992-11-14', gender: '여성', age: 35, prescriptionNo: '-', comorbidities: '-', adherenceRate: 0, phone: '010-3616-8575', pharmacist: '최약사', lastVisit: '2026-02-04', membership: true, managementStatus: '정기 상담', registeredAt: '2026-01-30 17:20', prescriptionCount: 4 },
   { id: '9', name: '수민테스트', status: 'risk', medicationStatus: '당뇨 • 고혈압', birthDate: '1971-02-04', gender: '남성', age: 56, prescriptionNo: '-', comorbidities: '-', adherenceRate: 60, phone: '010-0160-0247', pharmacist: '박약사', lastVisit: '2026-02-04', membership: true, managementStatus: '상담 필요', registeredAt: '2025-10-10 12:00', prescriptionCount: 30 },
   { id: '10', name: '박서희', status: 'risk', medicationStatus: '당뇨(전) • 고혈압(전)', birthDate: '1996-08-24', gender: '여성', age: 31, prescriptionNo: '-', comorbidities: '비만, 우울증', adherenceRate: 88, phone: '010-9914-8158', pharmacist: '김약사', lastVisit: '2026-02-03', membership: true, managementStatus: '집중 관리', registeredAt: '2026-02-05 08:50', prescriptionCount: 7 },
+  { id: '11', name: '십칠스프린트탈퇴', status: 'withdrawn', medicationStatus: '고혈압', birthDate: '1987-03-12', gender: '여성', age: 40, prescriptionNo: '-', comorbidities: '-', adherenceRate: 0, phone: '010-****-5678', pharmacist: '김약사', lastVisit: '2026-04-10', membership: false, managementStatus: '탈퇴', registeredAt: '2026-01-20 14:30', prescriptionCount: 3 },
 ];
 
 interface PatientListProps {
@@ -85,6 +86,8 @@ export const PatientList: React.FC<PatientListProps> = ({ onPatientClick }) => {
       onPatientClick(patient.id);
     }
   };
+
+  const isWithdrawn = (patient: Patient) => patient.status === 'withdrawn';
 
   const handleSort = (key: keyof Patient) => {
     if (sortKey === key) {
@@ -189,8 +192,8 @@ export const PatientList: React.FC<PatientListProps> = ({ onPatientClick }) => {
               </thead>
               <tbody className="divide-y divide-gray-200">
                 {sortedPatients.map((patient) => (
-                  <tr key={patient.id} className="hover:bg-blue-50/50 transition-colors">
-                    <td className="px-4 py-4 text-sm text-gray-600 tabular-nums">{patient.registeredAt}</td>
+                  <tr key={patient.id} className={clsx("transition-colors", isWithdrawn(patient) ? "bg-gray-50/50 hover:bg-gray-100/50" : "hover:bg-blue-50/50")}>
+                    <td className={clsx("px-4 py-4 text-sm tabular-nums", isWithdrawn(patient) ? "text-gray-400" : "text-gray-600")}>{patient.registeredAt}</td>
                     <td className="px-4 py-4">
                       <button
                         onClick={() => handlePatientClick(patient)}
@@ -201,20 +204,28 @@ export const PatientList: React.FC<PatientListProps> = ({ onPatientClick }) => {
                         )}
                       >
                         <span className={clsx(
-                          "font-bold text-gray-900 text-sm",
-                          patient.name !== '미정스프린트' && "group-hover:text-blue-600"
+                          "font-bold text-sm",
+                          isWithdrawn(patient) ? "text-gray-400 group-hover:text-gray-600" : "text-gray-900",
+                          !isWithdrawn(patient) && patient.name !== '미정스프린트' && "group-hover:text-blue-600"
                         )}>
                           {patient.name}
                         </span>
+                        {isWithdrawn(patient) && (
+                          <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-red-100 text-red-500 border border-red-200 ml-1">탈퇴</span>
+                        )}
                       </button>
                     </td>
-                    <td className="px-4 py-4 text-sm text-gray-600 tabular-nums">{patient.birthDate}</td>
-                    <td className="px-4 py-4 text-sm text-gray-600 font-medium">{patient.phone}</td>
-                    <td className="px-4 py-4 text-sm text-gray-600">{patient.gender}</td>
-                    <td className="px-4 py-4 text-center text-sm text-gray-900 font-bold">{patient.prescriptionCount}건</td>
+                    <td className={clsx("px-4 py-4 text-sm tabular-nums", isWithdrawn(patient) ? "text-gray-400" : "text-gray-600")}>{patient.birthDate}</td>
+                    <td className={clsx("px-4 py-4 text-sm font-medium", isWithdrawn(patient) ? "text-gray-400" : "text-gray-600")}>{patient.phone}</td>
+                    <td className={clsx("px-4 py-4 text-sm", isWithdrawn(patient) ? "text-gray-400" : "text-gray-600")}>{patient.gender}</td>
+                    <td className={clsx("px-4 py-4 text-center text-sm font-bold", isWithdrawn(patient) ? "text-gray-400" : "text-gray-900")}>{patient.prescriptionCount}건</td>
                     <td className="px-4 py-4 text-sm text-gray-600">
                       <div className="flex flex-wrap gap-1">
-                        {patient.medicationStatus === '미실시' ? (
+                        {isWithdrawn(patient) ? (
+                          <span className="px-2 py-0.5 rounded-lg text-xs bg-gray-100 text-gray-400 font-medium">
+                            —
+                          </span>
+                        ) : patient.medicationStatus === '미실시' ? (
                           <span className="px-2 py-0.5 rounded-lg text-xs bg-gray-100 text-gray-500 font-medium">
                             미실시
                           </span>
@@ -237,7 +248,9 @@ export const PatientList: React.FC<PatientListProps> = ({ onPatientClick }) => {
                     </td>
                     <td className="px-4 py-4 text-center">
                       <div className="flex flex-col items-center">
-                        {(patient.adherenceRate === 20 || patient.adherenceRate === 40) ? (
+                        {isWithdrawn(patient) ? (
+                          <span className="text-xs font-medium text-gray-400">—</span>
+                        ) : (patient.adherenceRate === 20 || patient.adherenceRate === 40) ? (
                           <span className="text-sm font-medium text-gray-400">기록 없음</span>
                         ) : (
                           <span className={clsx(
