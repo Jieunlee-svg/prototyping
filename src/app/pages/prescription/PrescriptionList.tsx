@@ -24,7 +24,7 @@ const BASE_PRESCRIPTIONS: Prescription[] = [
   { id: 'RX-001', source: 'app_camera',  patientName: '김철수', birthDate: '1980-01-01', phone: '010-1234-5678', gender: '남성', hospitalName: '확인 안됨',        diseaseCode: 'J20.9', status: 'received',  deliveryMethod: '본인 방문', isConsentSubstitute: true, isMember: true,  receivedAt: '2026-03-12 14:30', imageUrl: prescriptionImage },
   { id: 'RX-002', source: 'app_camera',  patientName: '박지민', birthDate: '2015-05-05', phone: '010-3333-7777', gender: '여성', hospitalName: '확인 안됨',        diseaseCode: 'J30.4', status: 'received',  deliveryMethod: '본인 방문', isConsentSubstitute: true, isMember: false, receivedAt: '2026-03-12 13:45', imageUrl: prescriptionImage },
   { id: 'RX-003', source: 'app_camera',  patientName: '정수정', birthDate: '1998-07-07', phone: '010-6666-2222', gender: '여성', hospitalName: '확인 안됨',        diseaseCode: 'F41.0', status: 'completed', deliveryMethod: '본인 방문', isConsentSubstitute: true, isMember: true,  receivedAt: '2026-03-12 10:10', imageUrl: prescriptionImage },
-  { id: 'RX-004', source: 'fax_telemed', patientName: '이영희', birthDate: '1992-03-15', phone: '010-9876-5432', gender: '여성', hospitalName: '굿닥터이비인후과', diseaseCode: 'J00',   status: 'received',  deliveryMethod: '가족 방문', isConsentSubstitute: true, isMember: true,  receivedAt: '2026-03-12 14:15', imageUrl: prescriptionImage },
+  { id: 'RX-004', patientId: '11', source: 'fax_telemed', patientName: '스프린트십칠탈퇴', birthDate: '1992-03-15', phone: '010-9876-5432', gender: '여성', hospitalName: '굿닥터이비인후과', diseaseCode: 'J00',   status: 'received',  deliveryMethod: '가족 방문', isConsentSubstitute: true, isMember: true,  receivedAt: '2026-03-12 14:15', imageUrl: prescriptionImage },
   { id: 'RX-005', source: 'fax_telemed', patientName: '최민수', birthDate: '1975-12-12', phone: '010-5555-1111', gender: '남성', hospitalName: '서울대병원',       diseaseCode: 'E11.9', status: 'cancelled', deliveryMethod: '택배',     isConsentSubstitute: true, isMember: false, receivedAt: '2026-03-12 11:20', imageUrl: prescriptionImage },
   { id: 'RX-006', source: 'fax_telemed', patientName: '김하준', birthDate: '1990-02-14', phone: '010-2222-8888', gender: '남성', hospitalName: '강북삼성병원',     diseaseCode: 'J06.9', status: 'received',  deliveryMethod: '본인 방문', isConsentSubstitute: true, isMember: true,  receivedAt: '2026-03-12 10:50', imageUrl: prescriptionImage },
   { id: 'RX-007', source: 'fax_telemed', patientName: '한지수', birthDate: '2001-03-20', phone: '010-4444-9999', gender: '여성', hospitalName: '연세세브란스병원', diseaseCode: 'I10',   status: 'received',  deliveryMethod: '퀵',       isConsentSubstitute: true, isMember: true,  receivedAt: '2026-03-12 09:50', imageUrl: prescriptionImage },
@@ -305,7 +305,7 @@ export const PrescriptionList: React.FC<{ onOpenSettings?: () => void; onPatient
         </td>
         <td className={tdB}>
           <button
-            onClick={() => onPatientClick?.(p.id)}
+            onClick={() => onPatientClick?.(p.patientId || p.id)}
             className="text-blue-600 hover:underline font-medium focus:outline-none"
           >
             {p.patientName}

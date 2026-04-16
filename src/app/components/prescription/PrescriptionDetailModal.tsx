@@ -18,6 +18,7 @@ export type PrescriptionSource = 'app_camera' | 'fax_telemed' | 'kiosk';
 
 export interface Prescription {
   id: string;
+  patientId?: string;
   source: PrescriptionSource;
   patientName: string;
   birthDate: string;
