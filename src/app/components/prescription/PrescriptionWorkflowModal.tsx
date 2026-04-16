@@ -22,10 +22,51 @@ interface DrugItem {
   id: string;
   name: string;
   category: string;
+  imageUrl?: string;
   dosageAmount: number;   // "1회 N정" 의 N
   frequencyCount: number; // "하루 N회" 의 N
   days: number;
 }
+
+// ── Drug Database (Mock) ───────────────────────────────────────────────
+interface DrugDBItem {
+  name: string;
+  category: string;
+  imageUrl: string;
+}
+
+const DRUG_DATABASE: DrugDBItem[] = [
+  { name: '메트포르민 500mg', category: '혈당강하제', imageUrl: 'https://nedrug.mfds.go.kr/pbp/cmn/itemImageDownload/1NOwjjZaBL5' },
+  { name: '메트포르민 1000mg', category: '혈당강하제', imageUrl: 'https://nedrug.mfds.go.kr/pbp/cmn/itemImageDownload/1NOwjjZaBL5' },
+  { name: '메트포르민 서방정 500mg', category: '혈당강하제', imageUrl: 'https://nedrug.mfds.go.kr/pbp/cmn/itemImageDownload/1NOwjjZaBL5' },
+  { name: '메트포르민 서방정 750mg', category: '혈당강하제', imageUrl: 'https://nedrug.mfds.go.kr/pbp/cmn/itemImageDownload/1NOwjjZaBL5' },
+  { name: '글리메피리드 1mg', category: '인슐린 분비 촉진제', imageUrl: 'https://nedrug.mfds.go.kr/pbp/cmn/itemImageDownload/147428135736200037' },
+  { name: '글리메피리드 2mg', category: '인슐린 분비 촉진제', imageUrl: 'https://nedrug.mfds.go.kr/pbp/cmn/itemImageDownload/147428135736200037' },
+  { name: '글리메피리드 4mg', category: '인슐린 분비 촉진제', imageUrl: 'https://nedrug.mfds.go.kr/pbp/cmn/itemImageDownload/147428135736200037' },
+  { name: '로수바스타틴 5mg', category: '고지혈증약', imageUrl: 'https://nedrug.mfds.go.kr/pbp/cmn/itemImageDownload/1MwJhx0LQWM' },
+  { name: '로수바스타틴 10mg', category: '고지혈증약', imageUrl: 'https://nedrug.mfds.go.kr/pbp/cmn/itemImageDownload/1MwJhx0LQWM' },
+  { name: '로수바스타틴 20mg', category: '고지혈증약', imageUrl: 'https://nedrug.mfds.go.kr/pbp/cmn/itemImageDownload/1MwJhx0LQWM' },
+  { name: '오메프라졸 10mg', category: '위산분비억제제', imageUrl: 'https://nedrug.mfds.go.kr/pbp/cmn/itemImageDownload/1Nowtfg3hQ5' },
+  { name: '오메프라졸 20mg', category: '위산분비억제제', imageUrl: 'https://nedrug.mfds.go.kr/pbp/cmn/itemImageDownload/1Nowtfg3hQ5' },
+  { name: '오메프라졸 40mg', category: '위산분비억제제', imageUrl: 'https://nedrug.mfds.go.kr/pbp/cmn/itemImageDownload/1Nowtfg3hQ5' },
+  { name: '아토르바스타틴 10mg', category: '고지혈증약', imageUrl: 'https://nedrug.mfds.go.kr/pbp/cmn/itemImageDownload/1Mximr2PVSS' },
+  { name: '아토르바스타틴 20mg', category: '고지혈증약', imageUrl: 'https://nedrug.mfds.go.kr/pbp/cmn/itemImageDownload/1Mximr2PVSS' },
+  { name: '아토르바스타틴 40mg', category: '고지혈증약', imageUrl: 'https://nedrug.mfds.go.kr/pbp/cmn/itemImageDownload/1Mximr2PVSS' },
+  { name: '아스피린 100mg', category: '해열진통소염제', imageUrl: 'https://nedrug.mfds.go.kr/pbp/cmn/itemImageDownload/1MOsM_7uj12' },
+  { name: '아스피린프로텍트 100mg', category: '해열진통소염제', imageUrl: 'https://nedrug.mfds.go.kr/pbp/cmn/itemImageDownload/1MOsM_7uj12' },
+  { name: '암로디핀 5mg', category: '고혈압약', imageUrl: 'https://nedrug.mfds.go.kr/pbp/cmn/itemImageDownload/1N2vP5XPTMO' },
+  { name: '암로디핀 10mg', category: '고혈압약', imageUrl: 'https://nedrug.mfds.go.kr/pbp/cmn/itemImageDownload/1N2vP5XPTMO' },
+  { name: '제미메트서방정 25/500mg', category: '혈당강하제', imageUrl: 'https://nedrug.mfds.go.kr/pbp/cmn/itemImageDownload/1NjAuGS06Eu' },
+  { name: '제미메트서방정 25/750mg', category: '혈당강하제', imageUrl: 'https://nedrug.mfds.go.kr/pbp/cmn/itemImageDownload/1NjAuGS06Eu' },
+  { name: '제미메트서방정 25/1000mg', category: '혈당강하제', imageUrl: 'https://nedrug.mfds.go.kr/pbp/cmn/itemImageDownload/1NjAuGS06Eu' },
+  { name: '텔미사르탄 40mg', category: '고혈압약', imageUrl: 'https://nedrug.mfds.go.kr/pbp/cmn/itemImageDownload/1MvyTTzg7o7' },
+  { name: '텔미사르탄 80mg', category: '고혈압약', imageUrl: 'https://nedrug.mfds.go.kr/pbp/cmn/itemImageDownload/1MvyTTzg7o7' },
+  { name: '판토프라졸 20mg', category: '위산분비억제제', imageUrl: 'https://nedrug.mfds.go.kr/pbp/cmn/itemImageDownload/1Nowtfg3hQ5' },
+  { name: '판토프라졸 40mg', category: '위산분비억제제', imageUrl: 'https://nedrug.mfds.go.kr/pbp/cmn/itemImageDownload/1Nowtfg3hQ5' },
+  { name: '리나글립틴 5mg', category: '혈당강하제', imageUrl: 'https://nedrug.mfds.go.kr/pbp/cmn/itemImageDownload/1NOwjjZaBL5' },
+  { name: '세티리진 10mg', category: '항히스타민제', imageUrl: 'https://nedrug.mfds.go.kr/pbp/cmn/itemImageDownload/1MOsM_7uj12' },
+  { name: '클로피도그렐 75mg', category: '항혈소판제', imageUrl: 'https://nedrug.mfds.go.kr/pbp/cmn/itemImageDownload/1Mximr2PVSS' },
+];
 
 // ── Constants ──────────────────────────────────────────────────────────
 
@@ -36,10 +77,10 @@ const FREQUENCY_DEFAULTS: Record<number, { times: string[]; relation: string }> 
 };
 
 const INITIAL_DRUGS: DrugItem[] = [
-  { id: '1', name: '메트포르민 500mg',   category: '', dosageAmount: 1, frequencyCount: 3, days: 30 },
-  { id: '2', name: '글리메피리드 2mg',   category: '', dosageAmount: 1, frequencyCount: 1, days: 30 },
-  { id: '3', name: '로수바스타틴 10mg',  category: '', dosageAmount: 1, frequencyCount: 1, days: 30 },
-  { id: '4', name: '오메프라졸 20mg',    category: '', dosageAmount: 1, frequencyCount: 1, days: 30 },
+  { id: '1', name: '메트포르민 500mg',   category: '혈당강하제', imageUrl: 'https://nedrug.mfds.go.kr/pbp/cmn/itemImageDownload/1NOwjjZaBL5', dosageAmount: 1, frequencyCount: 3, days: 30 },
+  { id: '2', name: '글리메피리드 2mg',   category: '인슐린 분비 촉진제', imageUrl: 'https://nedrug.mfds.go.kr/pbp/cmn/itemImageDownload/147428135736200037', dosageAmount: 1, frequencyCount: 1, days: 30 },
+  { id: '3', name: '로수바스타틴 10mg',  category: '고지혈증약', imageUrl: 'https://nedrug.mfds.go.kr/pbp/cmn/itemImageDownload/1MwJhx0LQWM', dosageAmount: 1, frequencyCount: 1, days: 30 },
+  { id: '4', name: '오메프라졸 20mg',    category: '위산분비억제제', imageUrl: 'https://nedrug.mfds.go.kr/pbp/cmn/itemImageDownload/1Nowtfg3hQ5', dosageAmount: 1, frequencyCount: 1, days: 30 },
 ];
 
 const OCR_SMART_TAGS: string[] = [
@@ -147,6 +188,35 @@ export const PrescriptionWorkflowModal: React.FC<PrescriptionWorkflowModalProps>
   const [drugs, setDrugs] = useState<DrugItem[]>(INITIAL_DRUGS);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editingDraft, setEditingDraft] = useState<DrugItem | null>(null);
+  const [drugSearchQuery, setDrugSearchQuery] = useState('');
+  const [drugSearchResults, setDrugSearchResults] = useState<DrugDBItem[]>([]);
+  const [showDrugSearch, setShowDrugSearch] = useState(false);
+  const drugSearchRef = useRef<HTMLInputElement>(null);
+  const drugSearchDropRef = useRef<HTMLDivElement>(null);
+
+  // Drug search logic
+  useEffect(() => {
+    const q = drugSearchQuery.trim();
+    if (!q) {
+      setDrugSearchResults([]);
+      return;
+    }
+    const results = DRUG_DATABASE.filter(d =>
+      d.name.toLowerCase().includes(q.toLowerCase())
+    );
+    setDrugSearchResults(results);
+  }, [drugSearchQuery]);
+
+  // Close drug search dropdown on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (drugSearchDropRef.current && !drugSearchDropRef.current.contains(e.target as Node)) {
+        setShowDrugSearch(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
 
   // ── STEP 2: Customer search + phone
   const [customerQuery, setCustomerQuery] = useState('');
@@ -267,18 +337,56 @@ export const PrescriptionWorkflowModal: React.FC<PrescriptionWorkflowModalProps>
   };
 
   // ── Drug edit handlers
-  const startEdit = (drug: DrugItem) => { setEditingId(drug.id); setEditingDraft({ ...drug }); };
-  const cancelEdit = () => { setEditingId(null); setEditingDraft(null); };
+  const startEdit = (drug: DrugItem) => {
+    setEditingId(drug.id);
+    setEditingDraft({ ...drug });
+    setDrugSearchQuery('');
+    setDrugSearchResults([]);
+    setShowDrugSearch(false);
+    setTimeout(() => drugSearchRef.current?.focus(), 100);
+  };
+  const cancelEdit = () => {
+    // If adding a new drug and canceling before selecting, remove the empty row
+    if (editingDraft && !editingDraft.name) {
+      setDrugs(prev => prev.filter(d => d.id !== editingDraft.id));
+    }
+    setEditingId(null);
+    setEditingDraft(null);
+    setDrugSearchQuery('');
+    setDrugSearchResults([]);
+    setShowDrugSearch(false);
+  };
   const saveEdit = () => {
-    if (!editingDraft) return;
+    if (!editingDraft || !editingDraft.name) return;
     setDrugs(prev => prev.map(d => d.id === editingDraft.id ? editingDraft : d));
-    setEditingId(null); setEditingDraft(null);
+    setEditingId(null);
+    setEditingDraft(null);
+    setDrugSearchQuery('');
+    setDrugSearchResults([]);
+    setShowDrugSearch(false);
+  };
+  const selectDrugFromSearch = (dbDrug: DrugDBItem) => {
+    if (!editingDraft) return;
+    setEditingDraft({
+      ...editingDraft,
+      name: dbDrug.name,
+      category: dbDrug.category,
+      imageUrl: dbDrug.imageUrl,
+    });
+    setDrugSearchQuery('');
+    setDrugSearchResults([]);
+    setShowDrugSearch(false);
   };
   const deleteDrug = (id: string) => setDrugs(prev => prev.filter(d => d.id !== id));
   const addDrug = () => {
     const newDrug: DrugItem = { id: Date.now().toString(), name: '', category: '', dosageAmount: 1, frequencyCount: 1, days: 30 };
     setDrugs(prev => [...prev, newDrug]);
-    startEdit(newDrug);
+    setEditingId(newDrug.id);
+    setEditingDraft({ ...newDrug });
+    setDrugSearchQuery('');
+    setDrugSearchResults([]);
+    setShowDrugSearch(true);
+    setTimeout(() => drugSearchRef.current?.focus(), 100);
   };
 
   // ── Tag toggle
@@ -452,41 +560,149 @@ export const PrescriptionWorkflowModal: React.FC<PrescriptionWorkflowModalProps>
                       <div key={drug.id} className="border border-gray-100 rounded-lg overflow-hidden">
                         {editingId === drug.id && editingDraft ? (
                           /* 편집 모드 */
-                          <div className="p-3 bg-blue-50 space-y-3">
+                          <div className="p-3 bg-blue-50 space-y-3" ref={drugSearchDropRef}>
                             <div className="grid grid-cols-1 gap-2">
                               <div>
-                                <label className="text-[10px] text-gray-500 font-semibold mb-1 block">약품명</label>
-                                <input autoFocus value={editingDraft.name} onChange={e => setEditingDraft({ ...editingDraft, name: e.target.value })} className="w-full text-xs px-2 py-1.5 border border-blue-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-300 bg-white" placeholder="약품명" />
+                                <label className="text-[10px] text-gray-500 font-semibold mb-1 block">약품 검색</label>
+                                {/* 선택된 약이 있으면 선택 정보 표시 */}
+                                {editingDraft.name ? (
+                                  <div className="flex items-center gap-2.5 px-2.5 py-2 bg-white border border-blue-200 rounded-md">
+                                    {editingDraft.imageUrl && (
+                                      <img
+                                        src={editingDraft.imageUrl}
+                                        alt={editingDraft.name}
+                                        className="w-9 h-9 rounded-md object-cover border border-gray-100 flex-shrink-0"
+                                        onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                                      />
+                                    )}
+                                    <div className="flex-1 min-w-0">
+                                      <div className="text-xs font-semibold text-gray-900 truncate">{editingDraft.name}</div>
+                                      {editingDraft.category && (
+                                        <div className="text-[10px] text-gray-400">{editingDraft.category}</div>
+                                      )}
+                                    </div>
+                                    <button
+                                      onClick={() => {
+                                        setEditingDraft({ ...editingDraft, name: '', category: '', imageUrl: undefined });
+                                        setShowDrugSearch(true);
+                                        setTimeout(() => drugSearchRef.current?.focus(), 50);
+                                      }}
+                                      className="p-1 rounded hover:bg-gray-100 text-gray-400 hover:text-gray-600 transition-colors focus:outline-none"
+                                      aria-label="약품 변경"
+                                    >
+                                      <Pencil className="w-3 h-3" />
+                                    </button>
+                                  </div>
+                                ) : (
+                                  /* 검색 입력 영역 */
+                                  <div>
+                                    <div className="relative">
+                                      <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
+                                      <input
+                                        ref={drugSearchRef}
+                                        autoFocus
+                                        value={drugSearchQuery}
+                                        onChange={e => {
+                                          setDrugSearchQuery(e.target.value);
+                                          setShowDrugSearch(true);
+                                        }}
+                                        onFocus={() => { if (drugSearchQuery.trim()) setShowDrugSearch(true); }}
+                                        className="w-full text-xs pl-8 pr-3 py-2 border border-blue-200 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-300 bg-white"
+                                        placeholder="약품명을 검색하세요"
+                                      />
+                                    </div>
+
+                                    {/* 검색 결과 목록 (인라인) */}
+                                    {drugSearchQuery.trim() && (
+                                      <div className="mt-2 bg-white border border-gray-200 rounded-xl overflow-hidden">
+                                        {/* 검색 결과 건수 헤더 */}
+                                        <div className="px-3 py-2 border-b border-gray-100 bg-gray-50">
+                                          <span className="text-[11px] text-gray-500 font-medium">
+                                            검색 결과 총 <span className="font-bold text-blue-600">{drugSearchResults.length}</span>건
+                                          </span>
+                                        </div>
+
+                                        {drugSearchResults.length === 0 ? (
+                                          <div className="px-4 py-6 text-center">
+                                            <Pill className="w-6 h-6 text-gray-300 mx-auto mb-2" />
+                                            <p className="text-xs text-gray-400">검색 결과가 없습니다.</p>
+                                          </div>
+                                        ) : (
+                                          <div className="max-h-[220px] overflow-y-auto">
+                                            {drugSearchResults.map((result, rIdx) => (
+                                              <button
+                                                key={rIdx}
+                                                onClick={() => selectDrugFromSearch(result)}
+                                                className="w-full flex items-center gap-3 px-3 py-2.5 hover:bg-blue-50 transition-colors text-left border-b border-gray-100 last:border-b-0 focus:outline-none focus:bg-blue-50 active:scale-[0.98]"
+                                              >
+                                                <div className="w-11 h-11 rounded-lg border border-gray-100 flex-shrink-0 bg-gray-50 overflow-hidden flex items-center justify-center">
+                                                  <img
+                                                    src={result.imageUrl}
+                                                    alt={result.name}
+                                                    className="w-full h-full object-cover"
+                                                    onError={e => {
+                                                      const img = e.target as HTMLImageElement;
+                                                      img.style.display = 'none';
+                                                      (img.parentElement as HTMLElement).innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="text-gray-300"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>';
+                                                    }}
+                                                  />
+                                                </div>
+                                                <div className="flex-1 min-w-0">
+                                                  <div className="text-xs font-semibold text-gray-900 truncate">{result.name}</div>
+                                                  <div className="text-[10px] text-gray-400 mt-0.5">{result.category}</div>
+                                                </div>
+                                                <ChevronRight className="w-3.5 h-3.5 text-gray-300 flex-shrink-0" />
+                                              </button>
+                                            ))}
+                                          </div>
+                                        )}
+                                      </div>
+                                    )}
+                                  </div>
+                                )}
                               </div>
                             </div>
-                            <div className="flex items-center gap-4">
-                              {/* 용량: 1회 N정 — N만 수정 */}
-                              <div className="flex items-center gap-1.5">
-                                <label className="text-[10px] text-gray-500 font-semibold whitespace-nowrap">용량</label>
-                                <span className="text-xs text-gray-500">1회</span>
-                                <NumberInput value={editingDraft.dosageAmount} onChange={v => setEditingDraft({ ...editingDraft, dosageAmount: v })} />
-                                <span className="text-xs text-gray-500">정</span>
+
+                            {/* 용량/횟수/일수 — 약품이 선택된 후에만 표시 */}
+                            {editingDraft.name && (
+                              <>
+                                <div className="flex items-center gap-4">
+                                  {/* 용량: 1회 N정 — N만 수정 */}
+                                  <div className="flex items-center gap-1.5">
+                                    <label className="text-[10px] text-gray-500 font-semibold whitespace-nowrap">용량</label>
+                                    <span className="text-xs text-gray-500">1회</span>
+                                    <NumberInput value={editingDraft.dosageAmount} onChange={v => setEditingDraft({ ...editingDraft, dosageAmount: v })} />
+                                    <span className="text-xs text-gray-500">정</span>
+                                  </div>
+                                  {/* 횟수: 하루 N회 — N만 수정 */}
+                                  <div className="flex items-center gap-1.5">
+                                    <label className="text-[10px] text-gray-500 font-semibold whitespace-nowrap">횟수</label>
+                                    <span className="text-xs text-gray-500">하루</span>
+                                    <NumberInput value={editingDraft.frequencyCount} onChange={v => setEditingDraft({ ...editingDraft, frequencyCount: v })} />
+                                    <span className="text-xs text-gray-500">회</span>
+                                  </div>
+                                  {/* 조제일수 */}
+                                  <div className="flex items-center gap-1.5 ml-auto">
+                                    <label className="text-[10px] text-gray-500 font-semibold whitespace-nowrap">일수</label>
+                                    <NumberInput value={editingDraft.days} onChange={v => setEditingDraft({ ...editingDraft, days: v })} min={1} max={365} className="w-12" />
+                                    <span className="text-xs text-gray-500">일</span>
+                                  </div>
+                                </div>
+                                <div className="flex justify-end gap-1.5">
+                                  <button onClick={cancelEdit} className="px-3 py-1.5 text-xs border border-gray-200 rounded-md hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300">취소</button>
+                                  <button onClick={saveEdit} className="px-3 py-1.5 text-xs bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors flex items-center gap-1 focus:outline-none focus:ring-2 focus:ring-blue-300">
+                                    <Check className="w-3 h-3" />저장
+                                  </button>
+                                </div>
+                              </>
+                            )}
+
+                            {/* 약품 미선택 시 취소 버튼만 */}
+                            {!editingDraft.name && (
+                              <div className="flex justify-end">
+                                <button onClick={cancelEdit} className="px-3 py-1.5 text-xs border border-gray-200 rounded-md hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300">취소</button>
                               </div>
-                              {/* 횟수: 하루 N회 — N만 수정 */}
-                              <div className="flex items-center gap-1.5">
-                                <label className="text-[10px] text-gray-500 font-semibold whitespace-nowrap">횟수</label>
-                                <span className="text-xs text-gray-500">하루</span>
-                                <NumberInput value={editingDraft.frequencyCount} onChange={v => setEditingDraft({ ...editingDraft, frequencyCount: v })} />
-                                <span className="text-xs text-gray-500">회</span>
-                              </div>
-                              {/* 조제일수 */}
-                              <div className="flex items-center gap-1.5 ml-auto">
-                                <label className="text-[10px] text-gray-500 font-semibold whitespace-nowrap">일수</label>
-                                <NumberInput value={editingDraft.days} onChange={v => setEditingDraft({ ...editingDraft, days: v })} min={1} max={365} className="w-12" />
-                                <span className="text-xs text-gray-500">일</span>
-                              </div>
-                            </div>
-                            <div className="flex justify-end gap-1.5">
-                              <button onClick={cancelEdit} className="px-3 py-1.5 text-xs border border-gray-200 rounded-md hover:bg-gray-100 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300">취소</button>
-                              <button onClick={saveEdit} className="px-3 py-1.5 text-xs bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors flex items-center gap-1 focus:outline-none focus:ring-2 focus:ring-blue-300">
-                                <Check className="w-3 h-3" />저장
-                              </button>
-                            </div>
+                            )}
                           </div>
                         ) : (
                           /* 읽기 모드 */
@@ -495,7 +711,7 @@ export const PrescriptionWorkflowModal: React.FC<PrescriptionWorkflowModalProps>
                             <div className="flex-1 min-w-0">
                               <div className="text-[13px] font-semibold text-gray-900 truncate">{drug.name || '(약품명 없음)'}</div>
                               <div className="text-[11px] text-gray-400 mt-0.5">
-                                1회 {drug.dosageAmount}정, 하루 {drug.frequencyCount}회
+                                {drug.category ? `${drug.category} · ` : ''}1회 {drug.dosageAmount}정, 하루 {drug.frequencyCount}회
                               </div>
                             </div>
                             <span className="bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full text-[11px] font-bold flex-shrink-0">{drug.days}일분</span>
