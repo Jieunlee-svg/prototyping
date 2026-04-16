@@ -15,6 +15,7 @@ import {
 import { TelemedPrescriptionDetail } from '../../components/prescription/TelemedPrescriptionDetail';
 import { CancelReasonModal } from '../../components/prescription/CancelReasonModal';
 import { CompleteConfirmModal } from '../../components/prescription/CompleteConfirmModal';
+import { PrescriptionImageModal } from '../../components/prescription/PrescriptionImageModal';
 
 // ── Mock Data ──────────────────────────────────────────────────────────
 const prescriptionImage = 'https://placehold.co/400x560/e2e8f0/64748b?text=처방전';
@@ -86,6 +87,7 @@ export const PrescriptionList: React.FC<{ onOpenSettings?: () => void; onPatient
     },
   });
   const [selectedConsultation, setSelectedConsultation] = useState<ConsultationData | null>(null);
+  const [imagePrescription, setImagePrescription] = useState<Prescription | null>(null);
   const [openStatusDropdown, setOpenStatusDropdown] = useState<string | null>(null);
   const [showStatusTooltip, setShowStatusTooltip] = useState(false);
   const [tooltipPos, setTooltipPos] = useState({ top: 0, left: 0 });
@@ -324,7 +326,12 @@ export const PrescriptionList: React.FC<{ onOpenSettings?: () => void; onPatient
                 {getSourceLabel(p.source)}
               </button>
             ) : (
-              <span className="text-xs font-medium text-gray-700">{getSourceLabel(p.source)}</span>
+              <button
+                onClick={() => setImagePrescription(p)}
+                className="text-xs font-semibold text-blue-600 hover:underline focus:outline-none"
+              >
+                {getSourceLabel(p.source)}
+              </button>
             )}
           </div>
         </td>
@@ -528,6 +535,19 @@ export const PrescriptionList: React.FC<{ onOpenSettings?: () => void; onPatient
         <CancelReasonModal
           onConfirm={confirmCancel}
           onClose={() => setCancelTargetId(null)}
+        />
+      )}
+
+      {imagePrescription && (
+        <PrescriptionImageModal
+          imageUrl={imagePrescription.imageUrl}
+          patientName={imagePrescription.patientName}
+          receivedAt={imagePrescription.receivedAt}
+          hospitalName={imagePrescription.hospitalName}
+          status={imagePrescription.status}
+          statusLabel={STATUS_LABEL[imagePrescription.status].label}
+          source={imagePrescription.source}
+          onClose={() => setImagePrescription(null)}
         />
       )}
 

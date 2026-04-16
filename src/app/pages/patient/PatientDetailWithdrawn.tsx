@@ -42,6 +42,7 @@ import {
   PrescriptionSource
 } from '../../components/prescription/PrescriptionDetailModal';
 import { TelemedPrescriptionDetail } from '../../components/prescription/TelemedPrescriptionDetail';
+import { PrescriptionImageModal } from '../../components/prescription/PrescriptionImageModal';
 
 const MOCK_PRESCRIPTIONS: Prescription[] = [
   { id: 'RX-W-003', receivedAt: '2026-03-16 16:45', source: 'fax_telemed', status: 'completed', hospitalName: '연세세브란스',    patientName: '십칠스프린트탈퇴', birthDate: '1987-03-12', phone: '010-1234-5678', diseaseCode: 'I10', isConsentSubstitute: true, deliveryMethod: '가족 방문' },
@@ -82,6 +83,7 @@ export const PatientDetailWithdrawn: React.FC<PatientDetailProps> = ({ onBack, p
   const [statusFilter, setStatusFilter] = useState<'all' | PrescriptionStatus>('all');
 
   const [selectedConsultation, setSelectedConsultation] = useState<ConsultationData | null>(null);
+  const [imagePrescription, setImagePrescription] = useState<Prescription | null>(null);
   const sentIds = new Set(['RX-W-003', 'RX-W-002', 'RX-W-001']);
   const sentConsultations: Record<string, ConsultationData> = {
     'RX-W-003': {
@@ -273,7 +275,16 @@ export const PatientDetailWithdrawn: React.FC<PatientDetailProps> = ({ onBack, p
                             )}>
                               {getSourceIcon(rx.source)}
                             </span>
-                            <span className="text-xs font-medium text-gray-400">{getSourceLabel(rx.source)}</span>
+                            {rx.source === 'app_camera' ? (
+                              <button
+                                onClick={() => setImagePrescription(rx)}
+                                className="text-xs font-semibold text-blue-500 hover:underline focus:outline-none"
+                              >
+                                {getSourceLabel(rx.source)}
+                              </button>
+                            ) : (
+                              <span className="text-xs font-medium text-gray-400">{getSourceLabel(rx.source)}</span>
+                            )}
                           </div>
                         </td>
                         <td className="px-4 py-4 whitespace-nowrap text-sm text-gray-400">
@@ -331,6 +342,19 @@ export const PatientDetailWithdrawn: React.FC<PatientDetailProps> = ({ onBack, p
         <ConsultationDetailModal
           data={selectedConsultation}
           onClose={() => setSelectedConsultation(null)}
+        />
+      )}
+
+      {imagePrescription && (
+        <PrescriptionImageModal
+          imageUrl={imagePrescription.imageUrl}
+          patientName={imagePrescription.patientName}
+          receivedAt={imagePrescription.receivedAt}
+          hospitalName={imagePrescription.hospitalName}
+          status={imagePrescription.status}
+          statusLabel={STATUS_LABEL[imagePrescription.status].label}
+          source={imagePrescription.source}
+          onClose={() => setImagePrescription(null)}
         />
       )}
     </div>

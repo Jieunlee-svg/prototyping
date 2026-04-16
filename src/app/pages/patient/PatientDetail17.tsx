@@ -41,6 +41,7 @@ import { PatientEditModal } from '../../components/patient/PatientEditModal';
 import { TelemedPrescriptionDetail } from '../../components/prescription/TelemedPrescriptionDetail';
 import { CancelReasonModal } from '../../components/prescription/CancelReasonModal';
 import { CompleteConfirmModal } from '../../components/prescription/CompleteConfirmModal';
+import { PrescriptionImageModal } from '../../components/prescription/PrescriptionImageModal';
 
 const StatusToast: React.FC<{ message: string; onDone: () => void }> = ({ message, onDone }) => {
   React.useEffect(() => { const t = setTimeout(onDone, 3000); return () => clearTimeout(t); }, [onDone]);
@@ -101,6 +102,7 @@ export const PatientDetail17: React.FC<PatientDetailProps> = ({ onBack, patientI
   const [prescriptions, setPrescriptions] = useState<Prescription[]>(MOCK_PRESCRIPTIONS);
   const [selectedPrescription, setSelectedPrescription] = useState<Prescription | null>(null);
   const [telemedPrescription, setTelemedPrescription] = useState<Prescription | null>(null);
+  const [imagePrescription, setImagePrescription] = useState<Prescription | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   // Filters
@@ -367,7 +369,12 @@ export const PatientDetail17: React.FC<PatientDetailProps> = ({ onBack, patientI
                                 {getSourceLabel(rx.source)}
                               </button>
                             ) : (
-                              <span className="text-xs font-medium text-gray-600">{getSourceLabel(rx.source)}</span>
+                              <button
+                                onClick={() => setImagePrescription(rx)}
+                                className="text-xs font-semibold text-blue-600 hover:underline focus:outline-none"
+                              >
+                                {getSourceLabel(rx.source)}
+                              </button>
                             )}
                           </div>
                         </td>
@@ -495,6 +502,19 @@ export const PatientDetail17: React.FC<PatientDetailProps> = ({ onBack, patientI
         <CompleteConfirmModal
           onConfirm={confirmComplete}
           onClose={() => setCompleteTargetId(null)}
+        />
+      )}
+
+      {imagePrescription && (
+        <PrescriptionImageModal
+          imageUrl={imagePrescription.imageUrl}
+          patientName={imagePrescription.patientName}
+          receivedAt={imagePrescription.receivedAt}
+          hospitalName={imagePrescription.hospitalName}
+          status={imagePrescription.status}
+          statusLabel={STATUS_LABEL[imagePrescription.status].label}
+          source={imagePrescription.source}
+          onClose={() => setImagePrescription(null)}
         />
       )}
     </div>
