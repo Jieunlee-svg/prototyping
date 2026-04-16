@@ -283,7 +283,12 @@ export const PatientDetailWithdrawn: React.FC<PatientDetailProps> = ({ onBack, p
                                 {getSourceLabel(rx.source)}
                               </button>
                             ) : (
-                              <span className="text-xs font-medium text-gray-400">{getSourceLabel(rx.source)}</span>
+                              <button
+                                onClick={() => setTelemedPrescription(rx)}
+                                className="text-xs font-semibold text-purple-500 hover:underline focus:outline-none"
+                              >
+                                {getSourceLabel(rx.source)}
+                              </button>
                             )}
                           </div>
                         </td>
