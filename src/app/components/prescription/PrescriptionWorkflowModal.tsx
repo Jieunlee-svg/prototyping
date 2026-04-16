@@ -649,7 +649,6 @@ export const PrescriptionWorkflowModal: React.FC<PrescriptionWorkflowModalProps>
                                                 </div>
                                                 <div className="flex-1 min-w-0">
                                                   <div className="text-xs font-semibold text-gray-900 truncate">{result.name}</div>
-                                                  <div className="text-[10px] text-gray-400 mt-0.5">{result.category}</div>
                                                 </div>
                                                 <ChevronRight className="w-3.5 h-3.5 text-gray-300 flex-shrink-0" />
                                               </button>
