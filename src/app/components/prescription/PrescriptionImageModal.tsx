@@ -6,6 +6,7 @@ import {
   Eye,
   EyeOff,
   ImageOff,
+  Ban,
 } from 'lucide-react';
 import type { Prescription } from './PrescriptionDetailModal';
 
@@ -21,12 +22,14 @@ const SectionTitle: React.FC<{ children: React.ReactNode }> = ({ children }) => 
 interface PrescriptionImageModalProps {
   prescription: Prescription;
   onClose: () => void;
+  readOnly?: boolean;
 }
 
 /* ─── 메인 컴포넌트 ────────────────────────────────────────────────────── */
 export const PrescriptionImageModal: React.FC<PrescriptionImageModalProps> = ({
   prescription,
   onClose,
+  readOnly = false,
 }) => {
   const [showRrn, setShowRrn] = useState(false);
   const [imageError, setImageError] = useState(false);
@@ -83,11 +86,22 @@ export const PrescriptionImageModal: React.FC<PrescriptionImageModalProps> = ({
 
         <h1 className="text-lg font-bold text-gray-900 absolute left-1/2 -translate-x-1/2">
           처방전 상세 조회
+          {readOnly && <span className="ml-2 text-xs font-medium text-gray-400">(조회 전용)</span>}
         </h1>
 
         {/* 우측 — 빈 공간 (비대면 진료와 달리 결제/취소/완료 버튼 없음) */}
         <div className="w-32" />
       </div>
+
+      {/* 조회 전용 경고 배너 */}
+      {readOnly && (
+        <div className="mx-6 mt-4 px-5 py-3 bg-amber-50 border border-amber-200 rounded-xl flex items-center gap-3">
+          <Ban size={16} className="text-amber-500 flex-shrink-0" />
+          <p className="text-xs text-amber-700 font-medium">
+            탈퇴한 회원의 처방전입니다. 조회만 가능하며, 수정·결제·상태 변경은 제한됩니다.
+          </p>
+        </div>
+      )}
 
       {/* ── 스크롤 영역 ── */}
       <div className="flex-1 overflow-y-auto bg-gray-50">

@@ -523,6 +523,7 @@ export const PrescriptionList: React.FC<{ onOpenSettings?: () => void; onPatient
         <TelemedPrescriptionDetail
           prescription={telemedPrescription}
           onClose={() => setTelemedPrescription(null)}
+          readOnly={telemedPrescription.patientId === '11'}
         />
       )}
 
@@ -537,6 +538,7 @@ export const PrescriptionList: React.FC<{ onOpenSettings?: () => void; onPatient
         <PrescriptionImageModal
           prescription={imagePrescription}
           onClose={() => setImagePrescription(null)}
+          readOnly={imagePrescription.patientId === '11'}
         />
       )}
 
