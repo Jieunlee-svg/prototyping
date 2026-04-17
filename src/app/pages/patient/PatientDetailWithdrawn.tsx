@@ -162,10 +162,9 @@ export const PatientDetailWithdrawn: React.FC<PatientDetailProps> = ({ onBack, p
       <div className="mx-6 mt-4 px-5 py-4 bg-red-50 border border-red-200 rounded-xl flex items-start gap-3">
         <AlertTriangle size={20} className="text-red-500 flex-shrink-0 mt-0.5" />
         <div>
-          <p className="text-sm font-bold text-red-700 mb-1">탈퇴한 회원의 정보입니다</p>
+          <p className="text-sm font-bold text-red-700 mb-1">탈퇴한 회원 입니다.</p>
           <p className="text-xs text-red-500 leading-relaxed">
-            개인정보 보호 정책에 따라 일부 정보는 마스킹 처리되며, 메시지 전송 및 상태 변경 등의 기능이 제한됩니다.
-            과거 처방전 기록과 복약 상담 내역은 조회만 가능합니다.
+            조회만 가능하며, 정보 수정 및 상태 변경이 제한됩니다.
           </p>
         </div>
       </div>

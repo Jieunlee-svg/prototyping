@@ -99,11 +99,12 @@ export const PrescriptionImageModal: React.FC<PrescriptionImageModalProps> = ({
 
       {/* 조회 전용 경고 배너 */}
       {readOnly && (
-        <div className="mx-6 mt-4 px-5 py-3 bg-red-50 border border-red-200 rounded-xl flex items-center gap-3 animate-in slide-in-from-top-2 duration-300">
-          <Ban size={18} className="text-red-500 flex-shrink-0" />
-          <p className="text-sm text-red-700 font-bold">
-            탈퇴한 회원의 처방전입니다. 조회만 가능하며 정보 수정 및 상태 변경이 제한됩니다.
-          </p>
+        <div className="mx-6 mt-4 px-5 py-3 bg-red-50 border border-red-200 rounded-xl flex items-start gap-3 animate-in slide-in-from-top-2 duration-300">
+          <Ban size={18} className="text-red-500 flex-shrink-0 mt-0.5" />
+          <div>
+            <p className="text-sm font-bold text-red-700 mb-0.5">탈퇴한 회원 입니다.</p>
+            <p className="text-xs text-red-500">조회만 가능하며, 정보 수정 및 상태 변경이 제한됩니다.</p>
+          </div>
         </div>
       )}
 
