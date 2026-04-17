@@ -224,21 +224,7 @@ export const PrescriptionList: React.FC<{ onOpenSettings?: () => void; onPatient
           />
         </button>
       </th>
-      <th className={th}>
-        <button
-          onClick={() => handleSort('patientName')}
-          className="flex items-center gap-1.5 hover:text-gray-900 group transition-colors focus:outline-none"
-        >
-          고객명
-          <ArrowUpDown 
-            size={12} 
-            className={clsx(
-              'transition-colors',
-              sortConfig.key === 'patientName' ? 'text-blue-500' : 'text-gray-300 group-hover:text-blue-400'
-            )} 
-          />
-        </button>
-      </th>
+      <th className={th}>고객명</th>
       <th className={th}>생년월일</th>
       <th className={th}>휴대전화 번호</th>
       <th className={th}>접수 경로</th>

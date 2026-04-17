@@ -164,7 +164,6 @@ export const PatientDetailWithdrawn: React.FC<PatientDetailProps> = ({ onBack, p
         <div>
           <p className="text-sm font-bold text-red-700 mb-1">탈퇴한 회원의 정보입니다</p>
           <p className="text-xs text-red-500 leading-relaxed">
-            해당 고객은 <span className="font-semibold">{patientInfo.withdrawnAt}</span>에 서비스를 탈퇴하였습니다.
             개인정보 보호 정책에 따라 일부 정보는 마스킹 처리되며, 메시지 전송 및 상태 변경 등의 기능이 제한됩니다.
             과거 처방전 기록과 복약 상담 내역은 조회만 가능합니다.
           </p>

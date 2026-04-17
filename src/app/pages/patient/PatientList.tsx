@@ -155,11 +155,8 @@ export const PatientList: React.FC<PatientListProps> = ({ onPatientClick }) => {
                       <ArrowUpDown size={14} className={clsx("transition-colors", sortKey === 'registeredAt' ? "text-blue-500" : "text-gray-300 group-hover:text-gray-400")} />
                     </div>
                   </th>
-                  <th className="px-4 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider w-[10%] cursor-pointer group" onClick={() => handleSort('name')}>
-                    <div className="flex items-center gap-1">
-                      고객명
-                      <ArrowUpDown size={14} className={clsx("transition-colors", sortKey === 'name' ? "text-blue-500" : "text-gray-300 group-hover:text-gray-400")} />
-                    </div>
+                  <th className="px-4 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider w-[10%]">
+                    고객명
                   </th>
                   <th className="px-4 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider w-[10%] cursor-pointer group" onClick={() => handleSort('birthDate')}>
                     <div className="flex items-center gap-1">
