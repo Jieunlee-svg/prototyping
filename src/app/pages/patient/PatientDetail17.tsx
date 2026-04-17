@@ -509,6 +509,7 @@ export const PatientDetail17: React.FC<PatientDetailProps> = ({ onBack, patientI
         <PrescriptionImageModal
           prescription={imagePrescription}
           onClose={() => setImagePrescription(null)}
+          readOnly={false}
         />
       )}
     </div>
