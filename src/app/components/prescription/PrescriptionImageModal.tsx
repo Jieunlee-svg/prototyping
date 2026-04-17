@@ -84,13 +84,8 @@ export const PrescriptionImageModal: React.FC<PrescriptionImageModalProps> = ({
           <span className="font-medium">처방전 목록으로</span>
         </button>
 
-        <h1 className="text-lg font-bold text-gray-900 absolute left-1/2 -translate-x-1/2 flex items-center gap-2">
+        <h1 className="text-lg font-bold text-gray-900 absolute left-1/2 -translate-x-1/2">
           처방전 상세 조회
-          {readOnly && (
-            <span className="px-2 py-0.5 rounded bg-gray-100 text-[11px] font-bold text-gray-500 border border-gray-200">
-              조회 전용
-            </span>
-          )}
         </h1>
 
         {/* 우측 — 빈 공간 (비대면 진료와 달리 결제/취소/완료 버튼 없음) */}

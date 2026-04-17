@@ -123,7 +123,6 @@ export const TelemedPrescriptionDetail: React.FC<TelemedPrescriptionDetailProps>
 
         <h1 className="text-lg font-bold text-gray-900 absolute left-1/2 -translate-x-1/2">
           처방전 상세 조회
-          {readOnly && <span className="ml-2 text-xs font-medium text-gray-400">(조회 전용)</span>}
         </h1>
 
         {/* 우측 액션 */}
