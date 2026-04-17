@@ -84,9 +84,13 @@ export const PrescriptionImageModal: React.FC<PrescriptionImageModalProps> = ({
           <span className="font-medium">처방전 목록으로</span>
         </button>
 
-        <h1 className="text-lg font-bold text-gray-900 absolute left-1/2 -translate-x-1/2">
+        <h1 className="text-lg font-bold text-gray-900 absolute left-1/2 -translate-x-1/2 flex items-center gap-2">
           처방전 상세 조회
-          {readOnly && <span className="ml-2 text-xs font-medium text-gray-400">(조회 전용)</span>}
+          {readOnly && (
+            <span className="px-2 py-0.5 rounded bg-gray-100 text-[11px] font-bold text-gray-500 border border-gray-200">
+              조회 전용
+            </span>
+          )}
         </h1>
 
         {/* 우측 — 빈 공간 (비대면 진료와 달리 결제/취소/완료 버튼 없음) */}
@@ -95,10 +99,10 @@ export const PrescriptionImageModal: React.FC<PrescriptionImageModalProps> = ({
 
       {/* 조회 전용 경고 배너 */}
       {readOnly && (
-        <div className="mx-6 mt-4 px-5 py-3 bg-amber-50 border border-amber-200 rounded-xl flex items-center gap-3">
-          <Ban size={16} className="text-amber-500 flex-shrink-0" />
-          <p className="text-xs text-amber-700 font-medium">
-            탈퇴한 회원의 처방전입니다. 조회만 가능하며, 수정·결제·상태 변경은 제한됩니다.
+        <div className="mx-6 mt-4 px-5 py-3 bg-red-50 border border-red-200 rounded-xl flex items-center gap-3 animate-in slide-in-from-top-2 duration-300">
+          <Ban size={18} className="text-red-500 flex-shrink-0" />
+          <p className="text-sm text-red-700 font-bold">
+            탈퇴한 회원의 처방전입니다. 조회만 가능하며 정보 수정 및 상태 변경이 제한됩니다.
           </p>
         </div>
       )}
