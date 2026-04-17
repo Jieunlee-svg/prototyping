@@ -209,7 +209,6 @@ export const PatientDetailWithdrawn: React.FC<PatientDetailProps> = ({ onBack, p
                 <h3 className="text-sm font-bold text-gray-900 flex items-center gap-2">
                   <FileText size={18} className="text-gray-400" />
                   과거 처방전 기록
-                  <span className="text-xs text-gray-400 font-normal">(조회 전용)</span>
                 </h3>
               </div>
 
