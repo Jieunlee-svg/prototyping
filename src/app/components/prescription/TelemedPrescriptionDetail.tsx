@@ -208,7 +208,11 @@ export const TelemedPrescriptionDetail: React.FC<TelemedPrescriptionDetailProps>
                   연락처
                   <Eye size={12} className="text-gray-300" />
                 </p>
-                <p className="text-sm font-medium text-gray-800">{prescription.phone}</p>
+                <p className="text-sm font-medium text-gray-800">
+                  {readOnly
+                    ? prescription.phone?.replace(/-\d{4}-/, '-****-')
+                    : prescription.phone}
+                </p>
               </div>
             </div>
           </section>
