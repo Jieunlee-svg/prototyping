@@ -371,7 +371,6 @@ const WithdrawnChatChannel: React.FC<{ patientName: string; withdrawnAt: string 
             <MessageSquare size={13} className="text-gray-400" />
           </div>
           <span className="text-sm font-bold text-gray-400">통합 상담 채널</span>
-          <span className="text-[10px] text-red-400 font-medium bg-red-50 px-2 py-0.5 rounded-full border border-red-100">비활성</span>
         </div>
       </div>
 
@@ -385,7 +384,6 @@ const WithdrawnChatChannel: React.FC<{ patientName: string; withdrawnAt: string 
             </div>
             <p className="text-sm font-bold text-gray-700 mb-1.5">탈퇴한 회원입니다</p>
             <p className="text-xs text-gray-400 leading-relaxed">
-              {withdrawnAt} 탈퇴<br />
               메시지 전송이 불가합니다.
             </p>
           </div>
