@@ -5,17 +5,12 @@ import {
   Clock,
   Store,
   Save,
-  Search,
   Check,
   Copy,
   Sparkles,
   Smartphone,
-  Info,
-  EyeOff,
   Bell,
   RotateCcw,
-  X,
-  Printer,
   Users,
   Plus,
   Trash2,
@@ -78,12 +73,15 @@ const INITIAL_TIMES = [
 ];
 
 // ── 컴포넌트 외부에 정의: 내부 정의 시 매 렌더마다 재생성되어 자식 언마운트 발생 ──
-const SectionCard = ({ icon: Icon, title, children, headerRight }: { icon: React.ElementType; title: string; children: React.ReactNode; headerRight?: React.ReactNode }) => (
+const SectionCard = ({ icon: Icon, title, children, headerRight, required }: { icon: React.ElementType; title: string; children: React.ReactNode; headerRight?: React.ReactNode; required?: boolean }) => (
   <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
     <div className="px-6 py-4 border-b border-gray-100 bg-gray-50/50 flex items-center justify-between">
       <div className="flex items-center gap-2">
         <Icon size={16} className="text-blue-600" />
-        <h2 className="text-sm font-semibold text-gray-800">{title}</h2>
+        <h2 className="text-sm font-semibold text-gray-800">
+          {title}
+          {required && <span className="text-red-500 ml-1">*</span>}
+        </h2>
       </div>
       {headerRight}
     </div>
@@ -245,9 +243,7 @@ export const PharmacySettings: React.FC<PharmacySettingsProps> = ({ initialTab }
   const [phoneErrors, setPhoneErrors] = useState<string[]>(['']);
   const notifyPhoneRef = useRef<HTMLInputElement>(null);
   const [pharmacists, setPharmacists] = useState<Pharmacist[]>(MOCK_PHARMACISTS);
-  const [showAddressModal, setShowAddressModal] = useState(false);
-  const [addressSearch, setAddressSearch] = useState('');
-  const [addressResults, setAddressResults] = useState<{ address: string; zipCode: string }[]>([]);
+
   const [formData, setFormData] = useState({
     name: '약국',
     phone: '02-1234-5678',
@@ -307,11 +303,13 @@ export const PharmacySettings: React.FC<PharmacySettingsProps> = ({ initialTab }
   const visibleRelations = showAfterMeal30 ? RELATION_OPTIONS : RELATION_OPTIONS.filter(r => r !== '식후 30분');
   const displayedFreq = showFourTimes ? freqSettings : freqSettings.filter(s => s.count <= 3);
 
-  // "설정 저장" 활성 조건: 약국명, 주소, 번호 중 하나라도 비어있으면 비활성
+  // "설정 저장" 활성 조건: 약국명, 주소, 번호, 영업 시간(최소 1일 이상) 모두 충족 시 활성
+  const hasActiveDay = Object.values(formData.hours).some((day) => day.active);
   const isFormValid =
     formData.name.trim() !== '' &&
     formData.address.trim() !== '' &&
-    (hidePhone || formData.phone.trim() !== '');
+    (hidePhone || formData.phone.trim() !== '') &&
+    hasActiveDay;
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -338,29 +336,7 @@ export const PharmacySettings: React.FC<PharmacySettingsProps> = ({ initialTab }
     }));
   };
 
-  // ── 주소 검색 mock 데이터 ──
-  const MOCK_ADDRESSES = [
-    { address: '서울특별시 종로구 종로 1가 1', zipCode: '03154' },
-    { address: '서울특별시 종로구 종로 2가 1', zipCode: '03155' },
-    { address: '서울특별시 종로구 종로 3가 1', zipCode: '03156' },
-    { address: '서울특별시 중구 을지로 1가 1', zipCode: '04523' },
-    { address: '서울특별시 강남구 테헤란로 123', zipCode: '06133' },
-    { address: '경기도 성남시 분당구 판교역로 166', zipCode: '13529' },
-  ];
 
-  const handleAddressSearch = (query: string) => {
-    setAddressSearch(query);
-    if (query.trim().length < 2) { setAddressResults([]); return; }
-    const q = query.trim().toLowerCase();
-    setAddressResults(MOCK_ADDRESSES.filter(a => a.address.toLowerCase().includes(q)));
-  };
-
-  const handleAddressSelect = (item: { address: string; zipCode: string }) => {
-    setFormData(prev => ({ ...prev, address: item.address, addressDetail: '' }));
-    setShowAddressModal(false);
-    setAddressSearch('');
-    setAddressResults([]);
-  };
 
   const applyMondayToWeekdays = () => {
     const mondaySchedule = formData.hours.monday;
@@ -501,8 +477,8 @@ export const PharmacySettings: React.FC<PharmacySettingsProps> = ({ initialTab }
                       id="name"
                       name="name"
                       value={formData.name}
-                      onChange={handleChange}
-                      className="w-full px-4 py-2.5 bg-white border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                      disabled
+                      className="w-full px-4 py-2.5 bg-gray-100 text-gray-500 border border-gray-200 rounded-lg cursor-not-allowed"
                       placeholder="약국 이름을 입력하세요"
                     />
                   </div>
@@ -511,40 +487,25 @@ export const PharmacySettings: React.FC<PharmacySettingsProps> = ({ initialTab }
                     <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-1.5">
                       약국 주소 <span className="text-red-500">*</span>
                     </label>
-                    <div className="flex gap-2 mb-2">
-                      <div className="relative flex-1">
-                        <MapPin className="absolute left-3 top-3 text-gray-400" size={18} />
-                        <input
-                          type="text"
-                          id="address"
-                          name="address"
-                          value={formData.address}
-                          readOnly
-                          className="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-300 rounded-lg cursor-pointer focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                          placeholder="주소 검색 버튼을 눌러 검색하세요"
-                          onClick={() => setShowAddressModal(true)}
-                        />
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => setShowAddressModal(true)}
-                        className="px-4 py-2.5 bg-gray-100 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-200 transition-colors flex items-center gap-2 border border-gray-200"
-                      >
-                        <Search size={16} />
-                        주소 검색
-                      </button>
+                    <div className="relative mb-2">
+                      <MapPin className="absolute left-3 top-3 text-gray-400" size={18} />
+                      <input
+                        type="text"
+                        id="address"
+                        name="address"
+                        value={formData.address}
+                        disabled
+                        className="w-full pl-10 pr-4 py-2.5 bg-gray-100 text-gray-500 border border-gray-200 rounded-lg cursor-not-allowed"
+                        placeholder="약국 주소"
+                      />
                     </div>
                     <input
                       type="text"
                       name="addressDetail"
                       value={formData.addressDetail}
-                      onChange={handleChange}
-                      disabled={!formData.address}
-                      className={clsx(
-                        'w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all',
-                        !formData.address ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed' : 'bg-white border-gray-300'
-                      )}
-                      placeholder="상세 주소를 입력하세요 (동/호수, 층 등)"
+                      disabled
+                      className="w-full px-4 py-2.5 bg-gray-100 text-gray-400 border border-gray-200 rounded-lg cursor-not-allowed"
+                      placeholder="상세 주소"
                     />
                   </div>
 
@@ -552,42 +513,15 @@ export const PharmacySettings: React.FC<PharmacySettingsProps> = ({ initialTab }
                     <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-1.5">
                       약국 전화 번호 <span className="text-red-500">*</span>
                     </label>
-                    <div className="space-y-3">
-                      <input
-                        type="text"
-                        id="phone"
-                        name="phone"
-                        value={formData.phone}
-                        onChange={handleChange}
-                        disabled={hidePhone}
-                        className={clsx(
-                          'w-full px-4 py-2.5 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all',
-                          hidePhone ? 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed' : 'bg-white border-gray-300'
-                        )}
-                        placeholder="예) 02-1234-5678"
-                      />
-                      {!formData.phone.trim() && !hidePhone && (
-                        <div className="flex items-start gap-2 p-3 bg-amber-50 border border-amber-200 rounded-lg">
-                          <Info size={14} className="text-amber-600 mt-0.5 flex-shrink-0" />
-                          <p className="text-xs text-amber-700 leading-relaxed">
-                            약국 전화 번호를 입력하지 않으면 고객이 앱에서 전화 문의를 할 수 없습니다.<br />
-                            번호를 노출하고 싶지 않으시면 아래 <strong>'번호 노출 안 함'</strong> 체크박스를 선택해주세요.
-                          </p>
-                        </div>
-                      )}
-                      <label className="inline-flex items-center gap-2 cursor-pointer select-none">
-                        <input
-                          type="checkbox"
-                          checked={hidePhone}
-                          onChange={(e) => setHidePhone(e.target.checked)}
-                          className="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                        />
-                        <span className="text-sm text-gray-600 flex items-center gap-1">
-                          <EyeOff size={14} className="text-gray-400" />
-                          번호 노출 안 함
-                        </span>
-                      </label>
-                    </div>
+                    <input
+                      type="text"
+                      id="phone"
+                      name="phone"
+                      value={formData.phone}
+                      disabled
+                      className="w-full px-4 py-2.5 bg-gray-100 text-gray-500 border border-gray-200 rounded-lg cursor-not-allowed"
+                      placeholder="예) 02-1234-5678"
+                    />
                   </div>
 
                   <div>
@@ -655,6 +589,7 @@ export const PharmacySettings: React.FC<PharmacySettingsProps> = ({ initialTab }
               <SectionCard
                 icon={Clock}
                 title="영업 시간 설정"
+                required
                 headerRight={
                   <button
                     onClick={applyMondayToWeekdays}
@@ -1026,92 +961,6 @@ export const PharmacySettings: React.FC<PharmacySettingsProps> = ({ initialTab }
             </section>
           )}
 
-      {/* ── 주소 검색 모달 ── */}
-      {showAddressModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div className="absolute inset-0 bg-black/40" onClick={() => setShowAddressModal(false)} />
-          <div className="relative bg-white rounded-xl shadow-2xl w-full max-w-lg mx-4 flex flex-col overflow-hidden" style={{ maxHeight: '560px' }}>
-            {/* Modal Header */}
-            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
-              <h2 className="text-lg font-bold text-gray-900">주소검색</h2>
-              <button
-                type="button"
-                onClick={() => setShowAddressModal(false)}
-                className="p-1.5 hover:bg-gray-100 rounded-full transition-colors text-gray-500"
-              >
-                <X size={18} />
-              </button>
-            </div>
-
-            {/* Search Input */}
-            <div className="px-6 py-4 border-b border-gray-100">
-              <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-transparent">
-                <input
-                  type="text"
-                  autoFocus
-                  value={addressSearch}
-                  onChange={e => handleAddressSearch(e.target.value)}
-                  onKeyDown={e => { if (e.key === 'Escape') setShowAddressModal(false); }}
-                  className="flex-1 px-4 py-2.5 text-sm outline-none"
-                  placeholder="예) 판교역로 166,  분당 주공,  백현동 532"
-                />
-                <div className="px-3 text-gray-400">
-                  <Search size={18} />
-                </div>
-              </div>
-            </div>
-
-            {/* Results / Tip */}
-            <div className="flex-1 overflow-y-auto">
-              {addressResults.length > 0 ? (
-                <ul className="divide-y divide-gray-100">
-                  {addressResults.map((item, i) => (
-                    <li key={i}>
-                      <button
-                        type="button"
-                        onClick={() => handleAddressSelect(item)}
-                        className="w-full text-left px-6 py-4 hover:bg-blue-50 transition-colors group"
-                      >
-                        <div className="flex items-start gap-3">
-                          <MapPin size={16} className="mt-0.5 text-gray-400 group-hover:text-blue-500 flex-shrink-0" />
-                          <div>
-                            <p className="text-sm font-medium text-gray-900 group-hover:text-blue-700">{item.address}</p>
-                            <p className="text-xs text-gray-400 mt-0.5">우편번호 {item.zipCode}</p>
-                          </div>
-                        </div>
-                      </button>
-                    </li>
-                  ))}
-                </ul>
-              ) : addressSearch.trim().length >= 2 ? (
-                <div className="px-6 py-12 text-center text-gray-400 text-sm">
-                  검색 결과가 없습니다.
-                </div>
-              ) : (
-                <div className="px-6 py-8">
-                  <p className="text-base font-bold text-gray-800 mb-2">tip</p>
-                  <p className="text-sm text-gray-500 mb-6">아래와 같은 조합으로 검색을 하시면 더욱 정확한 결과가 검색됩니다.</p>
-                  <dl className="space-y-4 text-sm">
-                    {[
-                      { term: '도로명 + 건물번호', examples: ['예) 판교역로 166', '제주 점단로 242'] },
-                      { term: '지역명(동/리) + 번지', examples: ['예) 백현동 532', '제주 영평동 2181'] },
-                      { term: '지역명(동/리) + 건물명(아파트명)', examples: ['예) 분당 주공', '연수동 주공3차'] },
-                      { term: '사서함명 + 번호', examples: ['예) 분당우체국사서함 1~100'] },
-                    ].map(({ term, examples }) => (
-                      <div key={term}>
-                        <dt className="font-medium text-gray-700">{term}</dt>
-                        {examples.map(ex => (
-                          <dd key={ex} className="text-blue-500 mt-0.5">{ex}</dd>
-                        ))}
-                      </div>
-                    ))}
-                  </dl>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
