@@ -180,7 +180,7 @@ export const PatientList: React.FC<PatientListProps> = ({ onPatientClick }) => {
                   </th>
                   <th className="px-4 py-4 text-center text-xs font-bold text-gray-500 uppercase tracking-wider w-[14%] cursor-pointer group" onClick={() => handleSort('adherenceRate')}>
                     <div className="flex items-center justify-center gap-1">
-                      30일 복약 순응도
+                      전월 복약 순응도
                       <AdherenceTooltip />
                       <ArrowUpDown size={14} className={clsx("transition-colors", sortKey === 'adherenceRate' ? "text-blue-500" : "text-gray-300 group-hover:text-gray-400")} />
                     </div>

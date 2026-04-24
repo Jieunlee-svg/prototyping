@@ -130,17 +130,11 @@ export const PrescriptionImageModal: React.FC<PrescriptionImageModalProps> = ({
               </div>
               {/* 주민등록번호 */}
               <div>
-                <p className="text-xs text-gray-400 mb-1 flex items-center gap-1">
+                <p className="text-xs text-gray-400 mb-1">
                   주민등록번호
-                  <button
-                    onClick={() => setShowRrn(v => !v)}
-                    className="text-gray-400 hover:text-gray-600 transition-colors"
-                  >
-                    {showRrn ? <Eye size={12} /> : <EyeOff size={12} />}
-                  </button>
                 </p>
-                <p className="text-sm font-medium text-gray-800 font-mono">
-                  {showRrn ? maskedRrn.replace('*******', '1234567') : maskedRrn}
+                <p className="text-sm font-medium text-gray-400">
+                  미입력
                 </p>
               </div>
               {/* 연락처 */}
