@@ -168,15 +168,9 @@ const glucoseData = [
 const INITIAL_MESSAGES = [
   { id: 1, type: 'system', text: '상담이 시작되었습니다.', time: '09:00 AM' },
   {
-    id: 2,
-    type: 'pharmacist',
-    text: `안녕하세요, 이채림님 😊\n\n웰체크와 함께해 주셔서 감사합니다.\n\n건강한 삶은 작은 습관에서 시작됩니다. 웰체크는 이채림님의 복약 관리부터 건강 지표 모니터링까지 꾸준히 함께하겠습니다.\n\n오늘도 활기차고 건강한 하루 보내세요! 💪\n\n서울종로약국 드림`,
-    time: '09:02 AM'
-  },
-  {
     id: 3,
     type: 'pharmacist',
-    text: `[복약 상담 안내]\n안녕하세요, 서울종로약국입니다.\n처방받으신 약품 안내드립니다.\n\n[처방 약품]\n1. 노바스크정 5mg (한국화이자제약)\n2. 타이레놀정 500mg (한국얀센)\n\n[복약 방법]\n· 노바스크정: 1일 1회, 아침 식후 복용\n· 타이레놀정: 1일 3회, 식후 30분 복용\n\n[주의사항]\n· 노바스크정: 임부 또는 임신 가능성 있는 경우 반드시 의사와 상담하세요.\n· 타이레놀정: 매일 3잔 이상 음주 시 의사와 상의하세요.\n\n복용 중 이상 증상이 있으시면 언제든지 문의해 주세요.`,
+    text: `[복약 상담 안내]\n안녕하세요, 서울종로약국입니다.\n처방받으신 약품 안내드립니다.\n\n[처방 약품]\n1. 엔블로멧서방정 (대웅제약)\n\n[복약 방법]\n· 엔블로멧서방정: 1일 1회 아침 식후 복용\n\n복용 중 이상 증상이 있으시면 언제든지 문의해 주세요.`,
     time: '09:04 AM'
   },
   { id: 4, type: 'patient', text: '감사합니다.', time: '09:06 AM' },
@@ -493,8 +487,8 @@ export const PatientDetailHealthyFood: React.FC<PatientDetailProps> = ({ onBack,
   const [medSearchResults, setMedSearchResults] = useState<DrugInfo[]>([]);
 
   const [reminder, setReminder] = useState<ReminderSettings>({
-    frequency: 3,
-    times: ['아침', '점심', '저녁'],
+    frequency: 1,
+    times: ['아침'],
     relation: '식후 30분'
   });
 
@@ -669,7 +663,7 @@ export const PatientDetailHealthyFood: React.FC<PatientDetailProps> = ({ onBack,
         onClose={() => setModalState(prev => ({ ...prev, isOpen: false }))}
         type={modalState.type}
         title={modalState.title}
-        recipientName="미정스프린트"
+        recipientName="김영미"
         recipientPhone="010-2488-3976"
         mainStatusText={modalState.mainStatusText}
         subStatusText={modalState.subStatusText}
@@ -690,7 +684,7 @@ export const PatientDetailHealthyFood: React.FC<PatientDetailProps> = ({ onBack,
 
             <div>
               <div className="flex items-center gap-3 mb-1">
-                <h1 className="text-2xl font-bold text-gray-900">미정스프린트</h1>
+                <h1 className="text-2xl font-bold text-gray-900">김영미</h1>
                 <span className="text-sm text-gray-500 bg-gray-100 px-2 py-0.5 rounded">여성 / 26세</span>
                 <span className="text-xs font-semibold text-orange-600 bg-orange-50 px-2 py-0.5 rounded border border-orange-100">당뇨</span>
               </div>
@@ -931,7 +925,7 @@ export const PatientDetailHealthyFood: React.FC<PatientDetailProps> = ({ onBack,
               </div>
               <div className="text-sm text-gray-800 space-y-3 mb-4 leading-relaxed">
                 <p>
-                  홍길동님이 복용 중인 당뇨약(메트포르민)은 우리 몸에 꼭 필요한 비타민 B12의 흡수를 억제할 수 있습니다.
+                  김영미님이 복용 중인 당뇨약(엔블로멧)은 우리 몸에 꼭 필요한 비타민 B12의 흡수를 억제할 수 있습니다.
                 </p>
                 <div className="bg-white/60 p-3 rounded-lg border border-green-100">
                   <p className="font-bold text-green-900 mb-1">💡 왜 비타민 B가 필요한가요?</p>
@@ -957,7 +951,7 @@ export const PatientDetailHealthyFood: React.FC<PatientDetailProps> = ({ onBack,
                 </button>
                 <button 
                   onClick={() => {
-                    const recommendationMsg = `홍길동님이 복용 중인 당뇨약(메트포르민)은 우리 몸에 꼭 필요한 비타민 B12의 흡수를 억제할 수 있습니다.\n\n💡 왜 비타민 B가 필요한가요?\n• 에너지 생성: 만성 피로 회복 및 활력 증진\n• 신경 보호: 손발 저림 및 신경통 예방\n• 합병증 관리: 혈관 건강 유지에 도움\n\n✅ 전문가 추천: 당뇨약과 함께 '비타민 B군' 영양제를 병행하여 부족한 영양소를 채워주세요!\n\n🛒 관련 추천 제품 바로가기: [링크 삽입]`;
+                    const recommendationMsg = `김영미님이 복용 중인 당뇨약(엔블로멧)은 우리 몸에 꼭 필요한 비타민 B12의 흡수를 억제할 수 있습니다.\n\n💡 왜 비타민 B가 필요한가요?\n• 에너지 생성: 만성 피로 회복 및 활력 증진\n• 신경 보호: 손발 저림 및 신경통 예방\n• 합병증 관리: 혈관 건강 유지에 도움\n\n✅ 전문가 추천: 당뇨약과 함께 '비타민 B군' 영양제를 병행하여 부족한 영양소를 채워주세요!\n\n🛒 관련 추천 제품 바로가기: [링크 삽입]`;
                     const newMessage = {
                       id: Date.now(),
                       type: 'pharmacist',
@@ -1045,13 +1039,6 @@ export const PatientDetailHealthyFood: React.FC<PatientDetailProps> = ({ onBack,
                   <div className="p-3 bg-gray-50 border-b border-gray-100 sticky top-0 z-20">
                     <div className="flex justify-between items-center mb-2">
                       <span className="text-xs font-bold text-gray-700">처방 약품 추가</span>
-                      <button
-                        onClick={() => setMedSearchQuery('가스모틴')}
-                        className="text-[10px] bg-orange-100 text-orange-700 border border-orange-200 px-2 py-1 rounded hover:bg-orange-200 transition-colors font-medium flex items-center gap-1"
-                      >
-                        <AlertTriangle size={10} />
-                        테스트: 변경된 약물 검색
-                      </button>
                     </div>
                     <div className="relative mb-2">
                       <Search className="absolute left-2.5 top-2.5 text-gray-400 w-4 h-4" />
@@ -1213,7 +1200,7 @@ export const PatientDetailHealthyFood: React.FC<PatientDetailProps> = ({ onBack,
                         value={messageText}
                         onChange={(e) => setMessageText(e.target.value)}
                         className="w-full h-32 p-3 text-xs bg-white border border-gray-200 rounded-lg focus:ring-1 focus:ring-blue-500 outline-none resize-none leading-relaxed"
-                        placeholder="약품을 추가하면 상담 내용이 자동으로 작성됩니다."
+                        placeholder=""
                       />
                     </div>
 
