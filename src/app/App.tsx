@@ -12,13 +12,14 @@ import { MedicationConsultationC } from './pages/consultation/MedicationConsulta
 import { ReminderSettingsPage } from './components/consultation/ReminderSettingsPage';
 import { MedicationNotificationSettings } from './pages/consultation/MedicationNotificationSettings';
 import { ConsultationHistory } from './pages/consultation/ConsultationHistory';
+import { PatientDetailHealthyFood } from './pages/patient/PatientDetailHealthyFood';
 import { WellcheckLanding } from './components/auth/WellcheckLanding';
 import { MyInfo } from './pages/settings/MyInfo';
 import chatIcon from '../assets/chat-icon.png';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [view, setView] = useState<'list' | 'detail' | 'sms' | 'prescription' | 'settings' | 'notice' | 'consultation-c' | 'consultation-history' | 'consultation-reminder' | 'my-info'>('list');
+  const [view, setView] = useState<'list' | 'detail' | 'healthy-food' | 'sms' | 'prescription' | 'settings' | 'notice' | 'consultation-c' | 'consultation-history' | 'consultation-reminder' | 'my-info'>('list');
   const [selectedPatientId, setSelectedPatientId] = useState<string | null>(null);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [showChatIcon, setShowChatIcon] = useState(false);
@@ -37,7 +38,11 @@ function App() {
 
   const handlePatientClick = (id: string) => {
     setSelectedPatientId(id);
-    setView('detail');
+    if (id === '2') {
+      setView('healthy-food');
+    } else {
+      setView('detail');
+    }
   };
 
   const handleBack = () => {
@@ -118,6 +123,10 @@ function App() {
           ) : view === 'my-info' ? (
             <div className="absolute inset-0 overflow-hidden">
               <MyInfo />
+            </div>
+          ) : view === 'healthy-food' ? (
+            <div className="absolute inset-0 overflow-hidden">
+              <PatientDetailHealthyFood onBack={handleBack} patientId={selectedPatientId} />
             </div>
           ) : (
             <div className="absolute inset-0 overflow-hidden">

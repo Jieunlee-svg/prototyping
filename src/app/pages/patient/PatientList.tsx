@@ -82,7 +82,7 @@ export const PatientList: React.FC<PatientListProps> = ({ onPatientClick }) => {
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
 
   const handlePatientClick = (patient: Patient) => {
-    if (onPatientClick && patient.name !== '미정스프린트') {
+    if (onPatientClick) {
       onPatientClick(patient.id);
     }
   };
@@ -194,16 +194,13 @@ export const PatientList: React.FC<PatientListProps> = ({ onPatientClick }) => {
                     <td className="px-4 py-4">
                       <button
                         onClick={() => handlePatientClick(patient)}
-                        disabled={patient.name === '미정스프린트'}
                         className={clsx(
-                          "flex items-center space-x-2 text-left group",
-                          patient.name !== '미정스프린트' ? "cursor-pointer" : "cursor-default"
+                          "flex items-center space-x-2 text-left group cursor-pointer"
                         )}
                       >
                         <span className={clsx(
                           "font-bold text-sm",
-                          isWithdrawn(patient) ? "text-gray-400 group-hover:text-gray-600" : "text-gray-900",
-                          !isWithdrawn(patient) && patient.name !== '미정스프린트' && "group-hover:text-blue-600"
+                          isWithdrawn(patient) ? "text-gray-400 group-hover:text-gray-600" : "text-gray-900 group-hover:text-blue-600"
                         )}>
                           {patient.name}
                         </span>
