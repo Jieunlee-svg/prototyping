@@ -264,7 +264,7 @@ ${baseMessageBottom}`;
                             ? "bg-red-50 border-red-200 text-red-700" 
                             : "bg-blue-50 border-blue-200 text-blue-700"
                         )}>
-                          <span>{r.isAppUser && r.name ? `${r.phone} (${r.name} - 단골)` : r.phone}</span>
+                          <span>{r.phone}</span>
                           <button 
                             type="button" 
                             onClick={(e) => { e.stopPropagation(); removeRecipient(r.phone); }}
@@ -352,7 +352,7 @@ ${baseMessageBottom}`;
                       <p className="mt-1.5 text-sm text-red-500 flex items-start gap-1">
                         <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
                         <span>
-                          {inputError || "단골 등록된 사용자에게는 앱 설치 문자를 보낼 수 없습니다. 붉은색으로 표시된 단골 고객 번호를 삭제해주세요."}
+                          {inputError || "단골 등록된 사용자에게는 앱 설치 문자를 보낼 수 없습니다, 단골 고객 번호를 삭제해주세요."}
                         </span>
                       </p>
                     )}
