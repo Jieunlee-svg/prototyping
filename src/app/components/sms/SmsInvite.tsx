@@ -28,8 +28,9 @@ type SelectedCustomer = { name: string; phone: string; isAppUser: boolean };
 
 export const SmsInvite: React.FC<SmsInviteProps> = () => {
   const [hospitalPhone, setHospitalPhone] = useState('02-123-4567');
-  const [messageText, setMessageText] = useState(
-    `<광고> [약국과 더 가깝게 관리하세요] 
+  const [additionalMessage, setAdditionalMessage] = useState('');
+
+  const baseMessageTop = `<광고> [약국과 더 가깝게 관리하세요] 
 
 안녕하세요, {약국명}입니다.
 
@@ -44,14 +45,17 @@ export const SmsInvite: React.FC<SmsInviteProps> = () => {
 
 📱 지금 바로 시작하기
 링크를 눌러 앱을 설치하시면, 저희 약국과 연결되어 관리가 시작됩니다.
-👉 설치하기: https://api.well-check.co.kr/download
+👉 설치하기: https://api.well-check.co.kr/download`;
 
-약국 문의: ${hospitalPhone}
+  const baseMessageBottom = `약국 문의: ${hospitalPhone}
 
 서비스 문의: 1551-3633
 
-무료수신거부: 080-870-0486`
-  );
+무료수신거부: 080-870-0486`;
+
+  const fullMessageText = `${baseMessageTop}
+${additionalMessage ? `\n${additionalMessage}\n` : ''}
+${baseMessageBottom}`;
 
   // ── 수신자 목록 상태 ──────────────────────────────────────────
   const [recipients, setRecipients] = useState<{ phone: string; isAppUser: boolean; name?: string }[]>([]);
@@ -195,8 +199,8 @@ export const SmsInvite: React.FC<SmsInviteProps> = () => {
   };
 
   const hasAppUser = recipients.some(r => r.isAppUser);
-  // 발송 가능 여부: 1명 이상이고, 단골 고객이 없으며 필수 항목이 모두 채워져 있을 때
-  const canSend = recipients.length > 0 && !hasAppUser && !!hospitalPhone.trim() && !!messageText.trim();
+  // 발송 가능 여부: 1명 이상이고, 단골 고객이 없으며 약국 번호가 있을 때
+  const canSend = recipients.length > 0 && !hasAppUser && !!hospitalPhone.trim();
 
   // ── 발송 확인 / 완료 모달 상태 ──
   const [showConfirmModal, setShowConfirmModal] = useState(false);
@@ -370,36 +374,14 @@ export const SmsInvite: React.FC<SmsInviteProps> = () => {
                   />
                 </div>
 
-                {/* 문자 내용 */}
+                {/* 문자 내용 추가 */}
                 <div className="pt-2">
                   <div className="flex justify-between items-center mb-1">
                     <label className="block text-sm font-medium text-gray-700 flex items-center gap-1">
-                      문자 내용 (편집 가능)
-                      <span className="text-red-500 font-bold">*</span>
+                      문자 내용 추가
                     </label>
                     <button
-                      onClick={() => setMessageText(`<광고> [약국과 더 가깝게 관리하세요] 
-
-안녕하세요, {약국명}입니다.
-
-고객님의 안전한 약 복용과 건강 관리를 돕기 위한 서비스 "웰체크"를 도입해 운영하고 있습니다.
-
-고객님이 저희 약국에서 처방받으신 약의 상세 정보와 복용 이력을 스마트폰으로 편하게 확인하실 수 있습니다.
-
-✅ 앱 설치 시 좋아지는 점
-- 복약 알림 자동 설정 
-- 상담 기록 보관
-- 처방전 전송
-
-📱 지금 바로 시작하기
-링크를 눌러 앱을 설치하시면, 저희 약국과 연결되어 관리가 시작됩니다.
-👉 설치하기: https://api.well-check.co.kr/download
-
-약국 문의: ${hospitalPhone}
-
-서비스 문의: 1551-3633
-
-무료수신거부: 080-870-0486`)}
+                      onClick={() => setAdditionalMessage('')}
                       className="text-xs text-gray-500 flex items-center gap-1 hover:text-blue-600"
                     >
                       <RefreshCw size={12} />
@@ -407,12 +389,13 @@ export const SmsInvite: React.FC<SmsInviteProps> = () => {
                     </button>
                   </div>
                   <textarea
-                    value={messageText}
-                    onChange={(e) => setMessageText(e.target.value)}
-                    className="w-full h-[500px] px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow resize-none text-sm leading-relaxed"
+                    value={additionalMessage}
+                    onChange={(e) => setAdditionalMessage(e.target.value)}
+                    placeholder="추가할 문자 내용 입력"
+                    className="w-full h-[120px] px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-shadow resize-none text-sm leading-relaxed"
                   />
                   <p className="text-right text-xs text-gray-400 mt-1">
-                    {messageText.length} / 2000자 (LMS)
+                    {fullMessageText.length} / 2000자 (LMS)
                   </p>
                 </div>
               </div>
@@ -474,7 +457,7 @@ export const SmsInvite: React.FC<SmsInviteProps> = () => {
                 <div className="flex-1 bg-slate-50 p-4 overflow-y-auto">
                   <div className="flex flex-col items-start gap-1 max-w-[90%]">
                     <div className="bg-white p-4 rounded-2xl rounded-tl-none shadow-sm border border-gray-200 text-sm text-gray-800 leading-relaxed whitespace-pre-wrap">
-                      {messageText}
+                      {fullMessageText}
                     </div>
                     <span className="text-[10px] text-gray-400 ml-1">오전 09:41</span>
                   </div>
