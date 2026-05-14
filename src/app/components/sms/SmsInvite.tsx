@@ -54,7 +54,7 @@ export const SmsInvite: React.FC<SmsInviteProps> = () => {
   );
 
   // ── 수신자 목록 상태 ──────────────────────────────────────────
-  const [recipients, setRecipients] = useState<{ phone: string; isAppUser: boolean }[]>([]);
+  const [recipients, setRecipients] = useState<{ phone: string; isAppUser: boolean; name?: string }[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [inputError, setInputError] = useState<string | null>(null);
 
@@ -74,9 +74,10 @@ export const SmsInvite: React.FC<SmsInviteProps> = () => {
       setInputValue('');
       return;
     }
-    const isAppUser = MOCK_PATIENTS.some(c => c.phone === formattedPhone);
+    const matchedUser = MOCK_PATIENTS.find(c => c.phone === formattedPhone);
+    const isAppUser = !!matchedUser;
     setInputError(null);
-    setRecipients(prev => [...prev, { phone: formattedPhone, isAppUser }]);
+    setRecipients(prev => [...prev, { phone: formattedPhone, isAppUser, name: matchedUser?.name }]);
     setInputValue('');
   };
 
@@ -181,7 +182,7 @@ export const SmsInvite: React.FC<SmsInviteProps> = () => {
                             ? "bg-red-50 border-red-200 text-red-700" 
                             : "bg-blue-50 border-blue-200 text-blue-700"
                         )}>
-                          <span>{r.phone}</span>
+                          <span>{r.isAppUser && r.name ? `${r.phone} (${r.name} - 단골)` : r.phone}</span>
                           <button 
                             type="button" 
                             onClick={(e) => { e.stopPropagation(); removeRecipient(r.phone); }}
@@ -213,7 +214,7 @@ export const SmsInvite: React.FC<SmsInviteProps> = () => {
                       <p className="mt-1.5 text-sm text-red-500 flex items-start gap-1">
                         <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
                         <span>
-                          {inputError || "이미 단골 등록된 고객 번호가 포함되어 있습니다. 해당 번호를 삭제해주세요."}
+                          {inputError || "단골 등록된 사용자에게는 앱 설치 문자를 보낼 수 없습니다. 붉은색으로 표시된 단골 고객 번호를 삭제해주세요."}
                         </span>
                       </p>
                     )}
