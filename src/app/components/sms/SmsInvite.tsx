@@ -53,80 +53,73 @@ export const SmsInvite: React.FC<SmsInviteProps> = () => {
 무료수신거부: 080-870-0486`
   );
 
-  // ── 고객 검색 상태 ──────────────────────────────────────────
-  const [customerQuery, setCustomerQuery] = useState('');
-  const [selectedCustomer, setSelectedCustomer] = useState<SelectedCustomer | null>(null);
-  const [showCustomerDrop, setShowCustomerDrop] = useState(false);
-  const [focusedIndex, setFocusedIndex] = useState(-1);
+  // ── 수신자 목록 상태 ──────────────────────────────────────────
+  const [recipients, setRecipients] = useState<{ phone: string; isAppUser: boolean }[]>([]);
+  const [inputValue, setInputValue] = useState('');
+  const [inputError, setInputError] = useState<string | null>(null);
 
   const phoneRef = useRef<HTMLInputElement>(null);
-  const phoneDropRef = useRef<HTMLDivElement>(null);
 
   // 최초 진입 시 입력 필드 자동 포커스
   useEffect(() => {
     phoneRef.current?.focus();
   }, []);
 
-  // 외부 클릭 시 드롭다운 닫기
-  useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      if (phoneDropRef.current && !phoneDropRef.current.contains(e.target as Node)) {
-        setShowCustomerDrop(false);
-      }
-    };
-    document.addEventListener('mousedown', handler);
-    return () => document.removeEventListener('mousedown', handler);
-  }, []);
-
-  const filteredCustomers = useMemo(() => {
-    const q = customerQuery.trim();
-    if (!q) return [];
-    return MOCK_PATIENTS.filter(c =>
-      c.name.includes(q) ||
-      c.phone.replace(/-/g, '').includes(q.replace(/-/g, ''))
-    ).slice(0, 6);
-  }, [customerQuery]);
-
-  const handleSelectCustomer = (c: SelectedCustomer) => {
-    setSelectedCustomer(c);
-    setCustomerQuery('');
-    setShowCustomerDrop(false);
-    setFocusedIndex(-1);
+  const addRecipient = (formattedPhone: string) => {
+    if (recipients.length >= 50) {
+      setInputError("최대 50명까지만 입력할 수 있습니다.");
+      return;
+    }
+    if (recipients.some(r => r.phone === formattedPhone)) {
+      setInputValue('');
+      return;
+    }
+    const isAppUser = MOCK_PATIENTS.some(c => c.phone === formattedPhone);
+    setInputError(null);
+    setRecipients(prev => [...prev, { phone: formattedPhone, isAppUser }]);
+    setInputValue('');
   };
 
-  const handleClearCustomer = () => {
-    setSelectedCustomer(null);
-    setCustomerQuery('');
-    setShowCustomerDrop(false);
+  const removeRecipient = (phone: string) => {
+    setRecipients(prev => prev.filter(r => r.phone !== phone));
+    setInputError(null);
     setTimeout(() => phoneRef.current?.focus(), 50);
   };
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputVal = e.target.value;
     const raw = inputVal.replace(/[^0-9]/g, '');
-    const isNumericOnly = /^[0-9\-]*$/.test(inputVal);
-    if (isNumericOnly && raw.length > 0) {
-      let formatted = raw.slice(0, 11);
-      if (formatted.length > 7) formatted = `${formatted.slice(0, 3)}-${formatted.slice(3, 7)}-${formatted.slice(7)}`;
-      else if (formatted.length > 3) formatted = `${formatted.slice(0, 3)}-${formatted.slice(3)}`;
-      setCustomerQuery(formatted);
-      // 11자리 입력 완료 시 자동 선택 (DB에 없으면 미가입 고객으로 처리)
-      if (raw.length === 11) {
-        const matched = MOCK_PATIENTS.find(c => c.phone.replace(/-/g, '') === raw);
-        setSelectedCustomer(matched ?? { name: '', phone: formatted, isAppUser: false });
-        setShowCustomerDrop(false);
-        setCustomerQuery('');
-        return;
-      }
+    
+    if (raw.length === 11) {
+      let formatted = `${raw.slice(0, 3)}-${raw.slice(3, 7)}-${raw.slice(7)}`;
+      addRecipient(formatted);
     } else {
-      setCustomerQuery(inputVal);
+      let formatted = raw;
+      if (raw.length > 7) formatted = `${raw.slice(0, 3)}-${raw.slice(3, 7)}-${raw.slice(7)}`;
+      else if (raw.length > 3) formatted = `${raw.slice(0, 3)}-${raw.slice(3)}`;
+      setInputValue(formatted);
+      if (inputError) setInputError(null);
     }
-    setShowCustomerDrop(true);
   };
 
-  // 발송 가능 여부: 필수 항목이 모두 채워져 있고 이미 앱 가입자가 아닐 때
-  const canSend = !!selectedCustomer && !selectedCustomer.isAppUser && !!hospitalPhone.trim() && !!messageText.trim();
-  const isAlreadyMember = !!selectedCustomer && selectedCustomer.isAppUser;
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Backspace' && inputValue === '' && recipients.length > 0) {
+      setRecipients(prev => prev.slice(0, -1));
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      const raw = inputValue.replace(/[^0-9]/g, '');
+      if (raw.length === 11) {
+        let formatted = `${raw.slice(0, 3)}-${raw.slice(3, 7)}-${raw.slice(7)}`;
+        addRecipient(formatted);
+      } else if (raw.length > 0) {
+        setInputError("휴대폰 번호 11자리를 입력해주세요.");
+      }
+    }
+  };
+
+  const hasAppUser = recipients.some(r => r.isAppUser);
+  // 발송 가능 여부: 1명 이상이고, 단골 고객이 없으며 필수 항목이 모두 채워져 있을 때
+  const canSend = recipients.length > 0 && !hasAppUser && !!hospitalPhone.trim() && !!messageText.trim();
 
   // ── 발송 확인 / 완료 모달 상태 ──
   const [showConfirmModal, setShowConfirmModal] = useState(false);
@@ -146,8 +139,9 @@ export const SmsInvite: React.FC<SmsInviteProps> = () => {
   const handleSuccessClose = () => {
     setShowSuccessModal(false);
     // 발송 완료 후 초기화
-    setSelectedCustomer(null);
-    setCustomerQuery('');
+    setRecipients([]);
+    setInputValue('');
+    setInputError(null);
     setTimeout(() => phoneRef.current?.focus(), 50);
   };
 
@@ -165,138 +159,65 @@ export const SmsInvite: React.FC<SmsInviteProps> = () => {
 
                 {/* 고객 휴대전화 번호 */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5 flex items-center gap-1">
-                    고객 휴대전화 번호
-                    <span className="text-red-500 font-bold">*</span>
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5 flex items-center justify-between">
+                    <div className="flex items-center gap-1">
+                      고객 휴대전화 번호
+                      <span className="text-red-500 font-bold">*</span>
+                    </div>
+                    <span className="text-xs text-gray-500 font-normal">
+                      <span className={clsx(recipients.length >= 50 ? "text-red-500 font-bold" : "")}>{recipients.length}</span> / 50명
+                    </span>
                   </label>
 
-                  <div ref={phoneDropRef} className="relative">
-                    {selectedCustomer ? (
-                      /* 선택 완료 상태 — 칩 */
-                      <div className={clsx(
-                        'flex items-center gap-3 px-3 py-2.5 border rounded-xl transition-all shadow-sm ring-2',
-                        isAlreadyMember
-                          ? 'border-amber-400 bg-amber-50 ring-amber-100'
-                          : 'border-blue-400 bg-blue-50 ring-blue-100'
-                      )}>
-                        <div className={clsx(
-                          'w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0',
-                          isAlreadyMember ? 'bg-amber-100' : 'bg-blue-100'
+                  <div>
+                    <div 
+                      className="flex flex-wrap items-center gap-2 px-3 py-2 border rounded-xl transition-all shadow-sm border-gray-300 bg-gray-50 focus-within:bg-white focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-100 min-h-[46px]"
+                      onClick={() => phoneRef.current?.focus()}
+                    >
+                      {recipients.map(r => (
+                        <div key={r.phone} className={clsx(
+                          "flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-sm font-medium transition-colors",
+                          r.isAppUser 
+                            ? "bg-red-50 border-red-200 text-red-700" 
+                            : "bg-blue-50 border-blue-200 text-blue-700"
                         )}>
-                          <User className={clsx('w-4 h-4', isAlreadyMember ? 'text-amber-600' : 'text-blue-600')} />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="text-sm font-bold text-gray-900">
-                            {selectedCustomer.name || '직접 입력'}
-                          </div>
-                          <div className="text-xs text-gray-500">{selectedCustomer.phone}</div>
-                        </div>
-                        {isAlreadyMember
-                          ? <AlertCircle className="w-4 h-4 text-amber-500 flex-shrink-0" />
-                          : <CheckCircle className="w-4 h-4 text-blue-500 flex-shrink-0" />
-                        }
-                        <button
-                          type="button"
-                          onClick={handleClearCustomer}
-                          className={clsx(
-                            'p-1.5 ml-1 rounded-full transition-colors focus:outline-none',
-                            isAlreadyMember
-                              ? 'hover:bg-amber-100 text-amber-500'
-                              : 'hover:bg-white/60 text-blue-500'
-                          )}
-                          aria-label="선택 해제"
-                        >
-                          <X className="w-4 h-4" />
-                        </button>
-                      </div>
-                    ) : (
-                      /* 검색 입력 상태 */
-                      <div className="flex items-center gap-2.5 px-3 py-3 border rounded-xl transition-all shadow-sm border-gray-300 bg-gray-50 focus-within:bg-white focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-100">
-                        <Search className={clsx('w-5 h-5 flex-shrink-0 transition-colors', showCustomerDrop ? 'text-blue-500' : 'text-gray-400')} />
-                        <input
-                          ref={phoneRef}
-                          type="text"
-                          value={customerQuery}
-                          onChange={handlePhoneChange}
-                          onKeyDown={e => {
-                            if (!showCustomerDrop || customerQuery.trim() === '') return;
-                            if (e.key === 'ArrowDown') { e.preventDefault(); setFocusedIndex(prev => Math.min(prev + 1, filteredCustomers.length - 1)); }
-                            else if (e.key === 'ArrowUp') { e.preventDefault(); setFocusedIndex(prev => Math.max(prev - 1, 0)); }
-                            else if (e.key === 'Enter') { e.preventDefault(); if (focusedIndex >= 0 && filteredCustomers[focusedIndex]) handleSelectCustomer(filteredCustomers[focusedIndex]); else if (filteredCustomers.length > 0) handleSelectCustomer(filteredCustomers[0]); }
-                            else if (e.key === 'Escape') setShowCustomerDrop(false);
-                          }}
-                          onFocus={() => { if (customerQuery.trim() !== '') setShowCustomerDrop(true); }}
-                          placeholder="이름 또는 휴대전화 번호 검색..."
-                          className="flex-1 text-[15px] font-medium bg-transparent outline-none placeholder-gray-400 text-gray-900"
-                          autoComplete="off"
-                        />
-                        {customerQuery && (
-                          <button
-                            type="button"
-                            onMouseDown={e => { e.preventDefault(); setCustomerQuery(''); setShowCustomerDrop(false); phoneRef.current?.focus(); }}
-                            className="p-1 text-gray-400 hover:text-gray-700 hover:bg-gray-200 rounded-full transition-colors"
+                          <span>{r.phone}</span>
+                          <button 
+                            type="button" 
+                            onClick={(e) => { e.stopPropagation(); removeRecipient(r.phone); }}
+                            className={clsx(
+                              "p-0.5 rounded-full hover:bg-white/60 transition-colors focus:outline-none",
+                              r.isAppUser ? "text-red-500" : "text-blue-500"
+                            )}
                           >
-                            <X className="w-3.5 h-3.5" />
+                            <X size={14} />
                           </button>
-                        )}
-                      </div>
-                    )}
-
-                    {/* 실시간 검색 드롭다운 */}
-                    {showCustomerDrop && customerQuery.trim() !== '' && (
-                      <div className="absolute z-30 top-full left-0 mt-2 w-full bg-white border border-gray-200 rounded-xl shadow-xl overflow-hidden">
-                        {filteredCustomers.length > 0 ? (
-                          <>
-                            <div className="px-3 py-2 border-b border-gray-100 bg-gray-50/50 flex items-center justify-between">
-                              <span className="text-[11px] text-gray-500 font-bold tracking-wider">검색 결과</span>
-                              <span className="text-[11px] text-blue-500 font-bold">{filteredCustomers.length}건</span>
-                            </div>
-                            <div className="py-1 max-h-[220px] overflow-y-auto">
-                              {filteredCustomers.map((c, i) => {
-                                const isFocused = i === focusedIndex;
-                                return (
-                                  <button
-                                    key={c.phone}
-                                    type="button"
-                                    onMouseEnter={() => setFocusedIndex(i)}
-                                    onMouseDown={e => { e.preventDefault(); handleSelectCustomer(c); }}
-                                    className={clsx('w-full flex items-center gap-3 px-3 py-2.5 text-left transition-colors', isFocused ? 'bg-blue-50' : 'hover:bg-gray-50')}
-                                  >
-                                    <div className={clsx('w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-xs font-bold', isFocused ? 'bg-blue-200 text-blue-700' : 'bg-gray-100 text-gray-500')}>
-                                      {c.name.slice(0, 1)}
-                                    </div>
-                                    <div className="flex-1 min-w-0">
-                                      <div className={clsx('text-[14px] font-semibold', isFocused ? 'text-blue-900' : 'text-gray-900')}>{c.name}</div>
-                                      <div className={clsx('text-xs mt-0.5', isFocused ? 'text-blue-700' : 'text-gray-500')}>{c.phone}</div>
-                                    </div>
-                                    <span className="text-[10px] font-bold text-blue-600 bg-blue-50 border border-blue-100 px-2 py-0.5 rounded-full flex-shrink-0">
-                                      단골 등록됨
-                                    </span>
-                                  </button>
-                                );
-                              })}
-                            </div>
-                          </>
-                        ) : (
-                          <div className="px-4 py-8 text-center bg-gray-50/50">
-                            <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-2">
-                              <Search className="w-5 h-5 text-gray-400" />
-                            </div>
-                            <div className="text-sm font-bold text-gray-700 mb-1">검색 결과가 없습니다</div>
-                            <div className="text-xs text-gray-500">전화번호를 직접 입력해 주세요.</div>
-                          </div>
-                        )}
-                      </div>
+                        </div>
+                      ))}
+                      <input
+                        ref={phoneRef}
+                        type="text"
+                        value={inputValue}
+                        onChange={handlePhoneChange}
+                        onKeyDown={handleKeyDown}
+                        placeholder={recipients.length === 0 ? "휴대폰 번호 11자리를 입력하세요" : ""}
+                        className="flex-1 min-w-[150px] bg-transparent outline-none text-[15px] font-medium text-gray-900 placeholder-gray-400"
+                        maxLength={13}
+                        autoComplete="off"
+                        disabled={recipients.length >= 50}
+                      />
+                    </div>
+                    
+                    {/* 에러 메시지 */}
+                    {(inputError || hasAppUser) && (
+                      <p className="mt-1.5 text-sm text-red-500 flex items-start gap-1">
+                        <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+                        <span>
+                          {inputError || "이미 단골 등록된 고객 번호가 포함되어 있습니다. 해당 번호를 삭제해주세요."}
+                        </span>
+                      </p>
                     )}
                   </div>
-
-                  {/* 이미 앱 가입된 고객 경고 */}
-                  {isAlreadyMember && (
-                    <div className="mt-2 flex items-start gap-2 px-3 py-2.5 bg-amber-50 border border-amber-200 rounded-lg text-sm text-amber-800">
-                      <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0 text-amber-500" />
-                      <span>이미 단골 고객입니다.</span>
-                    </div>
-                  )}
                 </div>
 
                 {/* 약국 번호 */}
