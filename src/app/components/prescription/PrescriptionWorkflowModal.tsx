@@ -26,6 +26,8 @@ interface DrugItem {
   dosageAmount: number;   // "1회 N정" 의 N
   frequencyCount: number; // "하루 N회" 의 N
   days: number;
+  unit?: string;
+  isCustom?: boolean;
 }
 
 // ── Drug Database (Mock) ───────────────────────────────────────────────
@@ -33,6 +35,7 @@ interface DrugDBItem {
   name: string;
   category: string;
   imageUrl: string;
+  unit?: string;
 }
 
 const DRUG_DATABASE: DrugDBItem[] = [
@@ -373,6 +376,8 @@ export const PrescriptionWorkflowModal: React.FC<PrescriptionWorkflowModalProps>
       name: dbDrug.name,
       category: dbDrug.category,
       imageUrl: dbDrug.imageUrl,
+      unit: dbDrug.unit || '정',
+      isCustom: false,
     });
     setDrugSearchQuery('');
     setDrugSearchResults([]);
@@ -380,7 +385,7 @@ export const PrescriptionWorkflowModal: React.FC<PrescriptionWorkflowModalProps>
   };
   const deleteDrug = (id: string) => setDrugs(prev => prev.filter(d => d.id !== id));
   const addDrug = () => {
-    const newDrug: DrugItem = { id: Date.now().toString(), name: '', category: '', dosageAmount: 1, frequencyCount: 1, days: 30 };
+    const newDrug: DrugItem = { id: Date.now().toString(), name: '', category: '', dosageAmount: 1, frequencyCount: 1, days: 30, unit: '정' };
     setDrugs(prev => [...prev, newDrug]);
     setEditingId(newDrug.id);
     setEditingDraft({ ...newDrug });
@@ -620,7 +625,25 @@ export const PrescriptionWorkflowModal: React.FC<PrescriptionWorkflowModalProps>
                                       {drugSearchResults.length === 0 ? (
                                         <div className="px-4 py-6 text-center">
                                           <Pill className="w-6 h-6 text-gray-300 mx-auto mb-2" />
-                                          <p className="text-xs text-gray-400">검색 결과가 없습니다.</p>
+                                          <p className="text-xs text-gray-400 mb-3">검색 결과가 없습니다.</p>
+                                          <button
+                                            onClick={() => {
+                                              if (!editingDraft) return;
+                                              setEditingDraft({
+                                                ...editingDraft,
+                                                name: drugSearchQuery,
+                                                category: '직접 입력',
+                                                unit: '정',
+                                                isCustom: true,
+                                              });
+                                              setDrugSearchQuery('');
+                                              setDrugSearchResults([]);
+                                              setShowDrugSearch(false);
+                                            }}
+                                            className="px-4 py-2 bg-blue-50 text-blue-600 text-xs font-semibold rounded-lg hover:bg-blue-100 transition-colors focus:outline-none"
+                                          >
+                                            "{drugSearchQuery}" 직접 추가하기
+                                          </button>
                                         </div>
                                       ) : (
                                         <div className="max-h-[220px] overflow-y-auto">
@@ -661,7 +684,19 @@ export const PrescriptionWorkflowModal: React.FC<PrescriptionWorkflowModalProps>
                                 <label className="text-[10px] text-gray-500 font-semibold whitespace-nowrap">용량</label>
                                 <span className="text-xs text-gray-500">1회</span>
                                 <NumberInput value={editingDraft.dosageAmount} onChange={v => setEditingDraft({ ...editingDraft, dosageAmount: v })} />
-                                <span className="text-xs text-gray-500">정</span>
+                                {editingDraft.isCustom ? (
+                                  <select
+                                    value={editingDraft.unit || '정'}
+                                    onChange={e => setEditingDraft({ ...editingDraft, unit: e.target.value })}
+                                    className="text-xs border border-gray-200 rounded px-1 py-1 focus:outline-none focus:ring-1 focus:ring-blue-300 bg-white"
+                                  >
+                                    {['정', '캡슐', '포', '환', '개', 'ml', 'mg', 'g'].map(u => (
+                                      <option key={u} value={u}>{u}</option>
+                                    ))}
+                                  </select>
+                                ) : (
+                                  <span className="text-xs text-gray-500">{editingDraft.unit || '정'}</span>
+                                )}
                               </div>
                               <div className="flex items-center gap-1.5">
                                 <label className="text-[10px] text-gray-500 font-semibold whitespace-nowrap">횟수</label>
@@ -689,7 +724,7 @@ export const PrescriptionWorkflowModal: React.FC<PrescriptionWorkflowModalProps>
                             <div className="flex-1 min-w-0">
                               <div className="text-[13px] font-semibold text-gray-900 truncate">{drug.name || '(약품명 없음)'}</div>
                               <div className="text-[11px] text-gray-400 mt-0.5">
-                                {drug.category ? `${drug.category} · ` : ''}1회 {drug.dosageAmount}정, 하루 {drug.frequencyCount}회
+                                {drug.category ? `${drug.category} · ` : ''}1회 {drug.dosageAmount}{drug.unit || '정'}, 하루 {drug.frequencyCount}회
                               </div>
                             </div>
                             <span className="bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full text-[11px] font-bold flex-shrink-0">{drug.days}일분</span>
