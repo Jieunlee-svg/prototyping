@@ -7,8 +7,10 @@ interface WellcheckLandingProps {
 }
 
 const FAMILY_SITES = [
-  { name: 'PharmVille', url: 'https://pharmville.co.kr' },
-  { name: 'mcircle', url: 'https://mcircle.co.kr' },
+  { name: '엠서클', url: 'https://www.mcircle.co.kr/' },
+  { name: '팜빌', url: 'https://www.pharmville.co.kr/login?rd=%2F' },
+  { name: '더샵', url: 'https://www.shop.co.kr/front/intro/login' },
+  { name: '하이닥', url: 'https://news.hidoc.co.kr/' },
 ];
 
 export const WellcheckLanding: React.FC<WellcheckLandingProps> = ({ onLogin }) => {
