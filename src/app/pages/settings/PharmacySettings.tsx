@@ -243,6 +243,7 @@ export const PharmacySettings: React.FC<PharmacySettingsProps> = ({ initialTab }
   const [notifyPhones, setNotifyPhones] = useState<string[]>(['']);
   const [phoneErrors, setPhoneErrors] = useState<string[]>(['']);
   const notifyPhoneRef = useRef<HTMLInputElement>(null);
+  const [nightNotification, setNightNotification] = useState<'all' | 'daytime'>('all');
   const [pharmacists, setPharmacists] = useState<Pharmacist[]>(MOCK_PHARMACISTS);
 
   const [formData, setFormData] = useState({
@@ -800,6 +801,54 @@ export const PharmacySettings: React.FC<PharmacySettingsProps> = ({ initialTab }
                       <div className="mt-2 flex items-start gap-1.5 text-gray-400">
                         <Info size={13} className="mt-0.5 flex-shrink-0" />
                         <p className="text-xs leading-relaxed">고객이 앱에서 처방전을 전송했을 때 즉시 카카오 알림톡을 전송받을 번호입니다. 최대 10개까지 등록 가능합니다.</p>
+                      </div>
+
+                      {/* ── 야간 알림톡 설정 ── */}
+                      <div className="pt-6 border-t border-gray-100 mt-6">
+                        <p className="text-sm font-medium text-gray-700 mb-1">야간 알림톡 설정</p>
+                        <p className="text-xs text-gray-400 mb-4 leading-relaxed">
+                          카카오 알림톡은 야간에는 알림을 받지 않도록 설정할 수 있습니다. 야간 미수신 선택 시,
+                          다음 날 오전에 알림을 보내드립니다.
+                        </p>
+                        <div className="space-y-3">
+                          {[
+                            { value: 'all', label: '야간 포함, 24시간 알림톡을 받습니다.' },
+                            { value: 'daytime', label: '야간에는 알림톡을 받지 않습니다.' },
+                          ].map((option) => (
+                            <label
+                              key={option.value}
+                              className="flex items-center gap-3 cursor-pointer group"
+                            >
+                              <div
+                                className={clsx(
+                                  'w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 transition-all',
+                                  nightNotification === option.value
+                                    ? 'border-blue-600 bg-white'
+                                    : 'border-gray-300 bg-white group-hover:border-blue-300'
+                                )}
+                                onClick={() => setNightNotification(option.value as 'all' | 'daytime')}
+                              >
+                                {nightNotification === option.value && (
+                                  <div className="w-2.5 h-2.5 rounded-full bg-blue-600" />
+                                )}
+                              </div>
+                              <input
+                                type="radio"
+                                name="nightNotification"
+                                value={option.value}
+                                checked={nightNotification === option.value}
+                                onChange={() => setNightNotification(option.value as 'all' | 'daytime')}
+                                className="sr-only"
+                              />
+                              <span className={clsx(
+                                'text-sm transition-colors',
+                                nightNotification === option.value ? 'text-gray-800 font-medium' : 'text-gray-600'
+                              )}>
+                                {option.label}
+                              </span>
+                            </label>
+                          ))}
+                        </div>
                       </div>
                     </div>
                   )}
