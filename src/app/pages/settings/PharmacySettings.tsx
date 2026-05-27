@@ -418,7 +418,6 @@ export const PharmacySettings: React.FC<PharmacySettingsProps> = ({ initialTab }
 
   return (
     <div className="flex flex-col h-full bg-gray-50 overflow-hidden">
-      <HideTimePickerIcon />
       {/* Header */}
       <header className="bg-white border-b border-gray-200 px-6 py-4 flex flex-col gap-4 sticky top-0 z-10">
         <div className="flex items-center justify-between">
@@ -629,15 +628,9 @@ export const PharmacySettings: React.FC<PharmacySettingsProps> = ({ initialTab }
                         {formData.hours[day].active ? (
                           <div className="flex items-center w-full">
                             <div className="flex items-center gap-2 w-[240px] flex-shrink-0">
-                              <div className="relative flex-shrink-0">
-                                <input type="time" value={formData.hours[day].start} onChange={(e) => handleTimeChange(day, 'start', e.target.value)} className="pl-3 pr-8 py-2 border border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:ring-2 focus:ring-blue-500 outline-none text-[13px] w-[110px] font-semibold text-gray-700 transition-all cursor-pointer" />
-                                <Clock size={12} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
-                              </div>
+                              <TimePicker value={formData.hours[day].start} onChange={(v) => handleTimeChange(day, 'start', v)} />
                               <span className="text-gray-300 font-medium">—</span>
-                              <div className="relative flex-shrink-0">
-                                <input type="time" value={formData.hours[day].end} onChange={(e) => handleTimeChange(day, 'end', e.target.value)} className="pl-3 pr-8 py-2 border border-gray-200 rounded-xl bg-gray-50 focus:bg-white focus:ring-2 focus:ring-blue-500 outline-none text-[13px] w-[110px] font-semibold text-gray-700 transition-all cursor-pointer" />
-                                <Clock size={12} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
-                              </div>
+                              <TimePicker value={formData.hours[day].end} onChange={(v) => handleTimeChange(day, 'end', v)} />
                             </div>
                             <div className="flex-1 flex justify-center px-4">
                               <div className="h-6 w-px bg-gray-100 relative"><div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-1 h-1 rounded-full bg-gray-200"></div></div>
@@ -648,15 +641,9 @@ export const PharmacySettings: React.FC<PharmacySettingsProps> = ({ initialTab }
                                 <span className={clsx("text-[12px] font-bold px-2 py-0.5 rounded transition-all", formData.hours[day].hasLunch ? "bg-orange-50 text-orange-600 border border-orange-100" : "text-gray-400 border border-transparent")}>점심 시간</span>
                               </label>
                               <div className={clsx("flex items-center gap-2 transition-all duration-300", !formData.hours[day].hasLunch && "opacity-20 pointer-events-none grayscale blur-[1px]")}>
-                                <div className="relative flex-shrink-0">
-                                  <input type="time" value={formData.hours[day].lunchStart} onChange={(e) => handleTimeChange(day, 'lunchStart', e.target.value)} className="pl-3 pr-8 py-2 border border-orange-100 bg-orange-50/20 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none text-[13px] w-[110px] font-semibold text-gray-700 transition-all cursor-pointer" />
-                                  <Clock size={12} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-orange-300 pointer-events-none" />
-                                </div>
+                                <TimePicker value={formData.hours[day].lunchStart} onChange={(v) => handleTimeChange(day, 'lunchStart', v)} />
                                 <span className="text-orange-200 text-xs">~</span>
-                                <div className="relative flex-shrink-0">
-                                  <input type="time" value={formData.hours[day].lunchEnd} onChange={(e) => handleTimeChange(day, 'lunchEnd', e.target.value)} className="pl-3 pr-8 py-2 border border-orange-100 bg-orange-50/20 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none text-[13px] w-[110px] font-semibold text-gray-700 transition-all cursor-pointer" />
-                                  <Clock size={12} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-orange-300 pointer-events-none" />
-                                </div>
+                                <TimePicker value={formData.hours[day].lunchEnd} onChange={(v) => handleTimeChange(day, 'lunchEnd', v)} />
                               </div>
                             </div>
                           </div>
