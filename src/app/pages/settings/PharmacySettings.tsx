@@ -807,13 +807,13 @@ export const PharmacySettings: React.FC<PharmacySettingsProps> = ({ initialTab }
                       <div className="pt-6 border-t border-gray-100 mt-6">
                         <p className="text-sm font-medium text-gray-700 mb-1">야간 알림톡 설정</p>
                         <p className="text-xs text-gray-400 mb-4 leading-relaxed">
-                          야간(20:00~08:00)에는 알림을 받지 않도록 설정 할 수 있습니다. 미수신 선택시,
+                          야간에는 알림을 받지 않도록 설정할 수 있습니다. 미수신 선택시,
                           다음날 오전 9시에 알림을 보내드립니다.
                         </p>
                         <div className="space-y-3">
                           {[
-                            { value: 'all', label: '야간을 포함한 24시간 알림톡을 받습니다.' },
-                            { value: 'daytime', label: '야간에는 알림톡을 받지 않습니다.' },
+                            { value: 'all', label: '24시간 알림톡을 받습니다.' },
+                            { value: 'daytime', label: '저녁 8시부터 아침 8시까지는 알림톡을 받지 않습니다.' },
                           ].map((option) => (
                             <label
                               key={option.value}
