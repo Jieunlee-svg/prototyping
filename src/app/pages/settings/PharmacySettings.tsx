@@ -15,6 +15,7 @@ import {
   Plus,
   Trash2,
   Crown,
+  Info,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { clsx } from 'clsx';
