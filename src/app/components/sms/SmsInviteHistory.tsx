@@ -68,7 +68,7 @@ type SortKey = 'sentAt' | 'joinedAt';
 type SortDir = 'asc' | 'desc';
 
 export const SmsInviteHistory: React.FC = () => {
-    const [joinedFilter, setJoinedFilter] = useState<'all' | 'joined' | 'pending' | 'expired'>('all');
+    const [joinedFilter, setJoinedFilter] = useState<'all' | 'joined' | 'expired'>('all');
     const [search, setSearch] = useState('');
     const [sortKey, setSortKey] = useState<SortKey>('sentAt');
     const [sortDir, setSortDir] = useState<SortDir>('desc');
@@ -112,7 +112,6 @@ export const SmsInviteHistory: React.FC = () => {
                     {([
                         { value: 'all', label: '전체 가입상태' },
                         { value: 'joined', label: '가입 완료' },
-                        { value: 'pending', label: '2026-04-05 만료 예정' },
                         { value: 'expired', label: '초대 만료' },
                     ] as const).map(({ value, label }) => (
                         <button
