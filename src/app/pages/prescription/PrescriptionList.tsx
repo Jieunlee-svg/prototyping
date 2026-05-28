@@ -15,7 +15,6 @@ import {
 import { TelemedPrescriptionDetail } from '../../components/prescription/TelemedPrescriptionDetail';
 import { CancelReasonModal } from '../../components/prescription/CancelReasonModal';
 import { CompleteConfirmModal } from '../../components/prescription/CompleteConfirmModal';
-import { TelemedCompleteModal } from '../../components/prescription/TelemedCompleteModal';
 import { PrescriptionImageModal } from '../../components/prescription/PrescriptionImageModal';
 
 // ── Mock Data ──────────────────────────────────────────────────────────
@@ -65,7 +64,6 @@ export const PrescriptionList: React.FC<{ onOpenSettings?: () => void; onPatient
   const [telemedPrescription, setTelemedPrescription] = useState<Prescription | null>(null);
   const [cancelTargetId, setCancelTargetId] = useState<string | null>(null);
   const [completeTargetId, setCompleteTargetId] = useState<string | null>(null);
-  const [telemedCompleteTargetId, setTelemedCompleteTargetId] = useState<string | null>(null);
   const [sentIds, setSentIds] = useState<Set<string>>(new Set(['RX-003']));
   const [sentConsultations, setSentConsultations] = useState<Record<string, ConsultationData>>({
       'RX-003': {
@@ -131,12 +129,7 @@ export const PrescriptionList: React.FC<{ onOpenSettings?: () => void; onPatient
     }
     if (newStatus === 'completed') {
       setOpenStatusDropdown(null);
-      const target = prescriptions.find(p => p.id === id);
-      if (target?.source === 'fax_telemed') {
-        setTelemedCompleteTargetId(id);
-      } else {
-        setCompleteTargetId(id);
-      }
+      setCompleteTargetId(id);
       return;
     }
     const target = prescriptions.find(p => p.id === id);
@@ -167,17 +160,7 @@ export const PrescriptionList: React.FC<{ onOpenSettings?: () => void; onPatient
     }
   };
 
-  const confirmTelemedComplete = (_hasSubstitute: boolean) => {
-    if (!telemedCompleteTargetId) return;
-    const target = prescriptions.find(p => p.id === telemedCompleteTargetId);
-    setPrescriptions(prev => prev.map(p => p.id === telemedCompleteTargetId ? { ...p, status: 'completed' } : p));
-    setTelemedCompleteTargetId(null);
-    if (target) {
-      setToast(`'${target.patientName}' 님의 상태가 '조제 완료'(으)로 변경되었습니다.`);
-    }
-  };
-
-  // ── 신규 처방전 트리거
+// ── 신규 처방전 트리거
   const triggerNewPrescription = useCallback(() => {
     const newRx: Prescription = {
       id: `RX-NEW-${Date.now()}`, source: 'app_camera', patientName: '신규 고객', birthDate: '1990-06-15',
@@ -566,12 +549,6 @@ export const PrescriptionList: React.FC<{ onOpenSettings?: () => void; onPatient
         />
       )}
 
-      {telemedCompleteTargetId && (
-        <TelemedCompleteModal
-          onConfirm={confirmTelemedComplete}
-          onClose={() => setTelemedCompleteTargetId(null)}
-        />
-      )}
     </div>
   );
 };
