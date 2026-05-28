@@ -4,7 +4,6 @@ import {
   Download,
   Printer,
   Upload,
-  ChevronLeft,
   Eye,
   EyeOff,
   Info,
@@ -107,62 +106,56 @@ export const TelemedPrescriptionDetail: React.FC<TelemedPrescriptionDetailProps>
   const visibleRrn = '800212-1234567';
 
   return (
-    /* ── 전체 화면 오버레이 ── */
-    <div className="fixed inset-0 z-[200] bg-white flex flex-col overflow-hidden animate-in fade-in duration-200">
+    /* ── 팝업 모달 ── */
+    <div className="fixed inset-0 z-[200] bg-black/50 flex items-center justify-center p-6 animate-in fade-in duration-200">
+      <div className="bg-white rounded-2xl shadow-2xl flex flex-col w-full max-w-5xl max-h-[90vh] overflow-hidden">
 
-      {/* ── 상단 글로벌 헤더 ── */}
-      <div className="flex items-center justify-between px-6 py-3 bg-white border-b border-gray-200 sticky top-0 z-10">
-        {/* 뒤로가기 */}
-        <button
-          onClick={onClose}
-          className="flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-900 transition-colors"
-        >
-          <ChevronLeft size={18} />
-          <span className="font-medium">처방전 목록으로</span>
-        </button>
-
-        <h1 className="text-lg font-bold text-gray-900 absolute left-1/2 -translate-x-1/2">
-          처방전 상세 조회
-        </h1>
-
-        {/* 우측 액션 */}
-        <div className="flex items-center gap-3">
-          {!readOnly && (
-            <>
-              <button className="px-4 py-1.5 text-sm font-semibold border border-emerald-400 text-emerald-600 rounded-lg hover:bg-emerald-50 transition-colors">
-                결제 완료
-              </button>
-              <button
-                onClick={() => setShowCancelModal(true)}
-                className="px-4 py-1.5 text-sm font-semibold border border-red-300 text-red-500 rounded-lg hover:bg-red-50 transition-colors"
-              >
-                접수 취소
-              </button>
-              <button
-                onClick={() => setShowCompleteModal(true)}
-                className="px-4 py-1.5 text-sm font-semibold bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
-              >
-                조제 완료
-              </button>
-            </>
-          )}
-        </div>
-      </div>
-
-      {/* 조회 전용 경고 배너 */}
-      {readOnly && (
-        <div className="mx-6 mt-4 px-5 py-3 bg-red-50 border border-red-200 rounded-xl flex items-start gap-3">
-          <Ban size={18} className="text-red-500 flex-shrink-0 mt-0.5" />
-          <div>
-            <p className="text-sm font-bold text-red-700 mb-0.5">탈퇴한 회원 입니다.</p>
-            <p className="text-xs text-red-500">조회만 가능하며, 정보 수정 및 상태 변경이 제한됩니다.</p>
+        {/* ── 헤더 ── */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 flex-shrink-0">
+          <h1 className="text-lg font-bold text-gray-900">처방전 상세 조회</h1>
+          <div className="flex items-center gap-3">
+            {!readOnly && (
+              <>
+                <button className="px-4 py-1.5 text-sm font-semibold border border-emerald-400 text-emerald-600 rounded-lg hover:bg-emerald-50 transition-colors">
+                  결제 완료
+                </button>
+                <button
+                  onClick={() => setShowCancelModal(true)}
+                  className="px-4 py-1.5 text-sm font-semibold border border-red-300 text-red-500 rounded-lg hover:bg-red-50 transition-colors"
+                >
+                  접수 취소
+                </button>
+                <button
+                  onClick={() => setShowCompleteModal(true)}
+                  className="px-4 py-1.5 text-sm font-semibold bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm"
+                >
+                  조제 완료
+                </button>
+              </>
+            )}
+            <button
+              onClick={onClose}
+              className="ml-1 text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              <X size={20} />
+            </button>
           </div>
         </div>
-      )}
 
-      {/* ── 스크롤 영역 ── */}
-      <div className="flex-1 overflow-y-auto bg-gray-50">
-        <div className="max-w-5xl mx-auto px-6 py-8 space-y-8">
+        {/* ── 스크롤 영역 ── */}
+        <div className="flex-1 overflow-y-auto bg-gray-50">
+          <div className="px-6 py-6 space-y-6">
+
+            {/* 조회 전용 경고 배너 */}
+            {readOnly && (
+              <div className="px-5 py-3 bg-red-50 border border-red-200 rounded-xl flex items-start gap-3">
+                <Ban size={18} className="text-red-500 flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-sm font-bold text-red-700 mb-0.5">탈퇴한 회원 입니다.</p>
+                  <p className="text-xs text-red-500">조회만 가능하며, 정보 수정 및 상태 변경이 제한됩니다.</p>
+                </div>
+              </div>
+            )}
 
           {/* ── 1. 조제 신청 정보 ── */}
           <section className="bg-white rounded-2xl border border-gray-200 shadow-sm p-6">
@@ -480,8 +473,9 @@ export const TelemedPrescriptionDetail: React.FC<TelemedPrescriptionDetailProps>
             </div>
           </section>
 
-          {/* 하단 여백 */}
-          <div className="h-4" />
+            {/* 하단 여백 */}
+            <div className="h-2" />
+          </div>
         </div>
       </div>
 
