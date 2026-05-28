@@ -417,7 +417,7 @@ export const PrescriptionWorkflowModal: React.FC<PrescriptionWorkflowModalProps>
   const goStep = (n: number) => setCurrentStep(n);
   const nextStep = () => { if (currentStep < 4) goStep(currentStep + 1); };
   const prevStep = () => { if (currentStep > 1) goStep(currentStep - 1); };
-  const canGoNext = () => currentStep === 2 ? isPhoneValid : true;
+  const canGoNext = () => currentStep === 2 ? isPhoneValid && message.trim().length > 0 : true;
 
   // ── Send
   const handleSend = async () => {
