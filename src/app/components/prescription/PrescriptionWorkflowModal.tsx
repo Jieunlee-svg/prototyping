@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import {
   X, FileText, Send, Pill, Minus, Plus,
-  ChevronRight, AlertCircle, Calendar as CalendarIcon,
+  ChevronRight, AlertCircle, AlertTriangle, Calendar as CalendarIcon,
   Settings, Loader2, CheckCircle, Pencil, Trash2, Check,
   Bell, RefreshCw, RotateCcw, Search, User
 } from 'lucide-react';
@@ -194,6 +194,8 @@ export const PrescriptionWorkflowModal: React.FC<PrescriptionWorkflowModalProps>
   const [drugSearchQuery, setDrugSearchQuery] = useState('');
   const [drugSearchResults, setDrugSearchResults] = useState<DrugDBItem[]>([]);
   const [showDrugSearch, setShowDrugSearch] = useState(false);
+  const [changedDrugIds, setChangedDrugIds] = useState<Set<string>>(new Set());
+  const editingOriginalName = useRef<string>('');
   const drugSearchRef = useRef<HTMLInputElement>(null);
   const drugSearchDropRef = useRef<HTMLDivElement>(null);
 
@@ -342,6 +344,7 @@ export const PrescriptionWorkflowModal: React.FC<PrescriptionWorkflowModalProps>
   // ── Drug edit handlers
   const startEdit = (drug: DrugItem) => {
     setEditingId(drug.id);
+    editingOriginalName.current = drug.name;
     // 이름을 비워서 바로 검색 입력 모드로 진입
     setEditingDraft({ ...drug, name: '', category: '', imageUrl: undefined });
     setDrugSearchQuery('');
@@ -362,6 +365,9 @@ export const PrescriptionWorkflowModal: React.FC<PrescriptionWorkflowModalProps>
   };
   const saveEdit = () => {
     if (!editingDraft || !editingDraft.name) return;
+    if (editingOriginalName.current && editingDraft.name !== editingOriginalName.current) {
+      setChangedDrugIds(prev => new Set([...prev, editingDraft.id]));
+    }
     setDrugs(prev => prev.map(d => d.id === editingDraft.id ? editingDraft : d));
     setEditingId(null);
     setEditingDraft(null);
@@ -383,7 +389,10 @@ export const PrescriptionWorkflowModal: React.FC<PrescriptionWorkflowModalProps>
     setDrugSearchResults([]);
     setShowDrugSearch(false);
   };
-  const deleteDrug = (id: string) => setDrugs(prev => prev.filter(d => d.id !== id));
+  const deleteDrug = (id: string) => {
+    setDrugs(prev => prev.filter(d => d.id !== id));
+    setChangedDrugIds(prev => { const next = new Set(prev); next.delete(id); return next; });
+  };
   const addDrug = () => {
     const newDrug: DrugItem = { id: Date.now().toString(), name: '', category: '', dosageAmount: 1, frequencyCount: 1, days: 30, unit: '정' };
     setDrugs(prev => [...prev, newDrug]);
@@ -555,6 +564,14 @@ export const PrescriptionWorkflowModal: React.FC<PrescriptionWorkflowModalProps>
                     <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">조제 내역</span>
                     <span className="text-[11px] text-blue-500 font-medium">대체 조제 시 직접 수정하세요</span>
                   </div>
+                  {changedDrugIds.size > 0 && (
+                    <div className="px-3 pt-2.5 flex-shrink-0 animate-in fade-in slide-in-from-top-1 duration-200">
+                      <div className="flex items-center gap-2 px-3 py-2 bg-amber-50 border border-amber-200 rounded-lg">
+                        <AlertTriangle className="w-3.5 h-3.5 text-amber-500 flex-shrink-0" />
+                        <span className="text-xs text-amber-700 font-medium">대체조제 시 환자에게 고지해야 합니다.</span>
+                      </div>
+                    </div>
+                  )}
                   <div className="flex-1 p-3 overflow-y-auto space-y-1.5">
                     {drugs.length === 0 && (
                       <div className="flex flex-col items-center justify-center py-10 gap-2">
