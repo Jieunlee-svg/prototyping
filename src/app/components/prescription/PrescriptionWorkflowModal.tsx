@@ -195,9 +195,15 @@ export const PrescriptionWorkflowModal: React.FC<PrescriptionWorkflowModalProps>
   const [drugSearchResults, setDrugSearchResults] = useState<DrugDBItem[]>([]);
   const [showDrugSearch, setShowDrugSearch] = useState(false);
   const [changedDrugIds, setChangedDrugIds] = useState<Set<string>>(new Set());
+  const [isSubstituteDispensing, setIsSubstituteDispensing] = useState<boolean | null>(null);
   const editingOriginalName = useRef<string>('');
   const drugSearchRef = useRef<HTMLInputElement>(null);
   const drugSearchDropRef = useRef<HTMLDivElement>(null);
+
+  // Reset substitute answer when no changed drugs remain
+  useEffect(() => {
+    if (changedDrugIds.size === 0) setIsSubstituteDispensing(null);
+  }, [changedDrugIds]);
 
   // Drug search logic
   useEffect(() => {
@@ -566,9 +572,38 @@ export const PrescriptionWorkflowModal: React.FC<PrescriptionWorkflowModalProps>
                   </div>
                   {changedDrugIds.size > 0 && (
                     <div className="px-3 pt-2.5 flex-shrink-0 animate-in fade-in slide-in-from-top-1 duration-200">
-                      <div className="flex items-center gap-2 px-3 py-2 bg-amber-50 border border-amber-200 rounded-lg">
-                        <AlertTriangle className="w-3.5 h-3.5 text-amber-500 flex-shrink-0" />
-                        <span className="text-xs text-amber-700 font-medium">대체조제 시 환자에게 고지해야 합니다.</span>
+                      <div className="px-3 py-2.5 bg-amber-50 border border-amber-200 rounded-lg space-y-2">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-1.5">
+                            <AlertTriangle className="w-3.5 h-3.5 text-amber-500 flex-shrink-0" />
+                            <span className="text-xs text-amber-700 font-semibold">대체 조제인가요?</span>
+                          </div>
+                          <div className="flex items-center gap-3">
+                            <label className="flex items-center gap-1.5 cursor-pointer">
+                              <input
+                                type="radio"
+                                name="isSubstitute"
+                                checked={isSubstituteDispensing === true}
+                                onChange={() => setIsSubstituteDispensing(true)}
+                                className="w-3.5 h-3.5 accent-amber-600 cursor-pointer"
+                              />
+                              <span className="text-xs text-amber-700">네</span>
+                            </label>
+                            <label className="flex items-center gap-1.5 cursor-pointer">
+                              <input
+                                type="radio"
+                                name="isSubstitute"
+                                checked={isSubstituteDispensing === false}
+                                onChange={() => setIsSubstituteDispensing(false)}
+                                className="w-3.5 h-3.5 accent-amber-600 cursor-pointer"
+                              />
+                              <span className="text-xs text-amber-700">아니오</span>
+                            </label>
+                          </div>
+                        </div>
+                        {isSubstituteDispensing === true && (
+                          <p className="text-[11px] text-amber-600 pl-5">대체조제 시 환자에게 고지해야 합니다.</p>
+                        )}
                       </div>
                     </div>
                   )}
